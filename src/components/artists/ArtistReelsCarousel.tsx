@@ -1,0 +1,311 @@
+import { useContext, useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import type { Artist, ArtistVideo } from '@/types/artist'
+import { MediaContext } from '@/cms/media/MediaContext'
+import { parseMediaRef } from '@/cms/media/refs'
+import { videoObjectPosition } from '@/cms/artistVideos'
+import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
+import {
+  bindMobilePlayback,
+  browserCanPlayWebm,
+  guessVideoSourceType,
+  mediaLooksWebm,
+  pauseVideo,
+  releaseVideo,
+  requestPlay,
+} from '@/components/artists/videoPlayback'
+
+const CINEMA_EASE = [0.22, 1, 0.36, 1] as const
+
+function canPlayInThisBrowser(url?: string) {
+  if (!url) return false
+  return !(mediaLooksWebm(url) && !browserCanPlayWebm())
+}
+
+function VideoTile({ video }: { video: ArtistVideo }) {
+  const media = useContext(MediaContext)
+  const tileRef = useRef<HTMLElement>(null)
+  const [inView, setInView] = useState(false)
+  const inViewRef = useRef(false)
+  const [armed, setArmed] = useState(false)
+  const [playing, setPlaying] = useState(false)
+  const clipRef = video.clipUrl?.trim() || ''
+  const clipPlayable = canPlayInThisBrowser(clipRef)
+  const resolvedClip = useResolvedMediaUrl(clipPlayable ? clipRef : undefined)
+  const posterUrl = useResolvedMediaUrl(video.posterUrl)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const mediaId = parseMediaRef(clipRef)
+  const localUrl = media?.assets.find(
+    (item) => item.id === mediaId || item.publicUrl === clipRef,
+  )?.url
+  const clipUrl = clipPlayable ? localUrl || resolvedClip : ''
+  const sourceType = clipUrl ? guessVideoSourceType(clipUrl) : undefined
+
+  useEffect(() => {
+    const node = tileRef.current
+    if (!node) return
+    if (!window.IntersectionObserver) {
+      setInView(true)
+      setArmed(true)
+      return
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inViewRef.current = entry.isIntersecting && entry.intersectionRatio >= 0.35
+        setInView(inViewRef.current)
+        if (entry.isIntersecting) setArmed(true)
+      },
+      { rootMargin: '120px', threshold: [0, 0.2, 0.35, 0.6] },
+    )
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [])
+
+  useEffect(() => {
+    const element = videoRef.current
+    if (!element || !clipUrl || !armed) return
+    bindMobilePlayback(element)
+    if (inView) requestPlay(element)
+    else pauseVideo(element)
+  }, [armed, inView, clipUrl])
+
+  useEffect(() => {
+    return () => {
+      const element = videoRef.current
+      if (element) releaseVideo(element)
+    }
+  }, [clipUrl])
+
+  return (
+    <article
+      ref={tileRef}
+      className="relative w-full overflow-hidden rounded-[1.35rem] bg-[#121014] shadow-2xl"
+      style={{ aspectRatio: '9 / 16' }}
+      onPointerUp={() => {
+        const element = videoRef.current
+        if (element) requestPlay(element)
+      }}
+    >
+      {posterUrl ? (
+        <img
+          src={posterUrl}
+          alt=""
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
+            playing ? 'opacity-0' : 'opacity-100'
+          }`}
+          style={{ objectPosition: videoObjectPosition(video) }}
+          decoding="async"
+        />
+      ) : null}
+      {clipUrl && armed ? (
+        <video
+          key={clipUrl}
+          ref={(element) => {
+            videoRef.current = element
+            if (element) bindMobilePlayback(element)
+          }}
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ objectPosition: videoObjectPosition(video) }}
+          poster={posterUrl || undefined}
+          muted
+          autoPlay={inView}
+          playsInline
+          loop
+          preload={inView ? 'auto' : 'metadata'}
+          onLoadedMetadata={(event) => {
+            bindMobilePlayback(event.currentTarget)
+            if (inViewRef.current) requestPlay(event.currentTarget)
+          }}
+          onLoadedData={(event) => {
+            if (inViewRef.current) requestPlay(event.currentTarget)
+          }}
+          onCanPlay={(event) => {
+            if (inViewRef.current) requestPlay(event.currentTarget)
+          }}
+          onPlaying={(event) => {
+            bindMobilePlayback(event.currentTarget)
+            setPlaying(true)
+          }}
+          onPause={() => setPlaying(false)}
+          onError={() => {
+            const element = videoRef.current
+            if (element) pauseVideo(element)
+            setPlaying(false)
+          }}
+        >
+          <source src={clipUrl} type={sourceType} />
+        </video>
+      ) : null}
+    </article>
+  )
+}
+
+export function ArtistReelsCarousel({
+  artist,
+  videos,
+  showEmptyState = false,
+  previewMode = false,
+}: {
+  artist: Artist
+  videos: ArtistVideo[]
+  showEmptyState?: boolean
+  previewMode?: boolean
+}) {
+  const sectionRef = useRef<HTMLElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef<{
+    pointerId: number
+    startX: number
+    scrollLeft: number
+  } | null>(null)
+  const [isInteracting, setIsInteracting] = useState(false)
+
+  const scroll = (direction: -1 | 1) => {
+    trackRef.current?.scrollBy({
+      left: direction * trackRef.current.clientWidth * 0.82,
+      behavior: 'smooth',
+    })
+  }
+
+  if (videos.length === 0) {
+    if (!showEmptyState) return null
+    return (
+      <section
+        ref={sectionRef}
+        id="artist-visuals"
+        className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-8"
+      >
+        <div className="rounded-[1.5rem] border border-white/8 bg-[#121014] px-6 py-14 text-center">
+          <p className="type-headline text-lg text-[#F5F5F5]">Shows</p>
+          <p className="type-body mt-2 text-xs text-[#F5F5F5]/45">
+            Voeg maximaal acht video’s toe in het CMS.
+          </p>
+          <Link
+            to={`/cms/artists/${artist.slug}?tab=content`}
+            className="type-ui mt-4 inline-flex rounded-full border border-[#D8FF3E]/35 bg-[#D8FF3E]/10 px-4 py-2 text-[0.65rem] text-[#D8FF3E]"
+          >
+            Video’s beheren →
+          </Link>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <ErrorBoundary label="visuals" compact>
+      <section
+        ref={sectionRef}
+        id="artist-visuals"
+        className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-8 lg:py-20"
+      >
+        <motion.div
+          initial={previewMode ? false : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.45, ease: CINEMA_EASE }}
+        >
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <p className="type-label text-[0.6rem] tracking-[0.18em] text-ink/40 uppercase">
+                Artist
+              </p>
+              <h2 className="type-headline mt-1 text-2xl text-ink sm:text-3xl">
+                Shows
+              </h2>
+            </div>
+            {videos.length > 4 ? (
+              <div className="flex gap-2">
+                <SliderButton label="Previous videos" onClick={() => scroll(-1)}>
+                  ←
+                </SliderButton>
+                <SliderButton label="Next videos" onClick={() => scroll(1)}>
+                  →
+                </SliderButton>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="overflow-hidden rounded-[1.75rem] border border-white/8 bg-[#0d090b] py-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] sm:py-14">
+            <div
+              ref={trackRef}
+              className={
+                videos.length === 1
+                  ? 'flex justify-start overflow-x-auto px-3 py-3 sm:px-6 lg:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+                  : videos.length === 2
+                    ? 'flex snap-x snap-mandatory justify-start gap-3 overflow-x-auto px-3 py-3 sm:px-6 lg:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
+                  : 'grid cursor-grab grid-flow-col auto-cols-[min(62vw,17.5rem)] grid-rows-1 items-start gap-3 overflow-x-auto overscroll-x-contain px-3 py-3 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [scrollbar-width:none] active:cursor-grabbing sm:auto-cols-[17.5rem] sm:px-6 lg:auto-cols-[17.5rem] lg:px-8 [&::-webkit-scrollbar]:hidden'
+              }
+              onMouseLeave={() => {
+                dragRef.current = null
+                setIsInteracting(false)
+              }}
+              onWheel={(event) => {
+                if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
+                  event.currentTarget.scrollLeft += event.deltaX + event.deltaY
+                }
+              }}
+              onPointerDown={(event) => {
+                if (event.pointerType !== 'mouse') return
+                dragRef.current = {
+                  pointerId: event.pointerId,
+                  startX: event.clientX,
+                  scrollLeft: event.currentTarget.scrollLeft,
+                }
+                event.currentTarget.setPointerCapture(event.pointerId)
+                setIsInteracting(true)
+              }}
+              onPointerMove={(event) => {
+                const drag = dragRef.current
+                if (!drag || drag.pointerId !== event.pointerId) return
+                event.currentTarget.scrollLeft =
+                  drag.scrollLeft - (event.clientX - drag.startX)
+              }}
+              onPointerUp={(event) => {
+                if (dragRef.current?.pointerId === event.pointerId) {
+                  dragRef.current = null
+                  event.currentTarget.releasePointerCapture(event.pointerId)
+                  setIsInteracting(false)
+                }
+              }}
+            >
+              {videos.map((video) => (
+                <div
+                  key={video.id}
+                  className={
+                    videos.length <= 2
+                      ? 'w-[min(72vw,17.5rem)] shrink-0 snap-start'
+                      : 'w-full min-w-0 shrink-0'
+                  }
+                >
+                  <VideoTile video={video} />
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </section>
+    </ErrorBoundary>
+  )
+}
+
+function SliderButton({
+  label,
+  onClick,
+  children,
+}: {
+  label: string
+  onClick: () => void
+  children: string
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={onClick}
+      className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 text-sm text-ink transition-colors hover:border-ink/35"
+    >
+      {children}
+    </button>
+  )
+}

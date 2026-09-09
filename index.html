@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="nl" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/brand/tzjill-logo.png" />
+    <link rel="apple-touch-icon" href="/brand/tzjill-logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Tzjill Barber Shop — knippen, baard en verzorging."
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="canonical" href="https://www.notype-mgmt.com/" />
+    <style>
+      html, body {
+        margin: 0;
+        min-height: 100%;
+        background: #000000;
+        color: #f5f5f5;
+      }
+      html[data-theme='light'] {
+        background: #f6f3ee;
+        color: #2c241c;
+      }
+      html[data-theme='dark'] {
+        background: #000000;
+        color: #f5f5f5;
+      }
+      #root { min-height: 100vh; }
+    </style>
+    <link rel="preload" as="image" href="/brand/tzjill-logo.png" type="image/png" fetchpriority="high" />
+    <title>Tzjill Barber Shop</title>
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('tzjill-theme-v2')
+          if (t !== 'light' && t !== 'dark') t = 'dark'
+          document.documentElement.dataset.theme = t
+        } catch (e) {
+          document.documentElement.dataset.theme = 'dark'
+        }
+      })()
+    </script>
+    <!--public-boot-->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
