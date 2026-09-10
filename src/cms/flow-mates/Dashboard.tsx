@@ -2,7 +2,7 @@ import type { ComponentType } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowUpRight,
-  CalendarDays,
+  Banknote,
   FolderOpen,
   Home,
   Phone,
@@ -131,7 +131,7 @@ export function DashboardHome() {
             Bewerken
           </h3>
           <p className="mt-0.5 text-xs text-neutral-500">
-            Wat je het vaakst aanpast — roster, media, contact, booking.
+            Wat je het vaakst aanpast — pagina’s, media, contact.
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -157,10 +157,10 @@ export function DashboardHome() {
             accent="bg-emerald-500/10 text-emerald-500"
           />
           <ActionTile
-            to="/cms/booking"
-            label="Booking"
-            description="Formulier en inbox."
-            icon={CalendarDays}
+            to="/cms/prijzen"
+            label="Prijzen"
+            description="Tarieven op de prijzenpagina."
+            icon={Banknote}
             accent="bg-emerald-500/10 text-emerald-500"
           />
           <ActionTile

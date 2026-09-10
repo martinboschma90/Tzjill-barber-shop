@@ -3,6 +3,7 @@ import { Link, Navigate, NavLink, useLocation, useNavigate } from 'react-router-
 import {
   FileText,
   FolderOpen,
+  HelpCircle,
   LayoutDashboard,
   LogOut,
   Menu as MenuIcon,
@@ -36,14 +37,18 @@ import { isPagesWorkspacePath, PagesTabBar } from '@/cms/flow-mates/PagesTabBar'
 import type { CmsPanelProps } from '@/cms/panels/types'
 import { UsersAdmin } from '@/cms/editors/UsersAdmin'
 import { RouteFallback } from '@/components/ui/RouteFallback'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 const CmsHomePanel = lazy(() => import('@/cms/panels/home'))
+const CmsPrijzenPanel = lazy(() => import('@/cms/panels/prijzen'))
+const CmsLookbookPanel = lazy(() => import('@/cms/panels/lookbook'))
+const CmsProductsPanel = lazy(() => import('@/cms/panels/products'))
+const CmsCollabsPanel = lazy(() => import('@/cms/panels/collabs'))
+const CmsTeamPanel = lazy(() => import('@/cms/panels/team'))
 const CmsAboutPanel = lazy(() => import('@/cms/panels/about'))
 const CmsContactPanel = lazy(() => import('@/cms/panels/contact'))
-const CmsBookingPanel = lazy(() => import('@/cms/panels/booking'))
 const CmsFaqPanel = lazy(() => import('@/cms/panels/faq'))
 const CmsFooterPanel = lazy(() => import('@/cms/panels/footer'))
-const CmsRosterPanel = lazy(() => import('@/cms/panels/roster'))
 const CmsArtistsIndexPanel = lazy(() => import('@/cms/panels/artistsIndex'))
 const CmsArtistDetailPanel = lazy(() => import('@/cms/panels/artistDetail'))
 const CmsMediaPanel = lazy(() => import('@/cms/panels/media'))
@@ -52,6 +57,7 @@ const CmsSettingsPanel = lazy(() => import('@/cms/panels/settings'))
 const NAV = [
   { to: '/cms/dashboard', label: 'Dashboard', icon: LayoutDashboard, match: 'dashboard' as const },
   { to: '/cms/home', label: "Pagina's", icon: FileText, match: 'pages' as const },
+  { to: '/cms/faq', label: 'FAQ', icon: HelpCircle, match: 'faq' as const },
   { to: '/cms/artists', label: 'Artiesten', icon: Users, match: 'artists' as const },
   { to: '/cms/media', label: 'Media', icon: FolderOpen, match: 'media' as const },
   { to: '/cms/settings', label: 'Instellingen', icon: Settings, match: 'settings' as const },
@@ -71,7 +77,7 @@ function useCmsPanels(): {
     return {
       mode: 'dashboard',
       title: 'Dashboard',
-      subtitle: 'Tzjill Barber Shop CMS',
+      subtitle: 'Flow Mates CMS',
       Page: null,
     }
   }
@@ -119,25 +125,39 @@ function useCmsPanels(): {
       Page: CmsArtistDetailPanel,
     }
   }
-  if (pathname.startsWith('/cms/about')) {
-    return { mode: 'pages', title: 'About', subtitle: 'About · team · social', Page: CmsAboutPanel }
+  if (pathname.startsWith('/cms/over-ons') || pathname.startsWith('/cms/about')) {
+    return { mode: 'pages', title: 'Over ons', subtitle: '/over-ons', Page: CmsAboutPanel }
+  }
+  if (pathname.startsWith('/cms/prijzen')) {
+    return { mode: 'pages', title: 'Prijzen', subtitle: '/prijzen', Page: CmsPrijzenPanel }
+  }
+  if (pathname.startsWith('/cms/lookbook')) {
+    return { mode: 'pages', title: 'Lookbook', subtitle: '/lookbook', Page: CmsLookbookPanel }
+  }
+  if (pathname.startsWith('/cms/products')) {
+    return { mode: 'pages', title: 'Products', subtitle: '/products', Page: CmsProductsPanel }
+  }
+  if (pathname.startsWith('/cms/collabs')) {
+    return { mode: 'pages', title: 'Collabs', subtitle: '/collabs', Page: CmsCollabsPanel }
+  }
+  if (pathname.startsWith('/cms/team') || pathname.startsWith('/cms/roster')) {
+    return { mode: 'pages', title: 'Team', subtitle: '/team', Page: CmsTeamPanel }
   }
   if (pathname.startsWith('/cms/contact')) {
-    return { mode: 'pages', title: 'Contact', subtitle: 'Contactkanalen', Page: CmsContactPanel }
-  }
-  if (pathname.startsWith('/cms/booking')) {
-    return { mode: 'pages', title: 'Booking', subtitle: 'Booking request', Page: CmsBookingPanel }
+    return { mode: 'pages', title: 'Contact', subtitle: '/contact', Page: CmsContactPanel }
   }
   if (pathname.startsWith('/cms/faq')) {
-    return { mode: 'pages', title: 'FAQ', subtitle: 'Promoter FAQ', Page: CmsFaqPanel }
+    return { mode: 'pages', title: 'FAQ', subtitle: 'Vragen op de homepage', Page: CmsFaqPanel }
   }
   if (pathname.startsWith('/cms/footer')) {
     return { mode: 'pages', title: 'Footer', subtitle: 'Globale footer', Page: CmsFooterPanel }
   }
-  if (pathname.startsWith('/cms/roster')) {
-    return { mode: 'pages', title: 'Roster', subtitle: 'Homepage artist grid', Page: CmsRosterPanel }
+  return {
+    mode: 'pages',
+    title: 'Homepage',
+    subtitle: 'Bewerk elke sectie. Wijzigingen worden automatisch opgeslagen.',
+    Page: CmsHomePanel,
   }
-  return { mode: 'pages', title: 'Home', subtitle: 'Hero · brand', Page: CmsHomePanel }
 }
 
 function formatSavedAt(ts: number | null) {
@@ -180,7 +200,7 @@ function CmsWorkAlert() {
   )
 }
 
-/** Tzjill Barber Shop CMS layout. */
+/** Flow Mates CMS layout. */
 export function CmsLayout() {
   const { pathname, search } = useLocation()
   const navigate = useNavigate()
@@ -205,6 +225,9 @@ export function CmsLayout() {
     pathname.includes('/cms/settings/users') ||
     pathname.includes('/cms/instellingen/gebruikers')
 
+  if (pathname.startsWith('/cms/booking')) {
+    return <Navigate to="/cms/contact" replace />
+  }
   if (pathname === '/cms' || pathname === '/cms/') {
     return <Navigate to="/cms/dashboard" replace />
   }
@@ -242,6 +265,8 @@ export function CmsLayout() {
           const active =
             n.match === 'pages'
               ? pagesWorkspace
+              : n.match === 'faq'
+                ? pathname.startsWith('/cms/faq')
               : n.match === 'artists'
                 ? panels.mode === 'artists'
                 : n.match === 'dashboard'
@@ -297,7 +322,7 @@ export function CmsLayout() {
               collapsible ? 'text-[11px] group-hover/sidebar:text-[15px]' : 'text-[15px]'
             }`}
           >
-            Tzjill
+            Flow Mates
           </span>
           <span
             className={`mt-1 whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.18em] text-neutral-500 ${
@@ -462,9 +487,9 @@ export function CmsLayout() {
           <MenuIcon className="h-5 w-5" />
         </button>
         <div className="flex flex-col items-center leading-tight">
-          <span className="text-[13px] font-semibold text-neutral-900">Tzjill</span>
+          <span className="text-[13px] font-semibold text-neutral-900">Flow Mates</span>
           <span className="text-[9px] font-medium uppercase tracking-[0.18em] text-neutral-500">
-            Barber Shop
+            CMS
           </span>
         </div>
         <button
@@ -622,16 +647,20 @@ export function CmsLayout() {
                   />
                 )}
                 <EditorAccordionScope key={`${pathname}${search}`}>
+                  <ErrorBoundary compact label="cms-editor" resetKey={`${pathname}${search}`}>
                   <Suspense fallback={<RouteFallback compact />}>
                     <panels.Page slot="editor" />
                   </Suspense>
+                  </ErrorBoundary>
                 </EditorAccordionScope>
                 </div>
               </div>
               <div className="min-h-0 min-w-0 flex-1">
+                <ErrorBoundary compact label="cms-preview" resetKey={`${pathname}${search}`}>
                 <Suspense fallback={<RouteFallback compact />}>
                   <panels.Page slot="preview" />
                 </Suspense>
+                </ErrorBoundary>
               </div>
               </EditorPreviewLayout>
             )

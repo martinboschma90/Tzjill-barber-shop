@@ -21,7 +21,7 @@ export function CmsAuthGate({ children }: { children: ReactNode }) {
         className="flex h-svh items-center justify-center bg-neutral-50"
         style={{ fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif" }}
       >
-        <p className="text-sm text-neutral-500">Tzjill CMS laden…</p>
+        <p className="text-sm text-neutral-500">Flow Mates CMS laden…</p>
       </div>
     )
   }

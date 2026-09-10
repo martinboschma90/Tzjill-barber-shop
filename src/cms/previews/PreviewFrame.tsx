@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { CmsPreviewModeProvider } from '@/cms/previews/PreviewMode'
 import { ExternalLink, Maximize2, Minimize2, Monitor, RefreshCw, Smartphone, Tablet } from 'lucide-react'
 import { useTheme } from '@/theme/ThemeProvider'
 
@@ -206,6 +207,7 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
             />
             {mountNode &&
               createPortal(
+                <CmsPreviewModeProvider>
                 <div
                   data-cms-preview
                   data-theme={theme}
@@ -218,7 +220,8 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
                   }}
                 >
                   {children}
-                </div>,
+                </div>
+                </CmsPreviewModeProvider>,
                 mountNode,
               )}
           </div>

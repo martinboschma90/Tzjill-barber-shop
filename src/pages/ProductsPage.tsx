@@ -1,9 +1,13 @@
 import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
-import { products } from '@/data/products'
+import { useCms } from '@/cms/CmsContext'
+import { cloneProducts } from '@/cms/content'
 
 export function ProductsPage() {
+  const { content } = useCms()
+  const products = content.site.products ?? cloneProducts()
+
   return (
     <AppShell navVariant="wordmark">
       <PageFrame>

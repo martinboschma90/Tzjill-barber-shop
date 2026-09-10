@@ -1,17 +1,15 @@
 import { Link } from 'react-router-dom'
 import { SectionHead } from '@/components/layout/SectionHead'
 import { Reveal } from '@/components/motion/Reveal'
-
-const highlights = [
-  { name: 'Haircut', price: '€30' },
-  { name: 'Haircut + wassen', price: '€33' },
-  { name: 'Haircut + baard trimmen', price: '€40' },
-  { name: 'Baard trimmen', price: '€20' },
-  { name: '1 stand scheren', price: '€19' },
-  { name: 'Kinderen t/m 11 jaar', price: '€22' },
-]
+import { useCms } from '@/cms/CmsContext'
+import { cloneShopMenu } from '@/cms/content'
 
 export function HomePrices() {
+  const { content } = useCms()
+  const highlights = (content.site.shopMenu ?? cloneShopMenu())
+    .flatMap((category) => category.groups.flatMap((group) => group.items))
+    .slice(0, 6)
+
   return (
     <section className="text-white">
       <div className="mx-auto max-w-[1240px] px-8 section-y sm:px-12">

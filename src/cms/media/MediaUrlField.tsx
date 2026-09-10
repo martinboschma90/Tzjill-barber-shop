@@ -48,8 +48,8 @@ export function MediaUrlField({
       hint={
         hint ??
         (kind === 'video'
-          ? 'Upload slaat de video op voor preview. Live fragmenten worden MP4 (H.264) voor iPhone.'
-          : 'Upload converts to WebP. Stored in the media library.')
+          ? 'Upload of kies uit de bibliotheek.'
+          : 'Upload of kies uit de bibliotheek.')
       }
     >
       <div className="space-y-2">
@@ -134,29 +134,30 @@ export function MediaUrlField({
         ) : null}
 
         {previewUrl && kind !== 'video' ? (
-          <div className="overflow-hidden rounded-lg border border-ink/8 bg-ink/5">
-            <OptimizedImg
-              src={previewUrl}
-              alt=""
-              size="thumb"
-              className="h-28 w-full object-cover"
-            />
+          <div className="overflow-hidden rounded-xl border border-dashed border-neutral-300 bg-neutral-50">
+            <div className="aspect-[4/3] w-full">
+              <OptimizedImg
+                src={previewUrl}
+                alt=""
+                size="thumb"
+                className="h-full w-full object-cover"
+              />
+            </div>
           </div>
         ) : null}
         {previewUrl && kind === 'video' ? (
-          <div
-            className="mx-auto w-[min(100%,14rem)] overflow-hidden rounded-xl bg-ink/10"
-            style={{ aspectRatio: '9 / 16' }}
-          >
-            <video
-              key={previewUrl}
-              src={previewUrl}
-              controls
-              muted
-              playsInline
-              preload="metadata"
-              className="h-full w-full object-cover object-center"
-            />
+          <div className="overflow-hidden rounded-xl border border-dashed border-neutral-300 bg-neutral-50">
+            <div className="aspect-[4/3] w-full">
+              <video
+                key={previewUrl}
+                src={previewUrl}
+                controls
+                muted
+                playsInline
+                preload="metadata"
+                className="h-full w-full object-cover object-center"
+              />
+            </div>
           </div>
         ) : null}
 

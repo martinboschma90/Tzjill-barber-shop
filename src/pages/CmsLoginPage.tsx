@@ -68,14 +68,17 @@ export function CmsLoginPage() {
       <div className="relative z-10 w-full max-w-sm">
         <div className="mb-8 text-center">
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
-            Tzjill Barber Shop
+            Flow Mates
           </p>
           <p className="mt-1 text-2xl font-semibold tracking-tight text-white">CMS</p>
         </div>
 
         <div className="rounded-2xl border border-white/12 bg-[#111718]/85 p-6 shadow-2xl shadow-black/35 backdrop-blur-xl">
-          <h1 className="mb-1 text-lg font-semibold text-white">Welkom in het CMS</h1>
-          <p className="mb-5 text-sm text-white/50">Log in om verder te gaan · Tzjill Barber Shop</p>
+          <h1 className="mb-1 text-lg font-semibold text-white">Welkom in Flow Mates CMS</h1>
+          <p className="mb-5 text-sm text-white/50">
+            Log in met het account uit Supabase → Authentication → Users
+            (Auto Confirm aan).
+          </p>
 
           <form className="space-y-3" onSubmit={onSubmit}>
             <label className="block">

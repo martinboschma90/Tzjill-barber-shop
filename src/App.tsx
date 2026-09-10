@@ -53,7 +53,7 @@ function publicPageViewsOnly(event: BeforeSendEvent) {
     : event
 }
 
-/** Tzjill CMS lives at /cms; /admin is an alias. */
+/** Flow Mates CMS lives at /cms; /admin is an alias. */
 function AdminToCms() {
   const { pathname, search } = useLocation()
   const rest = pathname.replace(/^\/admin/, '') || '/home'

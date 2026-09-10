@@ -10,6 +10,10 @@ import {
   DEFAULT_ROSTER_GLOW_SECONDARY,
   type RosterGlowPreset,
 } from '@/cms/rosterGlow'
+import { shopMenu } from '@/data/menu'
+import { lookbookImages as defaultLookbook } from '@/data/lookbook'
+import { products as defaultProducts } from '@/data/products'
+import { collabs as defaultCollabs } from '@/data/collabs'
 import { site as defaultSite } from '@/data/site'
 import { DEFAULT_WHATSAPP_NUMBER } from '@/data/whatsapp'
 import type { Artist, TeamMember } from '@/types/artist'
@@ -17,6 +21,106 @@ import type { Artist, TeamMember } from '@/types/artist'
 const DEFAULT_PHONE_NUMBER = DEFAULT_WHATSAPP_NUMBER
 
 export type { RosterGlowPreset }
+
+export type ShopMenuItem = {
+  name: string
+  price: string
+}
+
+export type ShopMenuGroup = {
+  title: string
+  items: ShopMenuItem[]
+}
+
+export type ShopMenuCategory = {
+  id: string
+  label: string
+  groups: ShopMenuGroup[]
+}
+
+export type LookbookImage = {
+  src: string
+  alt: string
+  tags: string[]
+}
+
+export type ShopProduct = {
+  name: string
+  text: string
+  image: string
+}
+
+export type ShopCollab = {
+  name: string
+  year: string
+  text: string
+  image: string
+}
+
+export type HomeTreatment = {
+  title: string
+  text: string
+  image: string
+}
+
+export const DEFAULT_TREATMENTS: HomeTreatment[] = [
+  {
+    title: 'Haircut',
+    text: 'Strak, classic of fade — altijd in verhouding met je gezicht.',
+    image: '/lookbook/01.jpg',
+  },
+  {
+    title: 'Baard',
+    text: 'Trimmen, lijnen of hot towel straight razor.',
+    image: '/lookbook/03.jpg',
+  },
+  {
+    title: 'Kids',
+    text: 'Kinderen t/m 11. Dezelfde precisie, rustiger tempo.',
+    image: '/lookbook/02.jpg',
+  },
+]
+
+export function cloneTreatments(
+  source: readonly HomeTreatment[] = DEFAULT_TREATMENTS,
+): HomeTreatment[] {
+  return source.map((item) => ({ ...item }))
+}
+
+export function cloneShopMenu(
+  source: ShopMenuCategory[] = shopMenu,
+): ShopMenuCategory[] {
+  return source.map((category) => ({
+    id: category.id,
+    label: category.label,
+    groups: category.groups.map((group) => ({
+      title: group.title,
+      items: group.items.map((item) => ({ ...item })),
+    })),
+  }))
+}
+
+export function cloneLookbook(
+  source: readonly LookbookImage[] = defaultLookbook,
+): LookbookImage[] {
+  return source.map((item) => ({
+    src: item.src,
+    alt: item.alt,
+    tags: [...item.tags],
+  }))
+}
+
+export function cloneProducts(
+  source: readonly ShopProduct[] = defaultProducts,
+): ShopProduct[] {
+  return source.map((item) => ({ ...item }))
+}
+
+export function cloneCollabs(
+  source: readonly ShopCollab[] = defaultCollabs,
+): ShopCollab[] {
+  return source.map((item) => ({ ...item }))
+}
 
 export type ContactItem = {
   label: string
@@ -112,6 +216,19 @@ export type SiteContent = {
   metaDescription: string
   /** When false, public pages send noindex. */
   searchIndexing: boolean
+  /** Prijzen page + homepage highlights. */
+  shopMenu: ShopMenuCategory[]
+  lookbookImages: LookbookImage[]
+  products: ShopProduct[]
+  collabs: ShopCollab[]
+  welcomeKicker: string
+  welcomeTitle: string
+  welcomeText: string
+  welcomeImageUrl: string
+  treatmentsKicker: string
+  treatmentsTitle: string
+  treatmentsIntro: string
+  treatments: HomeTreatment[]
 }
 
 export type CmsContent = {
@@ -168,6 +285,19 @@ export function createDefaultSiteContent(): SiteContent {
     metaDescription:
       'Tzjill Barber & Lounge in Leeuwarden. Trendy haircuts and hot towel straight razor shaves.',
     searchIndexing: true,
+    shopMenu: cloneShopMenu(),
+    lookbookImages: cloneLookbook(),
+    products: cloneProducts(),
+    collabs: cloneCollabs(),
+    welcomeKicker: 'Studio',
+    welcomeTitle: 'Elke coupe\nis maatwerk.',
+    welcomeText: 'Knippen, scheren, baard. Voorstreek, Leeuwarden. A man’s world.',
+    welcomeImageUrl: '/lookbook/05.png',
+    treatmentsKicker: 'Behandelingen',
+    treatmentsTitle: 'Alles wat je\nin de stoel nodig hebt',
+    treatmentsIntro:
+      'Knippen, baard, kids — dezelfde precisie, altijd in verhouding met je gezicht.',
+    treatments: cloneTreatments(),
   }
 }
 

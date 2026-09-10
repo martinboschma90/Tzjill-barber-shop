@@ -5,6 +5,7 @@ import {
   PUBLIC_ARTISTS_STORAGE_KEY,
 } from '@/cms/storageKeys'
 import type { CmsContent } from '@/cms/content'
+import { normalizeSiteContent } from '@/cms/mappers/site'
 import { visibleArtists } from '@/cms/artistVisibility'
 import { withArtDirection } from '@/cms/imageFocus'
 import { coerceArtist } from '@/cms/mappers/artist'
@@ -29,6 +30,7 @@ function parseCmsBlob(data: unknown): CmsContent | null {
   }
   return {
     ...parsed,
+    site: normalizeSiteContent(parsed.site),
     artists: parsed.artists.map((artist) => coerceArtist(withArtDirection(artist))),
   }
 }

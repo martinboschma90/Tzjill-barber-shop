@@ -34,18 +34,17 @@ export function Welcome() {
       <div className="mx-auto grid max-w-[1240px] items-center gap-12 px-8 section-y sm:px-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16">
         <div>
           <Reveal variant="clip">
-            <p className="type-label text-white/40">Studio</p>
+            <p className="type-label text-white/40">{content.site.welcomeKicker || 'Studio'}</p>
           </Reveal>
           <Reveal variant="clip" delay={0.08} className="mt-4">
-            <h2 className="type-headline max-w-2xl">
-              Elke coupe
-              <br />
-              is maatwerk.
+            <h2 className="type-headline max-w-2xl whitespace-pre-line">
+              {content.site.welcomeTitle || 'Elke coupe\nis maatwerk.'}
             </h2>
           </Reveal>
           <Reveal delay={0.16}>
             <p className="type-lead mt-6 max-w-xs text-white/55">
-              Knippen, scheren, baard. Voorstreek, Leeuwarden. A man’s world.
+              {content.site.welcomeText ||
+                'Knippen, scheren, baard. Voorstreek, Leeuwarden. A man’s world.'}
             </p>
             <Link
               to="/over-ons"
@@ -99,7 +98,7 @@ export function Welcome() {
           >
             <MediaReveal delay={0.12}>
               <img
-                src="/lookbook/05.png"
+                src={content.site.welcomeImageUrl || '/lookbook/05.png'}
                 alt=""
                 className="aspect-[3/4] w-full object-cover"
                 loading="lazy"

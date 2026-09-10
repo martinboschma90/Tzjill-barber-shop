@@ -55,6 +55,7 @@ import {
 } from '@/cms/storageKeys'
 import { useLocation } from 'react-router-dom'
 import { mergeRemoteArtists } from '@/cms/dedupeArtists'
+import { normalizeSiteContent } from '@/cms/mappers/site'
 import {
   CmsContext,
   type CmsContextValue,
@@ -74,7 +75,7 @@ function initialContent(): CmsContent {
       : defaults.artists
 
   return {
-    site: stored.site,
+    site: normalizeSiteContent(stored.site),
     team: stored.team,
     artists,
   }
@@ -255,7 +256,9 @@ export function CmsProvider({ children }: { children: ReactNode }) {
           ? remoteRoster.artists.map((artist) => withArtDirection(artist))
           : []
         const next: CmsContent = {
-          site: remoteBlob?.content.site ?? contentRef.current.site,
+          site: normalizeSiteContent(
+            remoteBlob?.content.site ?? contentRef.current.site,
+          ),
           team: remoteBlob?.content.team?.length
             ? remoteBlob.content.team
             : contentRef.current.team,

@@ -9,7 +9,7 @@ import {
 import { ChevronLeft, ChevronRight, GripVertical, Monitor, X } from 'lucide-react'
 
 const STORAGE_KEY = 'tzjill-cms-editor-width'
-const DEFAULT_EDITOR_WIDTH = 48
+const DEFAULT_EDITOR_WIDTH = 56
 
 export function EditorPreviewLayout({ children }: { children: ReactNode }) {
   const parts = Children.toArray(children)

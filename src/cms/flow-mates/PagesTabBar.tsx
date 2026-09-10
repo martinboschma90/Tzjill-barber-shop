@@ -1,16 +1,25 @@
 import { Link, useLocation } from 'react-router-dom'
 
 export const PAGE_TABS = [
-  { to: '/cms/home', label: 'Home' },
-  { to: '/cms/roster', label: 'Roster' },
-  { to: '/cms/about', label: 'About' },
+  { to: '/cms/home', label: 'Homepage' },
+  { to: '/cms/prijzen', label: 'Prijzen' },
+  { to: '/cms/lookbook', label: 'Lookbook' },
+  { to: '/cms/products', label: 'Products' },
+  { to: '/cms/collabs', label: 'Collabs' },
+  { to: '/cms/team', label: 'Team' },
+  { to: '/cms/over-ons', label: 'Over ons' },
   { to: '/cms/contact', label: 'Contact' },
-  { to: '/cms/booking', label: 'Booking' },
-  { to: '/cms/faq', label: 'FAQ' },
   { to: '/cms/footer', label: 'Footer' },
 ] as const
 
 export function isPagesWorkspacePath(pathname: string) {
+  if (
+    pathname.startsWith('/cms/about') ||
+    pathname.startsWith('/cms/roster') ||
+    pathname.startsWith('/cms/booking')
+  ) {
+    return true
+  }
   return PAGE_TABS.some((t) => pathname === t.to || pathname.startsWith(`${t.to}/`))
 }
 
@@ -25,7 +34,11 @@ export function PagesTabBar() {
           Pagina's
         </span>
         {PAGE_TABS.map((tab) => {
-          const active = pathname === tab.to || pathname.startsWith(`${tab.to}/`)
+          const active =
+            pathname === tab.to ||
+            pathname.startsWith(`${tab.to}/`) ||
+            (tab.to === '/cms/over-ons' && pathname.startsWith('/cms/about')) ||
+            (tab.to === '/cms/team' && pathname.startsWith('/cms/roster'))
           return (
             <Link
               key={tab.to}

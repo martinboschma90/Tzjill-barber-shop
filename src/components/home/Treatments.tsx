@@ -1,47 +1,35 @@
 import { Link } from 'react-router-dom'
 import { Reveal } from '@/components/motion/Reveal'
 import { MediaReveal } from '@/components/motion/MediaReveal'
-
-const items = [
-  {
-    title: 'Haircut',
-    text: 'Strak, classic of fade — altijd in verhouding met je gezicht.',
-    image: '/lookbook/01.jpg',
-  },
-  {
-    title: 'Baard',
-    text: 'Trimmen, lijnen of hot towel straight razor.',
-    image: '/lookbook/03.jpg',
-  },
-  {
-    title: 'Kids',
-    text: 'Kinderen t/m 11. Dezelfde precisie, rustiger tempo.',
-    image: '/lookbook/02.jpg',
-  },
-]
+import { useCms } from '@/cms/CmsContext'
+import { cloneTreatments } from '@/cms/content'
 
 export function Treatments() {
+  const { content } = useCms()
+  const items = content.site.treatments?.length
+    ? content.site.treatments
+    : cloneTreatments()
+
   return (
     <section className="text-white">
       <div className="mx-auto max-w-[1240px] px-8 section-y sm:px-12">
         <div className="mx-auto max-w-3xl text-center">
           <p className="type-label inline-flex items-center justify-center gap-2 text-white/45">
             <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
-            Behandelingen
+            {content.site.treatmentsKicker || 'Behandelingen'}
           </p>
-          <h2 className="type-headline mt-5">
-            Alles wat je
-            <br />
-            in de stoel nodig hebt
+          <h2 className="type-headline mt-5 whitespace-pre-line">
+            {content.site.treatmentsTitle ||
+              'Alles wat je\nin de stoel nodig hebt'}
           </h2>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
-            Knippen, baard, kids — dezelfde precisie, altijd in verhouding met
-            je gezicht.
+            {content.site.treatmentsIntro ||
+              'Knippen, baard, kids — dezelfde precisie, altijd in verhouding met je gezicht.'}
           </p>
         </div>
         <ul className="mt-14 grid gap-8 sm:grid-cols-3 sm:gap-5">
           {items.map((item, index) => (
-            <li key={item.title}>
+            <li key={`${item.title}-${index}`}>
               <Reveal delay={0.08 + index * 0.1}>
                 <Link to="/prijzen" className="group block">
                   <MediaReveal

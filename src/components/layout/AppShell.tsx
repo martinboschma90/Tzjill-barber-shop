@@ -10,6 +10,7 @@ import { Navbar } from '@/components/layout/Navbar'
 import { StickyContactBar } from '@/components/layout/StickyContactBar'
 import { SalonhubWidget } from '@/components/booking/SalonhubWidget'
 import { prefetchRoute } from '@/lib/prefetchRoute'
+import { useIsCmsPreview } from '@/cms/previews/PreviewMode'
 
 const Footer = lazy(() =>
   import('@/components/layout/Footer').then((m) => ({ default: m.Footer })),
@@ -29,20 +30,22 @@ export function AppShell({
   navVariant = 'wordmark',
   showFooter = true,
 }: AppShellProps) {
+  const preview = useIsCmsPreview()
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuReady, setMenuReady] = useState(false)
   const [footerReady, setFooterReady] = useState(false)
   const footerBoundaryRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    if (preview) return
     document.body.style.overflow = menuOpen ? 'hidden' : ''
     return () => {
       document.body.style.overflow = ''
     }
-  }, [menuOpen])
+  }, [menuOpen, preview])
 
   useEffect(() => {
-    if (!showFooter) return
+    if (!showFooter || preview) return
     const boundary = footerBoundaryRef.current
     if (!boundary || !window.IntersectionObserver) {
       setFooterReady(true)
@@ -58,7 +61,7 @@ export function AppShell({
     )
     observer.observe(boundary)
     return () => observer.disconnect()
-  }, [showFooter])
+  }, [showFooter, preview])
 
   return (
     <>
@@ -104,7 +107,7 @@ export function AppShell({
           >
             {children}
           </main>
-          {showFooter ? (
+          {showFooter && !preview ? (
             <>
               <div
                 ref={footerBoundaryRef}
@@ -120,8 +123,12 @@ export function AppShell({
             </>
           ) : null}
         </div>
-        <StickyContactBar />
-        <SalonhubWidget />
+        {preview ? null : (
+          <>
+            <StickyContactBar />
+            <SalonhubWidget />
+          </>
+        )}
       </div>
     </>
   )

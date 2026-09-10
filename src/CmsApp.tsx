@@ -15,11 +15,14 @@ const CmsShell = lazy(() =>
 
 function CmsNoIndex() {
   useEffect(() => {
+    const previousTitle = document.title
+    document.title = 'Flow Mates CMS'
     const robots = document.createElement('meta')
     robots.name = 'robots'
     robots.content = 'noindex, nofollow, noarchive'
     document.head.appendChild(robots)
     return () => {
+      document.title = previousTitle
       robots.remove()
     }
   }, [])

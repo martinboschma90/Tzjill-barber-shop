@@ -6,7 +6,7 @@ import {
   FileText,
   Image as ImageIcon,
   Pencil,
-  Settings,
+  Sliders,
   X,
 } from 'lucide-react'
 import { Card, Tabs, inputCls } from '@/cms/flow-mates/cms-ui'
@@ -32,6 +32,28 @@ export function Field({ label, hint, children }: FieldProps) {
 
 export const controlClass = inputCls
 export const controlStyle = undefined
+
+export function CompactInput({
+  value,
+  onChange,
+  placeholder,
+  className = '',
+}: {
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+  className?: string
+}) {
+  return (
+    <input
+      type="text"
+      className={`${inputCls} ${className}`}
+      value={value}
+      placeholder={placeholder}
+      onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
+    />
+  )
+}
 
 type TextInputProps = {
   label: string
@@ -61,15 +83,17 @@ type TextAreaProps = {
   onChange: (value: string) => void
   hint?: string
   rows?: number
+  placeholder?: string
 }
 
-export function TextArea({ label, value, onChange, hint, rows = 4 }: TextAreaProps) {
+export function TextArea({ label, value, onChange, hint, rows = 4, placeholder }: TextAreaProps) {
   return (
     <Field label={label} hint={hint}>
       <textarea
         className={`${inputCls} min-h-[6rem] resize-y`}
         value={value}
         rows={rows}
+        placeholder={placeholder}
         onChange={(e: ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
       />
     </Field>
@@ -95,11 +119,12 @@ type EditorSectionProps = {
   sectionKey?: string
   visible?: boolean
   onVisibleChange?: (visible: boolean) => void
+  thumbnail?: string | null
 }
 
 function tabIcon(id: string) {
   if (id === 'media') return ImageIcon
-  if (id === 'settings') return Settings
+  if (id === 'settings') return Sliders
   return FileText
 }
 
@@ -116,6 +141,7 @@ export function EditorSection({
   sectionKey,
   visible = true,
   onVisibleChange,
+  thumbnail,
 }: EditorSectionProps) {
   const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen)
   const generatedId = useId().replaceAll(':', '')
@@ -144,12 +170,40 @@ export function EditorSection({
   const activeTab = tabs?.find((t) => t.id === tabId) ?? tabs?.[0]
   const body = tabs ? activeTab?.children : children
 
+  const openMedia = () => {
+    if (!open) setOpen(true)
+    if (tabs?.some((t) => t.id === 'media')) setTabId('media')
+  }
+
   return (
     <Card
+      hover={!open}
       id={`cms-editor-section-${id}`}
       className={`overflow-hidden ${open ? 'ring-1 ring-neutral-900/5' : ''}`}
     >
       <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 sm:px-5">
+        <button
+          type="button"
+          onClick={thumbnail ? openMedia : () => setOpen(!open)}
+          className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-neutral-100"
+          title={thumbnail ? 'Media wijzigen' : `${title} openen`}
+          aria-label={thumbnail ? `Media van ${title} wijzigen` : `${title} openen`}
+        >
+          {thumbnail ? (
+            <img src={thumbnail} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <div
+              className={`flex h-full w-full items-center justify-center ${
+                visible ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400'
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+            </div>
+          )}
+          {!visible ? (
+            <div className="pointer-events-none absolute inset-0 bg-white/60" />
+          ) : null}
+        </button>
         <button
           type="button"
           onClick={() => setOpen(!open)}
@@ -157,9 +211,6 @@ export function EditorSection({
           aria-expanded={open}
           aria-controls={panelId}
         >
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-neutral-900 text-white">
-            <FileText className="h-4 w-4" />
-          </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h3 className="truncate text-[13.5px] font-semibold tracking-tight text-neutral-900">
@@ -168,6 +219,11 @@ export function EditorSection({
               {badge ? (
                 <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
                   {badge}
+                </span>
+              ) : null}
+              {!visible ? (
+                <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+                  Verborgen
                 </span>
               ) : null}
             </div>
@@ -183,11 +239,11 @@ export function EditorSection({
             }`}
           />
         </button>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="ml-auto shrink-0">
           <button
             type="button"
             onClick={() => setOpen(!open)}
-            className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold ${
+            className={`mr-2 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold ${
               open
                 ? 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50'
                 : 'border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-800'
@@ -219,7 +275,7 @@ export function EditorSection({
 
       {open ? (
         <div id={panelId} className="border-t border-neutral-200/70">
-          {tabs && tabs.length > 1 ? (
+          {tabs && tabs.length > 0 ? (
             <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-3 sm:px-5">
               <Tabs
                 tabs={tabs.map((t) => ({
@@ -232,7 +288,9 @@ export function EditorSection({
               />
             </div>
           ) : null}
-          <div className="space-y-3.5 px-4 pb-5 pt-4 sm:px-5">{body}</div>
+          <div className="space-y-3.5 px-4 pb-5 pt-4 sm:px-5">
+            <div className="animate-in fade-in duration-200">{body}</div>
+          </div>
         </div>
       ) : null}
     </Card>

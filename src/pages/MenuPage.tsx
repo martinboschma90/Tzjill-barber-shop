@@ -2,9 +2,13 @@ import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
 import { BookButton } from '@/components/booking/BookButton'
-import { shopMenu } from '@/data/menu'
+import { useCms } from '@/cms/CmsContext'
+import { cloneShopMenu } from '@/cms/content'
 
 export function MenuPage() {
+  const { content } = useCms()
+  const menu = content.site.shopMenu ?? cloneShopMenu()
+
   return (
     <AppShell navVariant="wordmark">
       <PageFrame>
@@ -26,7 +30,7 @@ export function MenuPage() {
         </div>
 
         <div className="mt-16 grid gap-16 lg:grid-cols-2 lg:gap-20">
-          {shopMenu.map((category) => (
+          {menu.map((category) => (
             <section key={category.id}>
               <h2 className="type-subhead">{category.label}</h2>
               {category.groups.map((group) => (

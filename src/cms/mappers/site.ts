@@ -1,10 +1,22 @@
 import {
+  cloneCollabs,
+  cloneLookbook,
+  cloneProducts,
+  cloneShopMenu,
+  cloneTreatments,
   createDefaultSiteContent,
   type ContactItem,
   type FaqCategory,
   type FaqItem,
+  type HomeTreatment,
   type LegalInfo,
   type LegalLink,
+  type LookbookImage,
+  type ShopCollab,
+  type ShopMenuCategory,
+  type ShopMenuGroup,
+  type ShopMenuItem,
+  type ShopProduct,
   type SiteContent,
 } from '@/cms/content'
 import { cloneFaqCategories } from '@/data/faq'
@@ -210,6 +222,134 @@ function asFaqCategories(
     .filter((item): item is FaqCategory => Boolean(item))
 }
 
+function asMenuItems(value: unknown): ShopMenuItem[] {
+  if (!Array.isArray(value)) return []
+  return value
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null
+      const row = item as Record<string, unknown>
+      const name = asString(row.name)
+      const price = asString(row.price)
+      if (!name && !price) return null
+      return { name, price }
+    })
+    .filter((item): item is ShopMenuItem => Boolean(item))
+}
+
+function asShopMenu(
+  value: unknown,
+  fallback: ShopMenuCategory[],
+): ShopMenuCategory[] {
+  if (!Array.isArray(value) || value.length === 0) return cloneShopMenu(fallback)
+  const mapped = value
+    .map((item, index) => {
+      if (!item || typeof item !== 'object') return null
+      const row = item as Record<string, unknown>
+      const groupsRaw = Array.isArray(row.groups) ? row.groups : []
+      const groups = groupsRaw
+        .map((group) => {
+          if (!group || typeof group !== 'object') return null
+          const g = group as Record<string, unknown>
+          const title = asString(g.title)
+          const items = asMenuItems(g.items)
+          if (!title && !items.length) return null
+          return { title: title || 'Groep', items }
+        })
+        .filter((group): group is ShopMenuGroup => Boolean(group))
+      return {
+        id: asString(row.id, `cat-${index + 1}`),
+        label: asString(row.label, `Categorie ${index + 1}`),
+        groups,
+      }
+    })
+    .filter((item): item is ShopMenuCategory => Boolean(item))
+  return mapped.length ? mapped : cloneShopMenu(fallback)
+}
+
+function asLookbook(
+  value: unknown,
+  fallback: LookbookImage[],
+): LookbookImage[] {
+  if (!Array.isArray(value) || value.length === 0) return cloneLookbook(fallback)
+  const mapped = value
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null
+      const row = item as Record<string, unknown>
+      const src = asString(row.src)
+      if (!src) return null
+      const tags = Array.isArray(row.tags)
+        ? row.tags.filter((tag): tag is string => typeof tag === 'string')
+        : []
+      return { src, alt: asString(row.alt), tags }
+    })
+    .filter((item): item is LookbookImage => Boolean(item))
+  return mapped.length ? mapped : cloneLookbook(fallback)
+}
+
+function asProducts(
+  value: unknown,
+  fallback: ShopProduct[],
+): ShopProduct[] {
+  if (!Array.isArray(value) || value.length === 0) return cloneProducts(fallback)
+  const mapped = value
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null
+      const row = item as Record<string, unknown>
+      const name = asString(row.name)
+      if (!name) return null
+      return {
+        name,
+        text: asString(row.text),
+        image: asString(row.image),
+      }
+    })
+    .filter((item): item is ShopProduct => Boolean(item))
+  return mapped.length ? mapped : cloneProducts(fallback)
+}
+
+function asCollabs(
+  value: unknown,
+  fallback: ShopCollab[],
+): ShopCollab[] {
+  if (!Array.isArray(value) || value.length === 0) return cloneCollabs(fallback)
+  const mapped = value
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null
+      const row = item as Record<string, unknown>
+      const name = asString(row.name)
+      if (!name) return null
+      return {
+        name,
+        year: asString(row.year),
+        text: asString(row.text),
+        image: asString(row.image),
+      }
+    })
+    .filter((item): item is ShopCollab => Boolean(item))
+  return mapped.length ? mapped : cloneCollabs(fallback)
+}
+
+function asTreatments(
+  value: unknown,
+  fallback: HomeTreatment[],
+): HomeTreatment[] {
+  if (!Array.isArray(value) || value.length === 0) return cloneTreatments(fallback)
+  const mapped = value
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null
+      const row = item as Record<string, unknown>
+      const title = asString(row.title)
+      if (!title) return null
+      return {
+        title,
+        text: asString(row.text),
+        image: asString(row.image),
+      }
+    })
+    .filter((item): item is HomeTreatment => Boolean(item))
+  return mapped.length ? mapped : cloneTreatments(fallback)
+}
+
 /** Merge partial/jsonb site content with shipped defaults. */
 export function normalizeSiteContent(raw: unknown): SiteContent {
   const defaults = createDefaultSiteContent()
@@ -226,6 +366,11 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
       aboutHeroVideoUrl: defaults.aboutHeroVideoUrl,
       legalLinks: defaults.legalLinks.map((l) => ({ ...l })),
       faqCategories: cloneFaqCategories(defaults.faqCategories),
+      shopMenu: cloneShopMenu(defaults.shopMenu),
+      lookbookImages: cloneLookbook(defaults.lookbookImages),
+      products: cloneProducts(defaults.products),
+      collabs: cloneCollabs(defaults.collabs),
+      treatments: cloneTreatments(defaults.treatments),
     }
   }
 
@@ -301,6 +446,18 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
     ),
     metaDescription: asString(row.metaDescription, defaults.metaDescription),
     searchIndexing: asBoolean(row.searchIndexing, defaults.searchIndexing),
+    shopMenu: asShopMenu(row.shopMenu, defaults.shopMenu),
+    lookbookImages: asLookbook(row.lookbookImages, defaults.lookbookImages),
+    products: asProducts(row.products, defaults.products),
+    collabs: asCollabs(row.collabs, defaults.collabs),
+    welcomeKicker: asString(row.welcomeKicker, defaults.welcomeKicker),
+    welcomeTitle: asString(row.welcomeTitle, defaults.welcomeTitle),
+    welcomeText: asString(row.welcomeText, defaults.welcomeText),
+    welcomeImageUrl: asString(row.welcomeImageUrl, defaults.welcomeImageUrl),
+    treatmentsKicker: asString(row.treatmentsKicker, defaults.treatmentsKicker),
+    treatmentsTitle: asString(row.treatmentsTitle, defaults.treatmentsTitle),
+    treatmentsIntro: asString(row.treatmentsIntro, defaults.treatmentsIntro),
+    treatments: asTreatments(row.treatments, defaults.treatments),
   }
 }
 

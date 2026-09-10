@@ -2,9 +2,13 @@ import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
 import { PillButton } from '@/components/ui/PillButton'
-import { collabs } from '@/data/collabs'
+import { useCms } from '@/cms/CmsContext'
+import { cloneCollabs } from '@/cms/content'
 
 export function CollabsPage() {
+  const { content } = useCms()
+  const collabs = content.site.collabs ?? cloneCollabs()
+
   return (
     <AppShell navVariant="wordmark">
       <PageFrame>

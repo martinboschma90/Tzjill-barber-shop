@@ -4,13 +4,16 @@ import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
 import {
   lookbookFilters,
-  lookbookImages,
   type LookbookFilterId,
 } from '@/data/lookbook'
 import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
 import { PillButton } from '@/components/ui/PillButton'
+import { useCms } from '@/cms/CmsContext'
+import { cloneLookbook } from '@/cms/content'
 
 export function LookbookPage() {
+  const { content } = useCms()
+  const lookbookImages = content.site.lookbookImages ?? cloneLookbook()
   const [filter, setFilter] = useState<LookbookFilterId>('all')
 
   const images = useMemo(() => {
@@ -18,7 +21,7 @@ export function LookbookPage() {
     return lookbookImages.filter((image) =>
       image.tags.some((tag) => tag === filter),
     )
-  }, [filter])
+  }, [filter, lookbookImages])
 
   return (
     <AppShell navVariant="wordmark">

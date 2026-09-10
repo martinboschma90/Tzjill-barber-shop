@@ -12,23 +12,21 @@ export function FooterEditor() {
   return (
     <>
       <EditorSection
-        title="Brand"
-        description="Logo and footer copy shown on every page."
-        defaultOpen
-        badge="Content"
+        title="Merk"
+        description="Naam en logo in de footer."
         tabs={[
           {
             id: 'content',
-            label: 'Content',
+            label: 'Inhoud',
             children: (
               <>
                 <TextInput
-                  label="Site name"
+                  label="Korte naam"
                   value={site.name}
                   onChange={(name) => setSite((s) => ({ ...s, name }))}
                 />
                 <TextInput
-                  label="Full name"
+                  label="Shopnaam"
                   value={site.fullName}
                   onChange={(fullName) => setSite((s) => ({ ...s, fullName }))}
                 />
@@ -36,7 +34,7 @@ export function FooterEditor() {
                   label="Footer tekst"
                   value={site.tagline}
                   rows={3}
-                  hint="Supports line breaks."
+                  hint="Mag meerdere regels."
                   onChange={(tagline) => setSite((s) => ({ ...s, tagline }))}
                 />
               </>
@@ -47,10 +45,10 @@ export function FooterEditor() {
             label: 'Logo',
             children: (
               <MediaUrlField
-                label="Custom logo"
+                label="Logo"
                 kind="image"
                 value={site.logoUrl}
-                hint="Leave empty to keep the default NOTYPE MGMT logo."
+                hint="Leeg = standaard Tzjill-logo."
                 onChange={(logoUrl) => setSite((s) => ({ ...s, logoUrl }))}
               />
             ),
@@ -60,7 +58,7 @@ export function FooterEditor() {
 
       <EditorSection
         title="Contact"
-        description="Contact labels, emails, phone and office in the footer."
+        description="Mail, telefoon en WhatsApp in de footer."
       >
         {site.contact.map((item, index) => (
           <div
@@ -81,7 +79,7 @@ export function FooterEditor() {
                   }))
                 }
               >
-                Remove
+                Verwijder
               </button>
             </div>
             <TextInput
@@ -120,13 +118,13 @@ export function FooterEditor() {
             }))
           }
         >
-          + Add contact
+          + Contact
         </button>
         <TextInput
-          label="Phone"
+          label="Telefoon"
           value={site.phoneNumber}
           onChange={(phoneNumber) => setSite((s) => ({ ...s, phoneNumber }))}
-          hint="Shown in the footer Phone row."
+          hint="Zichtbaar in de footer."
         />
         <TextInput
           label="WhatsApp"
@@ -134,21 +132,21 @@ export function FooterEditor() {
           onChange={(whatsappNumber) =>
             setSite((s) => ({ ...s, whatsappNumber }))
           }
-          hint="Shown in the footer WhatsApp row."
+          hint="Zichtbaar in de footer."
         />
       </EditorSection>
 
-      <EditorSection title="Social media" description="Follow links in the footer.">
+      <EditorSection title="Social" description="Instagram-link in de footer.">
         <TextInput
-          label="Instagram URL"
+          label="Instagram"
           value={site.instagram}
           onChange={(instagram) => setSite((s) => ({ ...s, instagram }))}
         />
       </EditorSection>
 
       <EditorSection
-        title="Navigatie links"
-        description="Links in the footer bottom bar (Privacy, Terms, …)."
+        title="Links"
+        description="Privacy en andere links onderaan."
       >
         {site.legalLinks.map((link, index) => (
           <div
@@ -169,7 +167,7 @@ export function FooterEditor() {
                   }))
                 }
               >
-                Remove
+                Verwijder
               </button>
             </div>
             <TextInput
@@ -208,16 +206,16 @@ export function FooterEditor() {
             }))
           }
         >
-          + Add link
+          + Link
         </button>
       </EditorSection>
 
       <EditorSection
         title="Copyright"
-        description="Bottom bar copyright line."
+        description="Regel onderaan de site."
       >
         <TextInput
-          label="Year"
+          label="Jaar"
           value={String(site.year)}
           onChange={(value) => {
             const year = Number.parseInt(value, 10)
@@ -229,7 +227,7 @@ export function FooterEditor() {
         <TextInput
           label="Copyright tekst"
           value={site.copyrightText}
-          hint="Optional override. Empty uses ©{year} {full name}."
+          hint="Leeg = ©jaar + shopnaam."
           placeholder={`©${site.year} ${site.fullName || site.name}`}
           onChange={(copyrightText) =>
             setSite((s) => ({ ...s, copyrightText }))
@@ -238,18 +236,18 @@ export function FooterEditor() {
       </EditorSection>
 
       <EditorSection
-        title="Legal & office"
-        description="Office address and Legal links in the footer."
+        title="Adres"
+        description="Bedrijfsnaam en adres in de footer."
       >
         <TextInput
-          label="Company"
+          label="Bedrijf"
           value={site.legal.company}
           onChange={(company) =>
             setSite((s) => ({ ...s, legal: { ...s.legal, company } }))
           }
         />
         <TextInput
-          label="VAT / domain"
+          label="KVK / extra"
           value={site.legal.vat}
           onChange={(vat) =>
             setSite((s) => ({ ...s, legal: { ...s.legal, vat } }))
@@ -261,7 +259,7 @@ export function FooterEditor() {
         ).map((line, index) => (
           <TextInput
             key={`footer-address-${index}`}
-            label={`Office line ${index + 1}`}
+            label={`Adresregel ${index + 1}`}
             value={line}
             onChange={(value) =>
               setSite((s) => {

@@ -55,21 +55,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setDisplayName('Lokaal')
       return
     }
-    const { data } = await supabase.rpc('cms_ensure_role')
     const owner =
       (user.email ?? '').trim().toLowerCase() === 'martin@viraal.media'
-    const nextRole = owner ? 'admin' : asRole(data)
-    setRole(nextRole)
-    const { data: row } = await supabase
-      .from('user_roles')
-      .select('display_name,email,role')
-      .eq('user_id', user.id)
-      .maybeSingle()
-    setDisplayName(
-      String(row?.display_name || user.user_metadata?.display_name || user.email || ''),
-    )
     if (owner) setRole('admin')
-    else if (row?.role) setRole(asRole(row.role))
+    setDisplayName(
+      String(user.user_metadata?.display_name || user.email || ''),
+    )
+    try {
+      const { data } = await supabase.rpc('cms_ensure_role')
+      const nextRole = owner ? 'admin' : asRole(data)
+      setRole(nextRole)
+      const { data: row } = await supabase
+        .from('user_roles')
+        .select('display_name,email,role')
+        .eq('user_id', user.id)
+        .maybeSingle()
+      setDisplayName(
+        String(row?.display_name || user.user_metadata?.display_name || user.email || ''),
+      )
+      if (owner) setRole('admin')
+      else if (row?.role) setRole(asRole(row.role))
+    } catch (error) {
+      console.warn('[cms auth] loadRole:', error)
+      if (owner) setRole('admin')
+    }
   }, [])
 
   useEffect(() => {
@@ -89,8 +98,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then(async (next) => {
         if (cancelled) return
         setSession(next)
-        await loadRole(next?.user ?? null)
         setReady(true)
+        window.clearTimeout(timer)
+        await loadRole(next?.user ?? null)
       })
       .catch(() => {
         if (!cancelled) setReady(true)
