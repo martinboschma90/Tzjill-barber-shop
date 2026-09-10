@@ -18,8 +18,6 @@ import { site as defaultSite } from '@/data/site'
 import { DEFAULT_WHATSAPP_NUMBER } from '@/data/whatsapp'
 import type { Artist, TeamMember } from '@/types/artist'
 
-const DEFAULT_PHONE_NUMBER = DEFAULT_WHATSAPP_NUMBER
-
 export type { RosterGlowPreset }
 
 export type ShopMenuItem = {
@@ -101,7 +99,11 @@ export function cloneShopMenu(
 }
 
 export function cloneLookbook(
-  source: readonly LookbookImage[] = defaultLookbook,
+  source: readonly {
+    src: string
+    alt: string
+    tags: readonly string[]
+  }[] = defaultLookbook,
 ): LookbookImage[] {
   return source.map((item) => ({
     src: item.src,

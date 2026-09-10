@@ -185,7 +185,6 @@ const channelLabels: Record<keyof ChannelCounts, string> = {
 
 export function TrafficDashboard({
   live,
-  compact = false,
 }: {
   live?: LiveSiteSnapshot | null
   compact?: boolean

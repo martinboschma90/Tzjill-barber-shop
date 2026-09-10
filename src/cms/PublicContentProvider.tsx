@@ -17,6 +17,7 @@ import { isSupabaseConfigured } from '@/lib/supabaseEnv'
 import { storageGet, storageSet } from '@/lib/safeStorage'
 import { createBlankArtist } from '@/cms/createArtist'
 import { team as defaultTeam } from '@/data/site'
+import type { TeamMember } from '@/types/artist'
 
 function readJson<T>(key: string): T | null {
   const raw = storageGet(key)

@@ -160,8 +160,6 @@ export function ArtistReelsCarousel({
     startX: number
     scrollLeft: number
   } | null>(null)
-  const [isInteracting, setIsInteracting] = useState(false)
-
   const scroll = (direction: -1 | 1) => {
     trackRef.current?.scrollBy({
       left: direction * trackRef.current.clientWidth * 0.82,
@@ -238,7 +236,6 @@ export function ArtistReelsCarousel({
               }
               onMouseLeave={() => {
                 dragRef.current = null
-                setIsInteracting(false)
               }}
               onWheel={(event) => {
                 if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
@@ -253,7 +250,6 @@ export function ArtistReelsCarousel({
                   scrollLeft: event.currentTarget.scrollLeft,
                 }
                 event.currentTarget.setPointerCapture(event.pointerId)
-                setIsInteracting(true)
               }}
               onPointerMove={(event) => {
                 const drag = dragRef.current
@@ -265,7 +261,6 @@ export function ArtistReelsCarousel({
                 if (dragRef.current?.pointerId === event.pointerId) {
                   dragRef.current = null
                   event.currentTarget.releasePointerCapture(event.pointerId)
-                  setIsInteracting(false)
                 }
               }}
             >
