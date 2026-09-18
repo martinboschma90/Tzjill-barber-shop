@@ -1,5 +1,5 @@
 import { useEffect, useId } from 'react'
-import { BookingWell } from '@/components/booking/BookingWell'
+import { BookingFlow } from '@/components/booking/BookingFlow'
 import { SALONHUB_OPEN_EVENT } from '@/lib/salonhub'
 import { Logo } from '@/components/ui/Logo'
 
@@ -76,7 +76,7 @@ export function SalonhubWidget({ open, onOpenChange }: SalonhubWidgetProps) {
             ×
           </button>
         </div>
-        <BookingWell className="min-h-0 min-w-0 flex-1" />
+        <BookingFlow compact onBack={() => onOpenChange(false)} />
       </div>
     </div>
   )
