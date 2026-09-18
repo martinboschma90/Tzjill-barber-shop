@@ -1,5 +1,5 @@
 const ALLOWED_ORIGIN_PATTERN =
-  /^https:\/\/((www\.)?notype-mgmt\.com|no-type-mgmt[\w.-]*\.vercel\.app)$/i
+  /^https:\/\/((www\.)?tzjill\.nl|tzjill-barber-shop[\w.-]*\.vercel\.app|(www\.)?notype-mgmt\.com|no-type-mgmt[\w.-]*\.vercel\.app)$/i
 const LOCAL_ORIGIN_PATTERN = /^http:\/\/localhost:(5173|5174|4173)$/i
 
 const hits = new Map()
@@ -16,6 +16,8 @@ export function allowedOrigin(origin) {
 export function isSiteHost(host) {
   const value = String(host || '').split(':')[0].toLowerCase()
   return (
+    value === 'tzjill.nl' ||
+    value === 'www.tzjill.nl' ||
     value === 'notype-mgmt.com' ||
     value === 'www.notype-mgmt.com' ||
     value.endsWith('.vercel.app') ||

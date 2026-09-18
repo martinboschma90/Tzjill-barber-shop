@@ -1,19 +1,23 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId } from 'react'
 import { SALONHUB_BOOKING_URL } from '@/data/site'
 import { SALONHUB_OPEN_EVENT } from '@/lib/salonhub'
 
-export function SalonhubWidget() {
-  const [open, setOpen] = useState(false)
+type SalonhubWidgetProps = {
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+export function SalonhubWidget({ open, onOpenChange }: SalonhubWidgetProps) {
   const titleId = useId()
 
   useEffect(() => {
-    const onOpen = () => setOpen(true)
+    const onOpen = () => onOpenChange(true)
     const onHash = () => {
       if (
         window.location.hash === '#afspraak' ||
         window.location.hash === '#salonhub-create'
       ) {
-        setOpen(true)
+        onOpenChange(true)
       }
     }
     window.addEventListener(SALONHUB_OPEN_EVENT, onOpen)
@@ -23,21 +27,21 @@ export function SalonhubWidget() {
       window.removeEventListener(SALONHUB_OPEN_EVENT, onOpen)
       window.removeEventListener('hashchange', onHash)
     }
-  }, [])
+  }, [onOpenChange])
 
   useEffect(() => {
     if (!open) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setOpen(false)
+      if (event.key === 'Escape') onOpenChange(false)
     }
     window.addEventListener('keydown', onKey)
     return () => {
       document.body.style.overflow = prev
       window.removeEventListener('keydown', onKey)
     }
-  }, [open])
+  }, [open, onOpenChange])
 
   if (!open) return null
 
@@ -47,7 +51,7 @@ export function SalonhubWidget() {
         type="button"
         aria-label="Sluiten"
         className="absolute inset-0 bg-[var(--body-bg)]/85 backdrop-blur-sm"
-        onClick={() => setOpen(false)}
+        onClick={() => onOpenChange(false)}
       />
       <div
         role="dialog"
@@ -61,7 +65,7 @@ export function SalonhubWidget() {
           </p>
           <button
             type="button"
-            onClick={() => setOpen(false)}
+            onClick={() => onOpenChange(false)}
             className="type-ui flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/20 text-white/70 transition-colors hover:border-white hover:bg-white hover:text-[#2c241c]"
             aria-label="Widget sluiten"
           >

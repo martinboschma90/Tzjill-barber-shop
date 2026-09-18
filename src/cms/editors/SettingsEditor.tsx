@@ -16,7 +16,7 @@ export function SettingsEditor() {
   const [dangerPassword, setDangerPassword] = useState('')
   const [dangerError, setDangerError] = useState<string | null>(null)
   const [dangerBusy, setDangerBusy] = useState(false)
-  const publicUrl = site.publicSiteUrl || 'https://www.notype-mgmt.com'
+  const publicUrl = site.publicSiteUrl || 'https://tzjill-barber-shop.vercel.app'
   const httpsUrl = publicUrl.replace(/^http:\/\//i, 'https://')
 
   useEffect(() => {
@@ -61,8 +61,8 @@ export function SettingsEditor() {
         <TextInput
           label="Publieke URL"
           value={site.publicSiteUrl}
-          placeholder="https://www.notype-mgmt.com"
-          hint="Gebruik https://www.notype-mgmt.com. Dit wordt de canonieke link in Google en socials."
+          placeholder="https://tzjill-barber-shop.vercel.app"
+          hint="Zet VITE_PUBLIC_SITE_URL in Vercel. Laat dit leeg tot tzjill.nl op deze app wijst — niet de oude WordPress-site."
           onChange={(publicSiteUrl) => setSite((current) => ({ ...current, publicSiteUrl }))}
         />
         <TextInput
@@ -140,9 +140,7 @@ export function SettingsEditor() {
         defaultOpen
       >
         <p className="type-body text-sm text-ink/70">
-          {authRequired
-            ? user?.email ?? 'Ingelogd'
-            : 'Lokale modus — geen login nodig.'}
+          {user?.email ?? (authRequired ? 'Ingelogd' : 'Niet ingelogd')}
         </p>
         {savedAt ? (
           <p className="type-body text-xs text-ink/40">

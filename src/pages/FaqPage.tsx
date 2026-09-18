@@ -21,7 +21,7 @@ export function FaqPage() {
           title={site.faqTitle.trim() || 'Vragen'}
           intro={site.faqIntro}
         />
-        <div className="mt-12 rounded-[2rem] bg-white px-8 py-10 text-[#2c241c] sm:px-12 sm:py-12">
+        <div className="page-panel mt-12 rounded-[2rem] bg-white px-8 py-10 text-[#2c241c] sm:px-12 sm:py-12">
           <FaqHub
             title=""
             intro=""

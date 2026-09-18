@@ -1,6 +1,10 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useCms } from '@/cms/CmsContext'
+import {
+  resolvePublicSiteUrl,
+  shouldNoIndexPublicSite,
+} from '@/lib/publicSiteUrl'
 
 function upsertMeta(selector: string, attrs: Record<string, string>) {
   let node = document.head.querySelector(selector)
@@ -30,10 +34,7 @@ export function PublicSeo() {
   const { site } = content
 
   useEffect(() => {
-    const origin = (site.publicSiteUrl || 'https://www.tzjill.nl').replace(
-      /\/+$/,
-      '',
-    )
+    const origin = resolvePublicSiteUrl(site.publicSiteUrl)
     const canonical = `${origin}${pathname === '/' ? '/' : pathname}`
     const description =
       site.metaDescription?.trim() ||
@@ -48,7 +49,9 @@ export function PublicSeo() {
     })
     upsertMeta('meta[name="robots"]', {
       name: 'robots',
-      content: site.searchIndexing === false ? 'noindex, nofollow' : 'index, follow',
+      content: shouldNoIndexPublicSite(origin, site.searchIndexing)
+        ? 'noindex, nofollow'
+        : 'index, follow',
     })
     upsertMeta('meta[property="og:url"]', {
       property: 'og:url',

@@ -30,6 +30,7 @@ supabase/.temp/
 *.sw?
 .vercel
 .env*
+!.env.example
 
 # Local notes
 Claude outputs/

@@ -1,17 +1,19 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/cms/auth/AuthProvider'
+import { CmsLockedPage } from '@/cms/auth/CmsLockedPage'
+import { isSupabaseConfigured } from '@/lib/supabaseEnv'
 import type { ReactNode } from 'react'
 
 /**
  * Protects CMS shell routes. Login page is outside this gate.
- * When Supabase is not configured, CMS stays open (local-only fallback).
+ * Fail closed: missing Supabase env never unlocks a local admin.
  */
 export function CmsAuthGate({ children }: { children: ReactNode }) {
-  const { ready, session, authRequired } = useAuth()
+  const { ready, session } = useAuth()
   const location = useLocation()
 
-  if (!authRequired) {
-    return children
+  if (!isSupabaseConfigured) {
+    return <CmsLockedPage />
   }
 
   if (!ready) {
@@ -21,7 +23,7 @@ export function CmsAuthGate({ children }: { children: ReactNode }) {
         className="flex h-svh items-center justify-center bg-neutral-50"
         style={{ fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif" }}
       >
-        <p className="text-sm text-neutral-500">Flow Mates CMS laden…</p>
+        <p className="text-sm text-neutral-500">CMS laden…</p>
       </div>
     )
   }

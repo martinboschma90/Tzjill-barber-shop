@@ -86,7 +86,7 @@ export function DashboardHome() {
   const pagesCount = PAGE_TABS.length
   const artistsCount = content.artists.length
   const mediaCount = assets.length
-  const live = useLiveSite(content.site.publicSiteUrl || 'https://www.notype-mgmt.com')
+  const live = useLiveSite(content.site.publicSiteUrl || 'https://tzjill-barber-shop.vercel.app')
   const optimize = useAutoOptimize(live.data)
   const statusLabel = live.loading
     ? 'Checken…'

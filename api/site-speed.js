@@ -10,7 +10,7 @@ import {
   fetchPageSpeed,
 } from './pagespeed-lib.mjs'
 
-const DEFAULT_ORIGIN = 'https://www.notype-mgmt.com'
+const DEFAULT_ORIGIN = 'https://tzjill-barber-shop.vercel.app'
 const INTERVAL_MS = SPEED_INTERVAL_DAYS * 24 * 60 * 60 * 1000
 
 export default async function handler(req, res) {
@@ -147,6 +147,8 @@ function resolveOrigin(raw) {
     const host = url.hostname.toLowerCase()
     if (host === 'localhost' || host === '127.0.0.1') return DEFAULT_ORIGIN
     if (
+      host === 'www.tzjill.nl' ||
+      host === 'tzjill.nl' ||
       host === 'www.notype-mgmt.com' ||
       host === 'notype-mgmt.com' ||
       host.endsWith('.vercel.app')

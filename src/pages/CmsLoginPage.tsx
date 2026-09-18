@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/cms/auth/AuthProvider'
+import { CmsLockedPage } from '@/cms/auth/CmsLockedPage'
+import { isSupabaseConfigured } from '@/lib/supabaseEnv'
 
 const controlClass =
   'w-full rounded-lg border border-white/12 bg-white/8 px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-white/40'
@@ -20,12 +22,12 @@ export function CmsLoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  if (authRequired && ready && session) {
-    return <Navigate to={from} replace />
+  if (!isSupabaseConfigured) {
+    return <CmsLockedPage />
   }
 
-  if (!authRequired) {
-    return <Navigate to="/cms/dashboard" replace />
+  if (authRequired && ready && session) {
+    return <Navigate to={from} replace />
   }
 
   async function onSubmit(e: FormEvent) {

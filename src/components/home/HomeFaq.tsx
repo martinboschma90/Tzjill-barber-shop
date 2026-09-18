@@ -1,53 +1,17 @@
 import { useMemo, useState } from 'react'
+import { SHOP_FAQ_FILTERS, SHOP_FAQ_ITEMS } from '@/data/shopFaq'
 
-const filters = [
-  { id: 'all', label: 'Alle' },
-  { id: 'afspraak', label: 'Afspraak' },
-  { id: 'salon', label: 'In de zaak' },
-  { id: 'kids', label: 'Kids' },
-] as const
-
-type FilterId = (typeof filters)[number]['id']
-
-const items = [
-  {
-    q: 'Hoe maak ik een afspraak?',
-    a: 'Boek online via Salonhub. Kies een behandeling, kapper en tijd. Je krijgt een bevestiging per mail.',
-    tag: 'afspraak' as const,
-  },
-  {
-    q: 'Kan ik annuleren of verzetten?',
-    a: 'Laat het zo vroeg mogelijk weten, bij voorkeur 24 uur van tevoren, via de bevestiging of telefonisch.',
-    tag: 'afspraak' as const,
-  },
-  {
-    q: 'Wat als ik te laat ben?',
-    a: 'Geef een seintje. Bij meer dan 10 minuten te laat kan de behandeling worden ingekort of verzet.',
-    tag: 'afspraak' as const,
-  },
-  {
-    q: 'Moet ik met gewassen haar komen?',
-    a: 'Niet verplicht. Haircut + wassen zit in het menu. Kom gerust zoals je bent.',
-    tag: 'salon' as const,
-  },
-  {
-    q: 'Koop ik producten in de zaak?',
-    a: 'Ja. Haar- en baardverzorging liggen in de lounge. Assortiment wisselt — vraag ernaar aan de balie.',
-    tag: 'salon' as const,
-  },
-  {
-    q: 'Knippen jullie ook kinderen?',
-    a: 'Ja, kinderen t/m 11 jaar. Zelfde precisie, rustiger tempo. Boek de kids-behandeling in Salonhub.',
-    tag: 'kids' as const,
-  },
-]
+type FilterId = (typeof SHOP_FAQ_FILTERS)[number]['id']
 
 export function HomeFaq() {
   const [filter, setFilter] = useState<FilterId>('all')
   const [open, setOpen] = useState<number | null>(0)
 
   const visible = useMemo(
-    () => (filter === 'all' ? items : items.filter((item) => item.tag === filter)),
+    () =>
+      filter === 'all'
+        ? SHOP_FAQ_ITEMS
+        : SHOP_FAQ_ITEMS.filter((item) => item.tag === filter),
     [filter],
   )
 
@@ -70,7 +34,7 @@ export function HomeFaq() {
         </div>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-          {filters.map((item) => {
+          {SHOP_FAQ_FILTERS.map((item) => {
             const active = filter === item.id
             return (
               <button

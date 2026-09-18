@@ -1,4 +1,3 @@
-import { useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Reveal } from '@/components/motion/Reveal'
 import { MediaReveal } from '@/components/motion/MediaReveal'
@@ -7,27 +6,11 @@ import { useCms } from '@/cms/CmsContext'
 import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
 
 const FALLBACK_POSTER = '/brand/hero.jpg'
-const FALLBACK_VIDEO = '/brand/hero.mp4'
-
-function isDirectVideo(url: string) {
-  return /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(url) || url.startsWith('blob:')
-}
 
 export function Welcome() {
   const { content } = useCms()
-  const videoRef = useRef<HTMLVideoElement>(null)
   const poster = useResolvedMediaUrl(content.site.homeHeroImageUrl, FALLBACK_POSTER)
-  const video = useResolvedMediaUrl(content.site.homeHeroVideoUrl, FALLBACK_VIDEO)
   const posterSrc = poster || FALLBACK_POSTER
-  const videoSrc = video || FALLBACK_VIDEO
-  const playVideo = isDirectVideo(videoSrc)
-
-  useEffect(() => {
-    const el = videoRef.current
-    if (!el) return
-    el.muted = true
-    void el.play().catch(() => {})
-  }, [videoSrc, playVideo])
 
   return (
     <section className="text-white">
@@ -68,27 +51,12 @@ export function Welcome() {
           >
             <MediaReveal>
               <div className="relative aspect-[3/4]">
-                {playVideo ? (
-                  <video
-                    ref={videoRef}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    src={videoSrc}
-                    poster={posterSrc}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    controls={false}
-                    disablePictureInPicture
-                  />
-                ) : (
-                  <img
-                    src={posterSrc}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                )}
+                <img
+                  src={posterSrc}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                  loading="lazy"
+                />
               </div>
             </MediaReveal>
           </Parallax>

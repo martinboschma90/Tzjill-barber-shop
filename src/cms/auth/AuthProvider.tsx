@@ -46,13 +46,13 @@ function asRole(value: unknown): CmsRole {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(!isSupabaseConfigured)
   const [session, setSession] = useState<Session | null>(null)
-  const [role, setRole] = useState<CmsRole>(isSupabaseConfigured ? 'viewer' : 'admin')
+  const [role, setRole] = useState<CmsRole>('viewer')
   const [displayName, setDisplayName] = useState('')
 
   const loadRole = useCallback(async (user: User | null) => {
     if (!isSupabaseConfigured || !supabase || !user) {
-      setRole('admin')
-      setDisplayName('Lokaal')
+      setRole('viewer')
+      setDisplayName('')
       return
     }
     const owner =
@@ -85,7 +85,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!isSupabaseConfigured) {
       setReady(true)
       setSession(null)
-      setRole('admin')
+      setRole('viewer')
+      setDisplayName('')
       return
     }
 
@@ -146,13 +147,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ready,
       session,
       user: session?.user ?? null,
-      authRequired: isSupabaseConfigured,
-      role: isSupabaseConfigured ? role : 'admin',
-      displayName:
-        displayName || session?.user?.email || (isSupabaseConfigured ? '' : 'Lokaal'),
-      canEdit: !isSupabaseConfigured || role === 'admin' || role === 'editor',
-      canSettings: !isSupabaseConfigured || role === 'admin',
-      canManageUsers: !isSupabaseConfigured || role === 'admin',
+      authRequired: true,
+      role,
+      displayName: displayName || session?.user?.email || '',
+      canEdit: Boolean(session) && (role === 'admin' || role === 'editor'),
+      canSettings: Boolean(session) && role === 'admin',
+      canManageUsers: Boolean(session) && role === 'admin',
       signIn,
       signOut,
     }),
