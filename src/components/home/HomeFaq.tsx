@@ -5,7 +5,7 @@ type FilterId = (typeof SHOP_FAQ_FILTERS)[number]['id']
 
 export function HomeFaq() {
   const [filter, setFilter] = useState<FilterId>('all')
-  const [open, setOpen] = useState<number | null>(0)
+  const [open, setOpen] = useState<number | null>(null)
 
   const visible = useMemo(
     () =>
@@ -63,6 +63,7 @@ export function HomeFaq() {
             return (
               <li
                 key={item.q}
+                {...(isOpen ? { 'data-faq-open': '' } : {})}
                 className={`group overflow-hidden rounded-[1.25rem] border transition-colors duration-300 sm:rounded-[1.5rem] ${
                   isOpen
                     ? 'border-[#efeae3] bg-[#efeae3]'
@@ -100,7 +101,7 @@ export function HomeFaq() {
                 >
                   <div className="overflow-hidden">
                     <p
-                      className={`type-lead px-6 pb-6 sm:px-7 ${
+                      className={`type-lead px-6 pb-8 pr-8 sm:px-7 sm:pb-6 ${
                         isOpen
                           ? 'text-[#2c241c]/60'
                           : 'text-white/50 group-hover:text-[#2c241c]/60'

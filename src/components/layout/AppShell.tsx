@@ -6,7 +6,6 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { useLocation } from 'react-router-dom'
 import { Navbar } from '@/components/layout/Navbar'
 import { StickyContactBar } from '@/components/layout/StickyContactBar'
 import { SalonhubWidget } from '@/components/booking/SalonhubWidget'
@@ -32,7 +31,6 @@ export function AppShell({
   showFooter = true,
 }: AppShellProps) {
   const preview = useIsCmsPreview()
-  const { pathname } = useLocation()
   const [salonhubOpen, setSalonhubOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuReady, setMenuReady] = useState(false)
@@ -128,9 +126,7 @@ export function AppShell({
         </div>
         {preview ? null : (
           <>
-            {pathname === '/booking' || salonhubOpen || menuOpen ? null : (
-              <StickyContactBar />
-            )}
+            <StickyContactBar hidden={salonhubOpen || menuOpen} />
             <SalonhubWidget open={salonhubOpen} onOpenChange={setSalonhubOpen} />
           </>
         )}
