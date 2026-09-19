@@ -12,8 +12,31 @@ export const openingHours = [
   { day: 'Zaterdag', time: '09:00 – 20:00' },
   { day: 'Zondag', time: 'Gesloten' },
 ] as const
-export const INSTAGRAM_URL = 'https://www.instagram.com/tzjill.barber.lounge/'
 export const INSTAGRAM_HANDLE = '@tzjill.barber.lounge'
+/** Official shop profile — no ?stkn= or other tracking params. */
+export const INSTAGRAM_URL = 'https://www.instagram.com/tzjill.barber.lounge'
+
+/**
+ * Shop Instagram href. Always the official lounge profile.
+ * Strips tracking (?stkn=) and remaps old / placeholder handles.
+ */
+export function shopInstagramUrl(raw?: string | null): string {
+  const trimmed = (raw ?? '').trim()
+  if (!trimmed) return INSTAGRAM_URL
+  try {
+    const withProtocol = /^https?:\/\//i.test(trimmed)
+      ? trimmed
+      : `https://www.instagram.com/${trimmed.replace(/^@/, '')}`
+    const url = new URL(withProtocol)
+    url.search = ''
+    url.hash = ''
+    const handle = url.pathname.split('/').filter(Boolean)[0]?.toLowerCase() ?? ''
+    if (handle === 'tzjill.barber.lounge') return INSTAGRAM_URL
+  } catch {
+    /* fall through to official */
+  }
+  return INSTAGRAM_URL
+}
 
 /** Live appointment widget (Salonhub). */
 export const SALONHUB_BOOKING_URL =

@@ -1,5 +1,6 @@
 import { useCms } from '@/cms/CmsProvider'
 import { EditorSection, TextArea, TextInput } from '@/cms/fields'
+import { INSTAGRAM_URL } from '@/data/site'
 
 export function ContactEditor() {
   const { content, setSite } = useCms()
@@ -41,7 +42,8 @@ export function ContactEditor() {
       <TextInput
         label="Instagram"
         value={site.instagram}
-        placeholder="https://www.instagram.com/…"
+        placeholder={INSTAGRAM_URL}
+        hint="Officieel shopprofiel. Tracking (?stkn=) wordt genegeerd."
         onChange={(instagram) => setSite((s) => ({ ...s, instagram }))}
       />
     </EditorSection>

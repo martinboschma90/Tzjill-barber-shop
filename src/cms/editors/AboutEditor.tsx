@@ -3,6 +3,7 @@ import { listBtnClass } from '@/cms/editors/listBtn'
 import { EditorSection, TextArea, TextInput } from '@/cms/fields'
 import { SectionGroup } from '@/cms/flow-mates/cms-ui'
 import { MediaUrlField } from '@/cms/media/MediaUrlField'
+import { INSTAGRAM_URL } from '@/data/site'
 
 export function AboutEditor() {
   const { content, setSite } = useCms()
@@ -85,7 +86,8 @@ export function AboutEditor() {
               <TextInput
                 label="Instagram"
                 value={site.instagram}
-                placeholder="https://www.instagram.com/tzjill.barber.lounge/"
+                placeholder={INSTAGRAM_URL}
+                hint="Officieel shopprofiel. Tracking (?stkn=) wordt genegeerd."
                 onChange={(instagram) => setSite((s) => ({ ...s, instagram }))}
               />
             </SectionGroup>

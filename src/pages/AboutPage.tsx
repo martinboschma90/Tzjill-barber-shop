@@ -7,7 +7,7 @@ import { Testimonials } from '@/components/home/Testimonials'
 import { PillButton } from '@/components/ui/PillButton'
 import { BookButton } from '@/components/booking/BookButton'
 import { useCms } from '@/cms/CmsContext'
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
+import { INSTAGRAM_HANDLE, shopInstagramUrl } from '@/data/site'
 
 const stats = [
   { n: '3', label: 'Specialismen' },
@@ -237,7 +237,7 @@ export function AboutPage() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <BookButton surface="dark">Afspraak maken</BookButton>
             <PillButton
-              href={INSTAGRAM_URL}
+              href={shopInstagramUrl(content.site.instagram)}
               target="_blank"
               rel="noreferrer"
               variant="ghost"

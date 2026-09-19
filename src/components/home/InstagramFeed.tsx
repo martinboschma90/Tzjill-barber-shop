@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { lookbookImages } from '@/data/lookbook'
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
+import { INSTAGRAM_HANDLE, shopInstagramUrl } from '@/data/site'
+import { useCms } from '@/cms/CmsContext'
 
 const slides = lookbookImages
 const COUNT = slides.length
@@ -18,6 +19,8 @@ function shortestOffset(index: number, active: number) {
 }
 
 export function InstagramFeed() {
+  const { content } = useCms()
+  const instagram = shopInstagramUrl(content.site.instagram)
   const reduce = useReducedMotion()
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -62,7 +65,7 @@ export function InstagramFeed() {
           </h2>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
             <a
-              href={INSTAGRAM_URL}
+              href={instagram}
               target="_blank"
               rel="noreferrer"
               className="hover:text-white"
@@ -99,7 +102,7 @@ export function InstagramFeed() {
             return (
               <a
                 key={image.src}
-                href={INSTAGRAM_URL}
+                href={instagram}
                 target="_blank"
                 rel="noreferrer"
                 aria-current={isCenter ? 'true' : undefined}

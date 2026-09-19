@@ -6,7 +6,7 @@ import {
   lookbookFilters,
   type LookbookFilterId,
 } from '@/data/lookbook'
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
+import { INSTAGRAM_HANDLE, shopInstagramUrl } from '@/data/site'
 import { PillButton } from '@/components/ui/PillButton'
 import { useCms } from '@/cms/CmsContext'
 import { cloneLookbook } from '@/cms/content'
@@ -57,7 +57,7 @@ export function LookbookPage() {
             )
           })}
           <PillButton
-            href={INSTAGRAM_URL}
+            href={shopInstagramUrl(content.site.instagram)}
             target="_blank"
             rel="noreferrer"
             variant="ghost"
