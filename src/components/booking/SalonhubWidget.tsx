@@ -62,7 +62,7 @@ export function SalonhubWidget({ open, onOpenChange }: SalonhubWidgetProps) {
       >
         <div className="flex h-14 shrink-0 items-center justify-between gap-3 px-4 sm:h-16 sm:px-5">
           <div className="min-w-0">
-            <Logo invert height={22} className="opacity-90" />
+            <Logo tone="white" height={22} className="opacity-90" />
             <p id={titleId} className="type-label mt-1 truncate text-white/45">
               Afspraak maken
             </p>

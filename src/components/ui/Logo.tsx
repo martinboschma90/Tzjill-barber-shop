@@ -1,39 +1,48 @@
-type LogoVariant = 'wordmark' | 'wordmark-ink' | 'seal' | 'stacked' | 'auto'
+type LogoTone = 'white' | 'black'
 
 type LogoProps = {
-  variant?: LogoVariant
   className?: string
   height?: number
   title?: string
+  /** White on dark surfaces; black on cream/light. */
+  tone?: LogoTone
   fetchPriority?: 'high' | 'low' | 'auto'
   loading?: 'lazy' | 'eager'
   decoding?: 'async' | 'sync' | 'auto'
-  /** Invert to white — use on dark video/hero. */
-  invert?: boolean
 }
 
-const SRC = '/brand/tzjill-logo.png'
-const RATIO = 1092 / 1044
+const SRC = {
+  white: '/brand/tzjill-logo-white.png',
+  black: '/brand/tzjill-logo-black.png',
+} as const
 
-/** Tzjill wordmark from tzjill.nl */
+/** Official EPS lockup, 1200 × 1151. */
+const INTRINSIC_W = 1200
+const INTRINSIC_H = 1151
+const RATIO = INTRINSIC_W / INTRINSIC_H
+
+/** Official Tzjill Barber & Lounge mark (white or black). */
 export function Logo({
   className = '',
   height = 40,
   title = 'Tzjill Barber & Lounge',
+  tone = 'black',
   fetchPriority,
   loading,
   decoding = 'async',
-  invert = false,
 }: LogoProps) {
   const width = Math.round(height * RATIO)
+  const src = SRC[tone]
 
   return (
     <img
-      src={SRC}
+      src={src}
+      srcSet={`${src} ${INTRINSIC_W}w`}
+      sizes={`${width}px`}
       alt={title}
       width={width}
       height={height}
-      className={`block max-w-full object-contain ${invert ? 'brightness-0 invert' : ''} ${className}`}
+      className={`block max-w-full object-contain ${className}`}
       style={{ height, width, objectFit: 'contain' }}
       draggable={false}
       loading={fetchPriority === 'high' ? 'eager' : loading}

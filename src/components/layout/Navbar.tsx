@@ -74,7 +74,7 @@ export function Navbar({
           </nav>
 
           <Link to="/" aria-label="Tzjill Barber & Lounge — home">
-            <Logo invert height={54} fetchPriority="high" />
+            <Logo tone="white" height={54} fetchPriority="high" />
           </Link>
 
           <nav className="hidden items-center gap-7 lg:flex xl:gap-10" aria-label="Primary right">

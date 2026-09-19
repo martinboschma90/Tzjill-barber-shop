@@ -1,4 +1,19 @@
-# No Type brand assets
+# Brand assets
+
+## Tzjill lockup (official)
+
+Source: owner-supplied EPS, converted to PNG.
+
+| File | Use |
+|------|-----|
+| `tzjill-logo-white.png` | Dark hero, dark header, dark footer (1200 × 1151) |
+| `tzjill-logo-black.png` | Cream / light backgrounds and favicon (1200 × 1151) |
+
+Do not use CSS invert on these files. Do not restore the scraped `tzjill-logo.png` from the old site.
+
+---
+
+# No Type brand assets (legacy template)
 
 Source: `notype_geel-1.ai` (official Illustrator file)
 

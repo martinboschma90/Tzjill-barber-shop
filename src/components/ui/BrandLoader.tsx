@@ -14,7 +14,7 @@ export function BrandLoader({ label = 'Loading' }: BrandLoaderProps) {
       aria-label={label}
     >
       <div className="brand-mark-spin origin-center">
-        <Logo variant="seal" height={160} title="" />
+        <Logo tone="white" height={160} title="" />
       </div>
       <span className="sr-only">{label}</span>
     </div>
