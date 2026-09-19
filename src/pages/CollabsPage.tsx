@@ -17,6 +17,7 @@ import {
 export function CollabsPage() {
   const { content } = useCms()
   const collabs = content.site.collabs ?? cloneCollabs()
+  // Every CMS/seed entry becomes a slide — never slice or drop one.
   const fallbackVideo =
     content.site.homeHeroVideoUrl?.trim() || SHOP_FALLBACK_VIDEO
 

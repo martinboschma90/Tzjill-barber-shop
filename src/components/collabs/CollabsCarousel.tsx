@@ -157,8 +157,10 @@ export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) 
               key={`${item.name}-${index}`}
               aria-roledescription="slide"
               aria-label={`${item.name}, ${index + 1} van ${items.length}`}
+              aria-posinset={index + 1}
+              aria-setsize={items.length}
               aria-current={index === active ? 'true' : undefined}
-              className="w-[calc(100vw-5rem)] shrink-0 snap-start sm:w-[min(64vw,24rem)]"
+              className="w-[calc(100vw-6.75rem)] shrink-0 snap-start sm:w-[min(62vw,24rem)]"
             >
               {/* One swipe unit: this collab's video and its copy move together. */}
               <div className="overflow-hidden rounded-[1.75rem] bg-[#100e0c] ring-1 ring-white/15 sm:rounded-[2rem]">
@@ -180,7 +182,11 @@ export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) 
 
       {items.length > 1 ? (
         <div className="mt-6 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
+            <p className="type-label text-white/40">
+              {active + 1} / {items.length}
+            </p>
+            <div className="flex items-center gap-2">
             {items.map((item, index) => (
               <button
                 key={`${item.name}-dot-${index}`}
@@ -194,6 +200,7 @@ export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) 
                 }`}
               />
             ))}
+            </div>
           </div>
           <div className="hidden gap-2 sm:flex">
             <CarouselButton

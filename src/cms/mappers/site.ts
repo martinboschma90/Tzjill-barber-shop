@@ -316,17 +316,21 @@ function asCollabs(
 ): ShopCollab[] {
   if (!Array.isArray(value) || value.length === 0) return cloneCollabs(fallback)
   const mapped = value
-    .map((item) => {
+    .map((item, index) => {
       if (!item || typeof item !== 'object') return null
       const row = item as Record<string, unknown>
-      const name = asString(row.name)
-      if (!name) return null
+      const name =
+        asString(row.name) || asString(row.title) || asString(row.heading)
+      const text = asString(row.text) || asString(row.description)
+      const image =
+        asString(row.image) || asString(row.poster) || asString(row.photo)
       const video = asString(row.video) || asString(row.videoUrl)
+      if (!name && !text && !image && !video) return null
       return {
-        name,
+        name: name || `Collab ${index + 1}`,
         year: asString(row.year),
-        text: asString(row.text),
-        image: asString(row.image),
+        text,
+        image,
         ...(video ? { video } : {}),
       }
     })
