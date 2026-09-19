@@ -1,7 +1,6 @@
 import { useCms } from '@/cms/CmsProvider'
 import { EditorSection, TextArea, TextInput } from '@/cms/fields'
 import { MediaUrlField } from '@/cms/media/MediaUrlField'
-import { INSTAGRAM_URL } from '@/data/site'
 
 const listBtnClass =
   'cms-secondary-action rounded-lg border border-neutral-200 bg-white px-3 py-1.5 text-[11px] font-medium text-neutral-600 transition-colors hover:bg-neutral-50 hover:text-neutral-900'
@@ -141,8 +140,6 @@ export function FooterEditor() {
         <TextInput
           label="Instagram"
           value={site.instagram}
-          placeholder={INSTAGRAM_URL}
-          hint="Officieel shopprofiel. Tracking (?stkn=) wordt genegeerd."
           onChange={(instagram) => setSite((s) => ({ ...s, instagram }))}
         />
       </EditorSection>

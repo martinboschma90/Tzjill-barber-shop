@@ -2,10 +2,10 @@ import { Link } from 'react-router-dom'
 import { Logo } from '@/components/ui/Logo'
 import { publicNav } from '@/data/nav'
 import {
+  INSTAGRAM_URL,
   MAPS_DIRECTIONS_URL,
   PHONE_DISPLAY,
   PHONE_TEL,
-  shopInstagramUrl,
 } from '@/data/site'
 import { useCms } from '@/cms/CmsContext'
 
@@ -25,7 +25,7 @@ export function Footer() {
   const copyright = site.copyrightText.trim() || `© ${site.year} ${brandName}`
   const phone = site.phoneNumber?.trim() || PHONE_DISPLAY
   const officeLines = site.legal.addressLines.filter((line) => line.trim())
-  const instagram = shopInstagramUrl(site.instagram)
+  const instagram = site.instagram.trim() || INSTAGRAM_URL
 
   return (
     <footer className="mx-3 mb-3 mt-4 sm:mx-4 sm:mb-4 sm:mt-6">

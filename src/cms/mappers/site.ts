@@ -20,7 +20,6 @@ import {
   type SiteContent,
 } from '@/cms/content'
 import { cloneFaqCategories, isLeftoverPromoterFaq } from '@/data/faq'
-import { shopInstagramUrl } from '@/data/site'
 import { isNotypeHost } from '@/lib/publicSiteUrl'
 import { normalizeRosterGlowPreset } from '@/cms/rosterGlow'
 import type { Json } from '@/lib/database.types'
@@ -414,9 +413,7 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
     homeHeroVisible: asBoolean(row.homeHeroVisible, defaults.homeHeroVisible),
     homeHeroImageUrl: asString(row.homeHeroImageUrl, defaults.homeHeroImageUrl),
     homeHeroVideoUrl: asString(row.homeHeroVideoUrl, defaults.homeHeroVideoUrl),
-    instagram: shopInstagramUrl(
-      asString(row.instagram, defaults.instagram),
-    ),
+    instagram: asString(row.instagram, defaults.instagram).trim() || defaults.instagram,
     year: asNumber(row.year, defaults.year),
     contactIntro: asString(row.contactIntro, defaults.contactIntro),
     contact,

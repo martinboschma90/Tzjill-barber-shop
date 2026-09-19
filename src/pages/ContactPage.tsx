@@ -7,9 +7,9 @@ import { BookButton } from '@/components/booking/BookButton'
 import { PillButton } from '@/components/ui/PillButton'
 import { useCms } from '@/cms/CmsContext'
 import {
+  INSTAGRAM_URL,
   PHONE_DISPLAY,
   PHONE_TEL,
-  shopInstagramUrl,
 } from '@/data/site'
 
 const hoursCompact = [
@@ -102,7 +102,7 @@ export function ContactPage() {
             <div className="mt-5 flex flex-wrap gap-2.5">
               <BookButton surface="dark">Afspraak maken</BookButton>
               <PillButton
-                href={shopInstagramUrl(site.instagram)}
+                href={INSTAGRAM_URL}
                 target="_blank"
                 rel="noreferrer"
                 variant="ghost"
