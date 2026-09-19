@@ -90,6 +90,20 @@ export function CollabsEditor() {
               }))
             }
           />
+          <MediaUrlField
+            label="Video"
+            kind="video"
+            value={item.video ?? ''}
+            hint="Optioneel. Leeg = shop hero-film. De foto hierboven is de poster."
+            onChange={(video) =>
+              setSite((s) => ({
+                ...s,
+                collabs: s.collabs.map((row, i) =>
+                  i === index ? { ...row, video } : row,
+                ),
+              }))
+            }
+          />
         </AdminListCard>
       ))}
       <button

@@ -321,11 +321,13 @@ function asCollabs(
       const row = item as Record<string, unknown>
       const name = asString(row.name)
       if (!name) return null
+      const video = asString(row.video) || asString(row.videoUrl)
       return {
         name,
         year: asString(row.year),
         text: asString(row.text),
         image: asString(row.image),
+        ...(video ? { video } : {}),
       }
     })
     .filter((item): item is ShopCollab => Boolean(item))

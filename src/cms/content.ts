@@ -55,6 +55,18 @@ export type ShopCollab = {
   year: string
   text: string
   image: string
+  /** Optional clip (mp4/webm or media://). Empty uses the shop hero film. */
+  video?: string
+}
+
+export const SHOP_FALLBACK_VIDEO = '/brand/hero.mp4'
+
+/** Per-collab clip, or the shop hero film when CMS has not set one. */
+export function collabVideoUrl(
+  item: Pick<ShopCollab, 'video'>,
+  fallback = SHOP_FALLBACK_VIDEO,
+): string {
+  return item.video?.trim() || fallback
 }
 
 export type HomeTreatment = {
