@@ -1,16 +1,22 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/cms/auth/AuthProvider'
 import { CmsLockedPage } from '@/cms/auth/CmsLockedPage'
+import { isCmsLocalBypassAllowed } from '@/lib/cmsLocalBypass'
 import { isSupabaseConfigured } from '@/lib/supabaseEnv'
 import type { ReactNode } from 'react'
 
 /**
  * Protects CMS shell routes. Login page is outside this gate.
- * Fail closed: missing Supabase env never unlocks a local admin.
+ * Fail closed on Vercel / production. Local Vite + localhost only
+ * may skip login when no hosted backend is configured.
  */
 export function CmsAuthGate({ children }: { children: ReactNode }) {
   const { ready, session } = useAuth()
   const location = useLocation()
+
+  if (isCmsLocalBypassAllowed()) {
+    return children
+  }
 
   if (!isSupabaseConfigured) {
     return <CmsLockedPage />

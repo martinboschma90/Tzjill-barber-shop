@@ -1,4 +1,5 @@
 import type { CmsContent } from '@/cms/content'
+import { FALLBACK_PUBLIC_SITE_URL } from '@/lib/publicSiteUrl'
 import type { ContentSyncStatus } from '@/cms/CmsContext'
 import { getArtistStatus } from '@/cms/artistVisibility'
 import { normalizeArtistVideos } from '@/cms/artistVideos'
@@ -86,7 +87,7 @@ export function assessSiteHealth(
 ): SiteHealth {
   const { site, artists } = content
   const checkedAt = Date.now()
-  const url = (site.publicSiteUrl || '').trim()
+  const url = (site.publicSiteUrl || FALLBACK_PUBLIC_SITE_URL).trim()
   const https = /^https:\/\//i.test(url) && !/localhost|127\.0\.0\.1/i.test(url)
   const meta = site.metaDescription?.trim() || ''
   const faqItems = (site.faqCategories || []).flatMap((cat) =>
@@ -259,33 +260,35 @@ export function assessSiteHealth(
   const artistChecks: HealthCheck[] = [
     {
       id: 'published',
-      label: 'Artiesten live',
-      ok: published.length > 0,
+      label: 'Muziekroster',
+      ok: true,
       weight: 16,
-      hint: published.length ? undefined : 'Nog geen gepubliceerde artiest.',
-      to: '/cms/artists',
+      hint: published.length
+        ? undefined
+        : 'Geen muziekartiesten — Tzjill is barber-only.',
+      to: '/cms/team',
     },
     {
       id: 'bios',
       label: 'Bio’s',
-      ok: published.length > 0 && withBio / published.length >= 0.7,
+      ok: published.length === 0 || withBio / published.length >= 0.7,
       weight: 12,
       hint:
         published.length && withBio / published.length < 0.7
           ? `${withBio}/${published.length} bio’s zijn gevuld.`
           : undefined,
-      to: '/cms/artists',
+      to: '/cms/team',
     },
     {
       id: 'alts',
       label: 'Afbeelding-alt',
-      ok: published.length > 0 && withAlt / published.length >= 0.7,
+      ok: published.length === 0 || withAlt / published.length >= 0.7,
       weight: 8,
       hint:
         published.length && withAlt / published.length < 0.7
           ? `${withAlt}/${published.length} met alt-tekst.`
           : undefined,
-      to: '/cms/artists',
+      to: '/cms/team',
     },
     {
       id: 'media',

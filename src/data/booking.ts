@@ -1,7 +1,7 @@
 import type { BookingRequestPayload } from '@/types/booking'
 
 /** Inbox for completed booking requests. */
-export const BOOKING_REQUEST_EMAIL = 'martin@notype-mgmt.com'
+export const BOOKING_REQUEST_EMAIL = 'info@tzjill.nl'
 
 export function formatBookingEmailBody(payload: BookingRequestPayload): string {
   const lines: string[] = [

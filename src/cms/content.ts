@@ -1,4 +1,6 @@
 import { createDefaultFaqCategories } from '@/data/faq'
+import { FALLBACK_PUBLIC_SITE_URL } from '@/lib/publicSiteUrl'
+import { stripLeftoverMusicArtists } from '@/cms/leftoverArtists'
 import { withArtDirection } from '@/cms/imageFocus'
 import { normalizeSiteContent } from '@/cms/mappers/site'
 import { storageGet, storageSet } from '@/lib/safeStorage'
@@ -281,7 +283,7 @@ export function createDefaultSiteContent(): SiteContent {
     faqIntro: 'Boeken, te laat, kids — de rest regel je aan de balie.',
     faqVisible: true,
     faqCategories: createDefaultFaqCategories(),
-    publicSiteUrl: '',
+    publicSiteUrl: FALLBACK_PUBLIC_SITE_URL,
     metaDescription:
       'Tzjill Barber & Lounge in Leeuwarden. Trendy haircuts and hot towel straight razor shaves.',
     searchIndexing: false,
@@ -312,7 +314,9 @@ export function loadStoredContent(): CmsContent | null {
     return {
       ...parsed,
       site: normalizeSiteContent(parsed.site),
-      artists: parsed.artists.map((artist) => withArtDirection(artist)),
+      artists: stripLeftoverMusicArtists(parsed.artists).map((artist) =>
+        withArtDirection(artist),
+      ),
     }
   } catch {
     return null

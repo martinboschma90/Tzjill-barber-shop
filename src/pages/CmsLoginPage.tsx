@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/cms/auth/AuthProvider'
 import { CmsLockedPage } from '@/cms/auth/CmsLockedPage'
+import { isCmsLocalBypassAllowed } from '@/lib/cmsLocalBypass'
 import { isSupabaseConfigured } from '@/lib/supabaseEnv'
 
 const controlClass =
@@ -21,6 +22,10 @@ export function CmsLoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+
+  if (isCmsLocalBypassAllowed()) {
+    return <Navigate to="/cms/dashboard" replace />
+  }
 
   if (!isSupabaseConfigured) {
     return <CmsLockedPage />

@@ -84,7 +84,7 @@ export function DashboardHome() {
   const { content, savedAt } = useCms()
   const { assets } = useMedia()
   const pagesCount = PAGE_TABS.length
-  const artistsCount = content.artists.length
+  const teamCount = content.team.length
   const mediaCount = assets.length
   const live = useLiveSite(content.site.publicSiteUrl || 'https://tzjill-barber-shop.vercel.app')
   const optimize = useAutoOptimize(live.data)
@@ -120,7 +120,7 @@ export function DashboardHome() {
         <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 border-t border-neutral-100 pt-2.5 sm:grid-cols-4">
           <StatusCard label="Site" value={statusLabel} />
           <StatusCard label="Laatst" value={relativeTime(savedAt)} />
-          <StatusCard label="Artiesten" value={String(artistsCount)} />
+          <StatusCard label="Team" value={String(teamCount)} />
           <StatusCard label="Media" value={`${mediaCount} · ${pagesCount} pagina’s`} />
         </div>
       </div>
@@ -136,9 +136,9 @@ export function DashboardHome() {
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <ActionTile
-            to="/cms/artists"
-            label="Artiesten"
-            description="Roster, profielen en video’s."
+            to="/cms/team"
+            label="Team"
+            description="Kappers en lounge — geen muziekroster."
             icon={Users}
             accent="bg-emerald-500/10 text-emerald-500"
           />

@@ -1,7 +1,6 @@
 import { Link, useLocation } from 'react-router-dom'
 import { prefetchRoute } from '@/lib/prefetchRoute'
 import { publicMenuLinks } from '@/data/nav'
-import { BookButton } from '@/components/booking/BookButton'
 
 type MenuOverlayProps = {
   open: boolean
@@ -35,9 +34,6 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
             </Link>
           )
         })}
-        <BookButton surface="dark" className="mt-6" onClick={onClose}>
-          Afspraak maken
-        </BookButton>
       </nav>
     </div>
   )

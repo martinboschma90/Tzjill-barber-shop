@@ -12,13 +12,13 @@ type BookingWellProps = {
 export function BookingWell({ className = '' }: BookingWellProps) {
   return (
     <div
-      className={`relative min-w-0 overflow-hidden bg-[#efeae3] ${className}`}
+      className={`relative min-w-0 overflow-hidden bg-[#f6f3ee] ${className}`}
     >
       <div className="h-full w-full origin-top-left max-sm:h-[164%] max-sm:w-[164%] max-sm:scale-[0.61]">
         <iframe
           title="Salonhub — online afspraak Tzjill"
           src={SALONHUB_BOOKING_URL}
-          className="block h-full w-full border-0 bg-[#efeae3]"
+          className="block h-full w-full border-0 bg-[#f6f3ee]"
         />
       </div>
     </div>

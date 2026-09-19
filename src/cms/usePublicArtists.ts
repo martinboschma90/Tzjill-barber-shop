@@ -8,6 +8,7 @@ import {
   writeStoredPublicArtists,
 } from '@/cms/api/publicArtistsCache'
 import { isArtistVisible, visibleArtists } from '@/cms/artistVisibility'
+import { isLeftoverMusicArtist, stripLeftoverMusicArtists } from '@/cms/leftoverArtists'
 import { isSupabaseConfigured } from '@/lib/supabaseEnv'
 import type { Artist } from '@/types/artist'
 import { dedupeArtists } from '@/cms/dedupeArtists'
@@ -16,7 +17,7 @@ export function usePublicArtists() {
   const [remoteArtists, setRemoteArtists] = useState<Artist[]>(
     () =>
       isSupabaseConfigured
-        ? dedupeArtists(getCachedPublicArtists())
+        ? stripLeftoverMusicArtists(dedupeArtists(getCachedPublicArtists()))
         : [],
   )
 
@@ -29,7 +30,9 @@ export function usePublicArtists() {
     void fetchPublicArtistsFromSupabaseCached()
       .then(({ artists }) => {
         if (cancelled || artists.length === 0) return
-        const visible = dedupeArtists(visibleArtists(artists))
+        const visible = stripLeftoverMusicArtists(
+          dedupeArtists(visibleArtists(artists)),
+        )
         setRemoteArtists(visible)
         writeStoredPublicArtists(visible)
       })
@@ -53,7 +56,9 @@ export function usePublicArtist(slug: string) {
     () => {
       if (!slug || !isSupabaseConfigured) return undefined
       const cached = getCachedPublicArtist(slug)
-      return cached && isArtistVisible(cached) ? cached : undefined
+      return cached && isArtistVisible(cached) && !isLeftoverMusicArtist(cached)
+        ? cached
+        : undefined
     },
   )
 
@@ -61,7 +66,9 @@ export function usePublicArtist(slug: string) {
     let cancelled = false
     const cached = getCachedPublicArtist(slug)
     const visibleCached =
-      cached && isArtistVisible(cached) ? cached : null
+      cached && isArtistVisible(cached) && !isLeftoverMusicArtist(cached)
+        ? cached
+        : null
     setRemoteArtist(visibleCached ?? undefined)
 
     if (!isSupabaseConfigured) {
@@ -72,7 +79,7 @@ export function usePublicArtist(slug: string) {
     void fetchPublicArtistBySlug(slug)
       .then((artist) => {
         if (cancelled) return
-        if (artist && isArtistVisible(artist)) {
+        if (artist && isArtistVisible(artist) && !isLeftoverMusicArtist(artist)) {
           setRemoteArtist(artist)
         } else if (!visibleCached) {
           setRemoteArtist(null)

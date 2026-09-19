@@ -15,7 +15,8 @@ export function CmsLockedPage() {
         Beheer is vergrendeld
       </h1>
       <p className="mt-3 max-w-sm text-sm leading-relaxed text-neutral-500">
-        Het dashboard is niet openbaar. Zet{' '}
+        Geen lokale modus op deze host. Preview en productie vereisen login.
+        Zet{' '}
         <span className="font-mono text-xs text-neutral-700">
           VITE_SUPABASE_URL
         </span>{' '}

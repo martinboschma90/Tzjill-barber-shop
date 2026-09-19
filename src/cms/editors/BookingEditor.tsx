@@ -1,7 +1,7 @@
 import { useCms } from '@/cms/CmsProvider'
 import { ArtistVisibilityToggle } from '@/cms/editors/ArtistVisibilityToggle'
 import { EditorSection, TextArea, TextInput } from '@/cms/fields'
-import { BOOKING_REQUEST_EMAIL } from '@/data/booking'
+import { SALONHUB_BOOKING_URL } from '@/data/site'
 
 export function BookingEditor() {
   const { content, setSite } = useCms()
@@ -56,29 +56,16 @@ export function BookingEditor() {
       </EditorSection>
 
       <EditorSection
-        title="Delivery"
-        description="Completed requests are emailed to the bookings inbox."
+        title="Agenda"
+        description="Bezoekers boeken via Salonhub. Geen eigen booking-backend."
       >
         <p className="type-body rounded-xl border border-ink/8 bg-ink/[0.03] px-3.5 py-3 text-xs text-ink/55">
-          {BOOKING_REQUEST_EMAIL}
+          {SALONHUB_BOOKING_URL}
         </p>
         <p className="type-body text-xs leading-relaxed text-ink/40">
-          Resend mag nu alleen testmails naar je Resend-account sturen. Voor
-          live booking-mail: verifieer <strong>notype-mgmt.com</strong> op{' '}
-          <a
-            className="underline underline-offset-2"
-            href="https://resend.com/domains"
-            target="_blank"
-            rel="noreferrer"
-          >
-            resend.com/domains
-          </a>
-          , zet de DNS-records, en in Vercel:{' '}
-          <code className="text-[11px]">BOOKING_FROM_EMAIL</code> ={' '}
-          <code className="text-[11px]">
-            NOTYPE MGMT &lt;bookings@notype-mgmt.com&gt;
-          </code>
-          . Inbox blijft {BOOKING_REQUEST_EMAIL}.
+          De publieke /booking-pagina toont eerst Tzjill-chrome, daarna de
+          Salonhub-agenda. Health checks en de publieke URL staan onder
+          Instellingen (tzjill-barber-shop.vercel.app tot tzjill.nl hierop wijst).
         </p>
       </EditorSection>
     </>

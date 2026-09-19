@@ -16,7 +16,7 @@ export function HomeFaq() {
   )
 
   return (
-    <section className="text-white">
+    <section id="faq" className="text-white">
       <div className="mx-auto max-w-[1240px] px-8 section-y sm:px-12">
         <div className="mx-auto max-w-3xl text-center">
           <p className="type-label inline-flex items-center justify-center gap-2 text-white/45">
