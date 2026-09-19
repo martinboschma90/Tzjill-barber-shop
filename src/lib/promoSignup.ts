@@ -1,6 +1,6 @@
 import { storageGet, storageSet } from '@/lib/safeStorage'
 
-export const PROMO_STORAGE_KEY = 'tzjill-promo-signup-v1'
+export const PROMO_STORAGE_KEY = 'tzjill-promo-10y-v1'
 
 export function isValidPromoEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim())

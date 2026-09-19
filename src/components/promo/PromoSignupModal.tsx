@@ -1,5 +1,4 @@
 import { useEffect, useId, useState, type FormEvent } from 'react'
-import { Logo } from '@/components/ui/Logo'
 import {
   isNlMobile,
   isValidPromoEmail,
@@ -9,6 +8,7 @@ import {
 } from '@/lib/promoSignup'
 
 const OPEN_DELAY_MS = 1400
+const PROMO_IMAGE = '/promo/10-years-tzjill.jpg'
 
 const fieldClass =
   'mt-2 w-full rounded-full border border-white/20 bg-white/5 px-5 py-3 type-body text-white outline-none placeholder:text-white/35 transition-colors focus:border-[#efeae3]'
@@ -22,6 +22,11 @@ export function PromoSignupModal() {
   const [error, setError] = useState('')
   const [sending, setSending] = useState(false)
   const [sent, setSent] = useState(false)
+
+  useEffect(() => {
+    const preload = new Image()
+    preload.src = PROMO_IMAGE
+  }, [])
 
   useEffect(() => {
     if (promoAlreadySeen()) return
@@ -95,95 +100,105 @@ export function PromoSignupModal() {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative z-[1] w-full max-w-[26rem] overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#141210] px-6 py-7 text-white shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:rounded-[2rem] sm:px-8 sm:py-9"
+        className="relative z-[1] flex max-h-[min(92svh,880px)] w-full max-w-[26rem] flex-col overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#141210] text-white shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:max-w-[44rem] sm:flex-row sm:rounded-[2rem]"
       >
-        <div className="flex items-start justify-between gap-3">
-          <Logo tone="white" height={36} className="opacity-90" />
+        <div className="relative h-[min(38svh,20rem)] shrink-0 overflow-hidden bg-black sm:h-auto sm:w-[46%]">
+          <img
+            src={PROMO_IMAGE}
+            alt="10 jaar Tzjill, 2016–2026"
+            width={1080}
+            height={1356}
+            className="h-full w-full object-cover object-center"
+            decoding="async"
+            fetchPriority="high"
+          />
+        </div>
+
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-6 py-6 sm:px-8 sm:py-8">
           <button
             type="button"
             onClick={() => dismiss('dismissed')}
-            className="type-ui flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 text-white/70 transition-colors hover:border-white hover:bg-white hover:text-[#2c241c]"
+            className="type-ui absolute right-4 top-4 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 text-white/70 transition-colors hover:border-white hover:bg-white hover:text-[#2c241c] sm:right-5 sm:top-5"
             aria-label="Popup sluiten"
           >
             ×
           </button>
-        </div>
 
-        <p className="type-label mt-6 inline-flex items-center gap-2 text-[#efeae3]/70">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#c4a574]" aria-hidden />
-          Lounge actie
-        </p>
-        <h2 id={titleId} className="type-headline mt-3 text-[1.85rem] sm:text-[2.15rem]">
-          Meld je aan
-          <br />
-          voor te gekke
-          <br />
-          prijzen
-        </h2>
-        <p className="type-lead mt-4 text-[0.95rem] text-white/55">
-          Tien jaar Tzjill — we geven cadeaus weg. Laat je gegevens achter,
-          dan hoor je als eerste van de acties.
-        </p>
-
-        {sent ? (
-          <p className="type-lead mt-8 text-white/75">
-            Staat. We mailen je als er iets te pakken valt.
+          <p className="type-label mt-1 inline-flex items-center gap-2 pr-12 text-[#efeae3]/70">
+            <span className="h-1.5 w-1.5 rounded-full bg-[#c4a574]" aria-hidden />
+            10 jaar Tzjill
           </p>
-        ) : (
-          <form onSubmit={onSubmit} className="mt-7 flex flex-col gap-3.5">
-            <label className="block">
-              <span className="type-label text-white/40">Naam</span>
-              <input
-                required
-                name="name"
-                autoComplete="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={fieldClass}
-              />
-            </label>
-            <label className="block">
-              <span className="type-label text-white/40">E-mail</span>
-              <input
-                required
-                type="email"
-                name="email"
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={fieldClass}
-              />
-            </label>
-            <label className="block">
-              <span className="type-label text-white/40">06</span>
-              <input
-                required
-                type="tel"
-                name="tel"
-                inputMode="tel"
-                autoComplete="tel"
-                pattern="(\+31|0)\s*6[\s-]*(\d[\s-]*){8}"
-                title="Vul een 06-nummer in"
-                placeholder="06 12 34 56 78"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className={fieldClass}
-              />
-            </label>
-            {error ? (
-              <p className="type-body text-[0.85rem] text-[#e8c4a8]" role="alert">
-                {error}
-              </p>
-            ) : null}
-            <button
-              type="submit"
-              disabled={sending}
-              className="type-ui mt-1 inline-flex min-h-[3rem] items-center justify-center rounded-full border border-[#efeae3] bg-[#efeae3] px-6 py-3 text-[#2c241c] transition-[color,background-color,transform] duration-300 hover:-translate-y-px hover:border-white hover:bg-white disabled:pointer-events-none disabled:opacity-60"
-            >
-              {sending ? 'Even geduld…' : 'Aanmelden'}
-            </button>
-          </form>
-        )}
+          <h2
+            id={titleId}
+            className="type-headline mt-3 max-w-[14ch] text-[1.7rem] sm:text-[2rem]"
+          >
+            Meld je aan voor te gekke prijzen
+          </h2>
+          <p className="type-lead mt-3 text-[0.95rem] text-white/55">
+            2016–2026. Winacties en cadeaus volgen dit jubileumjaar — laat je
+            gegevens achter en je hoort het als eerste.
+          </p>
+
+          {sent ? (
+            <p className="type-lead mt-8 text-white/75">
+              Staat. We mailen je als er iets te pakken valt.
+            </p>
+          ) : (
+            <form onSubmit={onSubmit} className="mt-6 flex flex-col gap-3.5">
+              <label className="block">
+                <span className="type-label text-white/40">Naam</span>
+                <input
+                  required
+                  name="name"
+                  autoComplete="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className={fieldClass}
+                />
+              </label>
+              <label className="block">
+                <span className="type-label text-white/40">E-mail</span>
+                <input
+                  required
+                  type="email"
+                  name="email"
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={fieldClass}
+                />
+              </label>
+              <label className="block">
+                <span className="type-label text-white/40">06</span>
+                <input
+                  required
+                  type="tel"
+                  name="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  pattern="(\+31|0)\s*6[\s-]*(\d[\s-]*){8}"
+                  title="Vul een 06-nummer in"
+                  placeholder="06 12 34 56 78"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className={fieldClass}
+                />
+              </label>
+              {error ? (
+                <p className="type-body text-[0.85rem] text-[#e8c4a8]" role="alert">
+                  {error}
+                </p>
+              ) : null}
+              <button
+                type="submit"
+                disabled={sending}
+                className="type-ui mt-1 inline-flex min-h-[3rem] items-center justify-center rounded-full border border-[#efeae3] bg-[#efeae3] px-6 py-3 text-[#2c241c] transition-[color,background-color,transform] duration-300 hover:-translate-y-px hover:border-white hover:bg-white disabled:pointer-events-none disabled:opacity-60"
+              >
+                {sending ? 'Even geduld…' : 'Aanmelden'}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </div>
   )
