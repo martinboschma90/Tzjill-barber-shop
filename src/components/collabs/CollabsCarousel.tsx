@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent,
+} from 'react'
 import type { ShopCollab } from '@/cms/content'
 import { collabVideoUrl } from '@/cms/content'
 import { CollabMedia } from '@/components/collabs/CollabMedia'
@@ -30,6 +36,11 @@ type CollabsCarouselProps = {
 
 export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null)
+  const dragRef = useRef<{
+    pointerId: number
+    startX: number
+    scrollLeft: number
+  } | null>(null)
   const [active, setActive] = useState(0)
 
   const syncActive = useCallback(() => {
@@ -77,7 +88,7 @@ export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) 
   if (items.length === 0) return null
 
   return (
-    <div className="mt-16 lg:hidden">
+    <div className="mt-8 pb-24 lg:hidden sm:mt-12">
       <div
         role="region"
         aria-roledescription="carousel"
@@ -101,7 +112,45 @@ export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) 
         </p>
         <div
           ref={trackRef}
-          className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-8 pb-2 pt-1 scroll-px-8 [scrollbar-width:none] [-ms-overflow-style:none] sm:gap-4 sm:px-12 sm:scroll-px-12 [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-8 pb-1 pt-1 scroll-px-8 touch-pan-x [scrollbar-width:none] [-ms-overflow-style:none] sm:gap-4 sm:px-12 sm:scroll-px-12 [&::-webkit-scrollbar]:hidden"
+          onPointerDown={(event: PointerEvent<HTMLDivElement>) => {
+            if (event.pointerType !== 'mouse' || event.button !== 0) return
+            dragRef.current = {
+              pointerId: event.pointerId,
+              startX: event.clientX,
+              scrollLeft: event.currentTarget.scrollLeft,
+            }
+            event.currentTarget.setPointerCapture(event.pointerId)
+          }}
+          onPointerMove={(event: PointerEvent<HTMLDivElement>) => {
+            const drag = dragRef.current
+            if (!drag || drag.pointerId !== event.pointerId) return
+            event.currentTarget.scrollLeft =
+              drag.scrollLeft - (event.clientX - drag.startX)
+          }}
+          onPointerUp={(event: PointerEvent<HTMLDivElement>) => {
+            if (dragRef.current?.pointerId !== event.pointerId) return
+            dragRef.current = null
+            event.currentTarget.releasePointerCapture(event.pointerId)
+            const track = event.currentTarget
+            const cards = Array.from(track.children) as HTMLElement[]
+            const marker = track.scrollLeft + track.clientWidth * 0.38
+            let best = 0
+            let bestDist = Number.POSITIVE_INFINITY
+            cards.forEach((card, index) => {
+              const dist = Math.abs(card.offsetLeft - marker)
+              if (dist < bestDist) {
+                bestDist = dist
+                best = index
+              }
+            })
+            const pad = Number.parseFloat(getComputedStyle(track).paddingLeft) || 0
+            const card = cards[best]
+            if (card) track.scrollTo({ left: card.offsetLeft - pad, behavior: 'smooth' })
+          }}
+          onPointerCancel={() => {
+            dragRef.current = null
+          }}
         >
           {items.map((item, index) => (
             <article
@@ -109,14 +158,15 @@ export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) 
               aria-roledescription="slide"
               aria-label={`${item.name}, ${index + 1} van ${items.length}`}
               aria-current={index === active ? 'true' : undefined}
-              className="w-[calc(100vw-5.5rem)] shrink-0 snap-start sm:w-[min(68vw,26rem)]"
+              className="w-[calc(100vw-6.25rem)] shrink-0 snap-start sm:w-[min(64vw,24rem)]"
             >
               <CollabMedia
                 image={item.image}
                 video={collabVideoUrl(item, fallbackVideo)}
                 priority={index === 0}
+                frame="carousel"
               />
-              <div className="mt-5 pr-2">
+              <div className="mt-4 pr-3">
                 <CollabCaption item={item} compact />
               </div>
             </article>

@@ -34,7 +34,7 @@ export function CollabsPage() {
           }
           intro="Gasten, merken, events. Mail als het past."
         />
-        <div className="mt-10">
+        <div className="mt-6 sm:mt-10">
           <PillButton href="mailto:info@tzjill.nl" surface="dark">
             Collab aanvragen
           </PillButton>

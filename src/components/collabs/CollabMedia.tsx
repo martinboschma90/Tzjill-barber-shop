@@ -23,6 +23,8 @@ type CollabMediaProps = {
   video?: string
   className?: string
   priority?: boolean
+  /** Short frame so mobile slides can keep caption text on screen. */
+  frame?: 'editorial' | 'carousel'
 }
 
 /**
@@ -34,6 +36,7 @@ export function CollabMedia({
   video,
   className = '',
   priority = false,
+  frame = 'editorial',
 }: CollabMediaProps) {
   const reduceMotion = useReducedMotion()
   const media = useContext(MediaContext)
@@ -93,20 +96,24 @@ export function CollabMedia({
   return (
     <div
       ref={tileRef}
-      className={`group relative overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem] ${className}`}
+      className={`group relative overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem] ${
+        frame === 'carousel'
+          ? 'h-[min(36svh,16.5rem)]'
+          : 'aspect-[4/5]'
+      } ${className}`}
     >
       {posterUrl ? (
         <img
           src={posterUrl}
           alt=""
-          className={`wf-media-zoom aspect-[4/5] h-full w-full object-cover transition-opacity duration-300 ${
+          className={`wf-media-zoom absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
             playing ? 'opacity-0' : 'opacity-100'
           }`}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
         />
       ) : (
-        <div className="aspect-[4/5] w-full bg-black" />
+        <div className="absolute inset-0 bg-black" />
       )}
       {clipUrl && armed ? (
         <video
