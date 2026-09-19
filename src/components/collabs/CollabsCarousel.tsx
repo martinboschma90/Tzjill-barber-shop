@@ -161,7 +161,7 @@ export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) 
               className="w-[calc(100vw-5rem)] shrink-0 snap-start sm:w-[min(64vw,24rem)]"
             >
               {/* One swipe unit: this collab's video and its copy move together. */}
-              <div className="overflow-hidden rounded-[1.75rem] bg-[#141210] ring-1 ring-white/10 sm:rounded-[2rem]">
+              <div className="overflow-hidden rounded-[1.75rem] bg-[#100e0c] ring-1 ring-white/15 sm:rounded-[2rem]">
                 <CollabMedia
                   image={item.image}
                   video={collabVideoUrl(item, fallbackVideo)}
@@ -169,7 +169,7 @@ export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) 
                   frame="carousel"
                   embedded
                 />
-                <div className="px-5 pb-5 pt-4">
+                <div className="border-t border-white/8 px-5 pb-5 pt-4">
                   <CollabCaption item={item} compact />
                 </div>
               </div>
