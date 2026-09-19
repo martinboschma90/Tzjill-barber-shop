@@ -55,6 +55,15 @@ export type ShopCollab = {
   year: string
   text: string
   image: string
+  /** Optional clip (mp4/webm or media://). Empty = poster only — never share another slide's film. */
+  video?: string
+}
+
+export const SHOP_FALLBACK_VIDEO = '/brand/hero.mp4'
+
+/** This collab's own clip only. No shared fallback — that made every slide look identical. */
+export function collabVideoUrl(item: Pick<ShopCollab, 'video'>): string {
+  return item.video?.trim() || ''
 }
 
 export type HomeTreatment = {

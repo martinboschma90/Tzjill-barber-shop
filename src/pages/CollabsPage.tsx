@@ -3,11 +3,17 @@ import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
 import { PillButton } from '@/components/ui/PillButton'
 import { useCms } from '@/cms/CmsContext'
-import { cloneCollabs } from '@/cms/content'
+import { cloneCollabs, collabVideoUrl } from '@/cms/content'
+import { CollabMedia } from '@/components/collabs/CollabMedia'
+import {
+  CollabCaption,
+  CollabsCarousel,
+} from '@/components/collabs/CollabsCarousel'
 
 export function CollabsPage() {
   const { content } = useCms()
   const collabs = content.site.collabs ?? cloneCollabs()
+  // Two distinct slides: each collab's own video + matching text, together.
 
   return (
     <AppShell navVariant="wordmark">
@@ -21,32 +27,33 @@ export function CollabsPage() {
               & merken
             </>
           }
-          intro="Gasten, merken, events. Mail als het past."
+          intro="Gasten en merken. Mail als het past."
         />
-        <div className="mt-10">
+        <div className="mt-6 sm:mt-10">
           <PillButton href="mailto:info@tzjill.nl" surface="dark">
             Collab aanvragen
           </PillButton>
         </div>
 
-        <ul className="mt-16 space-y-16 lg:space-y-24">
+        <CollabsCarousel items={collabs} />
+
+        <ul className="mt-16 hidden space-y-24 lg:block">
           {collabs.map((item, index) => {
             const reverse = index % 2 === 1
             return (
               <li
-                key={item.name}
+                key={`${item.name}-${index}`}
                 className="grid items-center gap-8 lg:grid-cols-12 lg:gap-16"
               >
                 <div
-                  className={`group overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem] lg:col-span-6 ${
+                  className={`lg:col-span-6 ${
                     reverse ? 'lg:col-start-7 lg:row-start-1' : ''
                   }`}
                 >
-                  <img
-                    src={item.image}
-                    alt=""
-                    className="wf-media-zoom aspect-[4/5] h-full w-full object-cover"
-                    loading="lazy"
+                  <CollabMedia
+                    image={item.image}
+                    video={collabVideoUrl(item)}
+                    priority={index === 0}
                   />
                 </div>
                 <div
@@ -54,9 +61,7 @@ export function CollabsPage() {
                     reverse ? 'lg:col-start-1 lg:row-start-1' : 'lg:col-start-8'
                   }`}
                 >
-                  <p className="type-label text-white/40">{item.year}</p>
-                  <h2 className="type-subhead mt-3">{item.name}</h2>
-                  <p className="type-lead mt-4 max-w-md text-white/55">{item.text}</p>
+                  <CollabCaption item={item} />
                 </div>
               </li>
             )

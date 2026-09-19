@@ -90,6 +90,20 @@ export function CollabsEditor() {
               }))
             }
           />
+          <MediaUrlField
+            label="Video"
+            kind="video"
+            value={item.video ?? ''}
+            hint="Eigen clip van deze collab. Leeg = alleen de foto — geen gedeelde film."
+            onChange={(video) =>
+              setSite((s) => ({
+                ...s,
+                collabs: s.collabs.map((row, i) =>
+                  i === index ? { ...row, video } : row,
+                ),
+              }))
+            }
+          />
         </AdminListCard>
       ))}
       <button

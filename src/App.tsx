@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import type { BeforeSendEvent } from '@vercel/analytics/react'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
 import { PublicSeo } from '@/components/layout/PublicSeo'
+import { PromoSignupModal } from '@/components/promo/PromoSignupModal'
 import { PublicContentProvider } from '@/cms/PublicContentProvider'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { RouteFallback } from '@/components/ui/RouteFallback'
@@ -80,6 +81,7 @@ function PublicApp() {
     <PublicContentProvider>
       <PublicSeo />
       <ScrollToTop />
+      <PromoSignupModal />
       <Suspense fallback={<RouteFallback />}>
         <Routes>
           <Route path="/" element={<HomePage />} />

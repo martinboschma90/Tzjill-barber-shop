@@ -316,20 +316,44 @@ function asCollabs(
 ): ShopCollab[] {
   if (!Array.isArray(value) || value.length === 0) return cloneCollabs(fallback)
   const mapped = value
-    .map((item) => {
+    .map((item, index) => {
       if (!item || typeof item !== 'object') return null
       const row = item as Record<string, unknown>
-      const name = asString(row.name)
-      if (!name) return null
+      const name =
+        asString(row.name) || asString(row.title) || asString(row.heading)
+      const text = asString(row.text) || asString(row.description)
+      const image =
+        asString(row.image) || asString(row.poster) || asString(row.photo)
+      const video =
+        asString(row.video) ||
+        asString(row.videoUrl) ||
+        seedVideoForName(name, fallback)
+      if (!name && !text && !image && !video) return null
       return {
-        name,
+        name: name || `Collab ${index + 1}`,
         year: asString(row.year),
-        text: asString(row.text),
-        image: asString(row.image),
+        text,
+        image,
+        ...(video ? { video } : {}),
       }
     })
     .filter((item): item is ShopCollab => Boolean(item))
+    .filter((item) => !isLeftoverEventsPlaceholder(item))
   return mapped.length ? mapped : cloneCollabs(fallback)
+}
+
+/** Drop the old third seed row so the public carousel stays at the two shop collabs. */
+function isLeftoverEventsPlaceholder(item: ShopCollab): boolean {
+  return (
+    item.name.trim().toLowerCase() === 'events' &&
+    item.text.includes('Avonden in de zaak, shoots en lokale collabs')
+  )
+}
+
+function seedVideoForName(name: string, fallback: ShopCollab[]): string {
+  const key = name.trim().toLowerCase()
+  if (!key) return ''
+  return fallback.find((item) => item.name.trim().toLowerCase() === key)?.video ?? ''
 }
 
 function asTreatments(
