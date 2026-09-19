@@ -44,7 +44,7 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative mx-3 mt-3 min-h-[calc(100svh-0.75rem)] overflow-hidden bg-[#1c1612] sm:mx-4 sm:mt-4 sm:min-h-[calc(100svh-1rem)]"
+      className="relative min-h-svh w-full overflow-hidden bg-[#1c1612]"
       aria-label="Hero"
     >
       <motion.div
@@ -87,7 +87,7 @@ export function Hero() {
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100svh-0.75rem)] max-w-[1600px] flex-col justify-end px-8 pb-10 pt-28 sm:min-h-[calc(100svh-1rem)] sm:px-12 sm:pb-14 lg:px-16">
+      <div className="relative z-10 mx-auto flex min-h-svh max-w-[1600px] flex-col justify-end px-8 pb-10 pt-28 sm:px-12 sm:pb-14 lg:px-16">
         <div className="max-w-4xl">
           <Reveal variant="clip" trigger="load" delay={0.08}>
             <p className="type-label text-white/70">Tzjill Barber & Lounge · Leeuwarden</p>

@@ -59,7 +59,7 @@ export function Navbar({
 
   return (
     <header
-      className={`pointer-events-none fixed inset-x-0 top-0 z-50 pt-3 transition-colors duration-300 sm:pt-4 ${
+      className={`pointer-events-none fixed inset-x-0 top-0 z-50 pt-[max(0.75rem,env(safe-area-inset-top,0px))] transition-colors duration-300 sm:pt-[max(1rem,env(safe-area-inset-top,0px))] ${
         solid ? 'bg-[var(--body-bg)]' : 'bg-transparent'
       }`}
     >
