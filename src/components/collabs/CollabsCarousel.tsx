@@ -112,7 +112,7 @@ export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) 
         </p>
         <div
           ref={trackRef}
-          className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain px-8 pb-1 pt-1 scroll-px-8 touch-pan-x [scrollbar-width:none] [-ms-overflow-style:none] sm:gap-4 sm:px-12 sm:scroll-px-12 [&::-webkit-scrollbar]:hidden"
+          className="flex items-start snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-8 pb-1 pt-1 scroll-px-8 touch-pan-x [scrollbar-width:none] [-ms-overflow-style:none] sm:gap-5 sm:px-12 sm:scroll-px-12 [&::-webkit-scrollbar]:hidden"
           onPointerDown={(event: PointerEvent<HTMLDivElement>) => {
             if (event.pointerType !== 'mouse' || event.button !== 0) return
             dragRef.current = {
@@ -158,16 +158,20 @@ export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) 
               aria-roledescription="slide"
               aria-label={`${item.name}, ${index + 1} van ${items.length}`}
               aria-current={index === active ? 'true' : undefined}
-              className="w-[calc(100vw-6.25rem)] shrink-0 snap-start sm:w-[min(64vw,24rem)]"
+              className="w-[calc(100vw-5rem)] shrink-0 snap-start sm:w-[min(64vw,24rem)]"
             >
-              <CollabMedia
-                image={item.image}
-                video={collabVideoUrl(item, fallbackVideo)}
-                priority={index === 0}
-                frame="carousel"
-              />
-              <div className="mt-4 pr-3">
-                <CollabCaption item={item} compact />
+              {/* One swipe unit: this collab's video and its copy move together. */}
+              <div className="overflow-hidden rounded-[1.75rem] bg-[#141210] ring-1 ring-white/10 sm:rounded-[2rem]">
+                <CollabMedia
+                  image={item.image}
+                  video={collabVideoUrl(item, fallbackVideo)}
+                  priority={index === 0}
+                  frame="carousel"
+                  embedded
+                />
+                <div className="px-5 pb-5 pt-4">
+                  <CollabCaption item={item} compact />
+                </div>
               </div>
             </article>
           ))}

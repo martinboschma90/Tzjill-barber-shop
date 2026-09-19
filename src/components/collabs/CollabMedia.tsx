@@ -25,6 +25,8 @@ type CollabMediaProps = {
   priority?: boolean
   /** Short frame so mobile slides can keep caption text on screen. */
   frame?: 'editorial' | 'carousel'
+  /** Drop own radius when the parent card already clips the unit. */
+  embedded?: boolean
 }
 
 /**
@@ -37,6 +39,7 @@ export function CollabMedia({
   className = '',
   priority = false,
   frame = 'editorial',
+  embedded = false,
 }: CollabMediaProps) {
   const reduceMotion = useReducedMotion()
   const media = useContext(MediaContext)
@@ -96,7 +99,9 @@ export function CollabMedia({
   return (
     <div
       ref={tileRef}
-      className={`group relative overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem] ${
+      className={`group relative overflow-hidden bg-black ${
+        embedded ? 'rounded-none' : 'rounded-[1.75rem] sm:rounded-[2rem]'
+      } ${
         frame === 'carousel'
           ? 'h-[min(36svh,16.5rem)]'
           : 'aspect-[4/5]'
