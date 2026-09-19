@@ -27,7 +27,7 @@ function FaqAccordionItem({
   onToggle: () => void
 }) {
   return (
-    <div className="border-b border-ink/10">
+    <div className="border-b border-ink/10" {...(open ? { 'data-faq-open': '' } : {})}>
       <button
         type="button"
         aria-expanded={open}
@@ -47,7 +47,7 @@ function FaqAccordionItem({
         </span>
       </button>
       {open ? (
-        <div className="pb-4 pr-8">
+        <div className="pb-8 pr-10 sm:pb-4 sm:pr-8">
           <p className="type-body text-sm text-ink/60 sm:text-[0.95rem]">
             {item.answer}
           </p>

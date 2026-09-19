@@ -19,7 +19,8 @@ import {
   type ShopProduct,
   type SiteContent,
 } from '@/cms/content'
-import { cloneFaqCategories } from '@/data/faq'
+import { cloneFaqCategories, isLeftoverPromoterFaq } from '@/data/faq'
+import { isNotypeHost } from '@/lib/publicSiteUrl'
 import { normalizeRosterGlowPreset } from '@/cms/rosterGlow'
 import type { Json } from '@/lib/database.types'
 
@@ -32,7 +33,8 @@ function asAboutHeroVideoUrl(value: unknown, fallback: string): string {
   if (
     !next ||
     next.includes('mUBXO4PbLLw') ||
-    next.includes('oi6JtAJocdw')
+    next.includes('oi6JtAJocdw') ||
+    next.includes('xXt3erMFs8w')
   ) {
     return fallback
   }
@@ -82,6 +84,7 @@ function asPublicSiteUrl(value: unknown, fallback: string): string {
     parsed.hash = ''
     parsed.search = ''
     const origin = `${parsed.protocol}//${parsed.host}`
+    if (isNotypeHost(origin)) return fallback
     const path = parsed.pathname.replace(/\/+$/, '')
     return `${origin}${path === '/' ? '' : path}`
   } catch {
@@ -382,6 +385,17 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
   const copyrightRaw = asString(row.copyrightText, defaults.copyrightText)
   const copyrightLooksLegacy =
     /no\s*type(\s+mgmt|\s+management)?/i.test(copyrightRaw)
+  const faqTitle = asString(row.faqTitle, defaults.faqTitle)
+  const faqIntro = asString(row.faqIntro, defaults.faqIntro)
+  const faqCategories = asFaqCategories(
+    row.faqCategories,
+    defaults.faqCategories,
+  )
+  const leftoverFaq = isLeftoverPromoterFaq({
+    title: faqTitle,
+    intro: faqIntro,
+    categories: faqCategories,
+  })
 
   return {
     name: migrateBrandLabel(asString(row.name, defaults.name), defaults.name),
@@ -436,10 +450,12 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
     whatsappNumber: asString(row.whatsappNumber, defaults.whatsappNumber).trim()
       ? asString(row.whatsappNumber, defaults.whatsappNumber)
       : defaults.whatsappNumber,
-    faqTitle: asString(row.faqTitle, defaults.faqTitle),
-    faqIntro: asString(row.faqIntro, defaults.faqIntro),
+    faqTitle: leftoverFaq ? defaults.faqTitle : faqTitle,
+    faqIntro: leftoverFaq ? defaults.faqIntro : faqIntro,
     faqVisible: asBoolean(row.faqVisible, defaults.faqVisible),
-    faqCategories: asFaqCategories(row.faqCategories, defaults.faqCategories),
+    faqCategories: leftoverFaq
+      ? cloneFaqCategories(defaults.faqCategories)
+      : faqCategories,
     publicSiteUrl: asPublicSiteUrl(
       row.publicSiteUrl,
       defaults.publicSiteUrl,

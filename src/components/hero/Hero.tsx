@@ -64,7 +64,7 @@ export function Hero() {
               muted
               loop
               playsInline
-              preload="auto"
+              preload="metadata"
               controls={false}
               disablePictureInPicture
             />

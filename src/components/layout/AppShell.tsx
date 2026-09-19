@@ -31,6 +31,7 @@ export function AppShell({
   showFooter = true,
 }: AppShellProps) {
   const preview = useIsCmsPreview()
+  const [salonhubOpen, setSalonhubOpen] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [menuReady, setMenuReady] = useState(false)
   const [footerReady, setFooterReady] = useState(false)
@@ -125,8 +126,8 @@ export function AppShell({
         </div>
         {preview ? null : (
           <>
-            <StickyContactBar />
-            <SalonhubWidget />
+            <StickyContactBar hidden={salonhubOpen || menuOpen} />
+            <SalonhubWidget open={salonhubOpen} onOpenChange={setSalonhubOpen} />
           </>
         )}
       </div>

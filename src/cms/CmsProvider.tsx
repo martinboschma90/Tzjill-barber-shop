@@ -55,6 +55,7 @@ import {
 } from '@/cms/storageKeys'
 import { useLocation } from 'react-router-dom'
 import { mergeRemoteArtists } from '@/cms/dedupeArtists'
+import { stripLeftoverMusicArtists } from '@/cms/leftoverArtists'
 import { normalizeSiteContent } from '@/cms/mappers/site'
 import {
   CmsContext,
@@ -67,12 +68,13 @@ function initialContent(): CmsContent {
   const stored = loadStoredContent()
   if (!stored) return defaults
 
-  const artists =
+  const artists = stripLeftoverMusicArtists(
     isSupabaseConfigured
       ? []
       : stored.artists.length > 0
-      ? stored.artists.map((artist) => withArtDirection(artist))
-      : defaults.artists
+        ? stored.artists.map((artist) => withArtDirection(artist))
+        : defaults.artists,
+  )
 
   return {
     site: normalizeSiteContent(stored.site),
@@ -117,7 +119,7 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   const { pathname } = useLocation()
   const isCmsRoute = pathname.startsWith('/cms')
   const { ready: authReady, session, authRequired, canEdit } = useAuth()
-  const canWriteRemote = authReady && (!authRequired || Boolean(session))
+  const canWriteRemote = authReady && Boolean(session) && authRequired
   const [content, setContent] = useState<CmsContent>(initialContent)
   const [savedAt, setSavedAt] = useState<number | null>(() =>
     loadStoredContent() ? Date.now() : null,
@@ -262,10 +264,12 @@ export function CmsProvider({ children }: { children: ReactNode }) {
           team: remoteBlob?.content.team?.length
             ? remoteBlob.content.team
             : contentRef.current.team,
-          artists: mergeRemoteArtists(
-            contentRef.current.artists,
-            remoteList,
-            dirtyArtistIdsRef.current,
+          artists: stripLeftoverMusicArtists(
+            mergeRemoteArtists(
+              contentRef.current.artists,
+              remoteList,
+              dirtyArtistIdsRef.current,
+            ),
           ),
         }
         skipCmsPush.current = true
@@ -341,10 +345,12 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         artistsHydrated.current = true
         setContent((prev) => ({
           ...prev,
-          artists: mergeRemoteArtists(
-            prev.artists,
-            artists.map((artist) => withArtDirection(artist)),
-            dirtyArtistIdsRef.current,
+          artists: stripLeftoverMusicArtists(
+            mergeRemoteArtists(
+              prev.artists,
+              artists.map((artist) => withArtDirection(artist)),
+              dirtyArtistIdsRef.current,
+            ),
           ),
         }))
         setSavedAt(Date.now())

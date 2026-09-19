@@ -303,7 +303,7 @@ export async function handleCmsUsers(req, res) {
     const publicSite = String(
       process.env.PUBLIC_SITE_URL ||
         process.env.VITE_SITE_URL ||
-        'https://www.notype-mgmt.com',
+        'https://tzjill-barber-shop.vercel.app',
     ).replace(/\/$/, '')
     const redirectTo = `${publicSite}/cms/login`
     const invited = await inviteAuthUser({ email, name, role, redirectTo })
