@@ -12,7 +12,6 @@ import {
   Settings,
   Sun,
   UserPlus,
-  Users,
   X,
 } from 'lucide-react'
 import { useAuth } from '@/cms/auth/AuthProvider'
@@ -58,7 +57,6 @@ const NAV = [
   { to: '/cms/dashboard', label: 'Dashboard', icon: LayoutDashboard, match: 'dashboard' as const },
   { to: '/cms/home', label: "Pagina's", icon: FileText, match: 'pages' as const },
   { to: '/cms/faq', label: 'FAQ', icon: HelpCircle, match: 'faq' as const },
-  { to: '/cms/artists', label: 'Artiesten', icon: Users, match: 'artists' as const },
   { to: '/cms/media', label: 'Media', icon: FolderOpen, match: 'media' as const },
   { to: '/cms/settings', label: 'Instellingen', icon: Settings, match: 'settings' as const },
 ]
@@ -267,8 +265,6 @@ export function CmsLayout() {
               ? pagesWorkspace
               : n.match === 'faq'
                 ? pathname.startsWith('/cms/faq')
-              : n.match === 'artists'
-                ? panels.mode === 'artists'
                 : n.match === 'dashboard'
                   ? panels.mode === 'dashboard'
                   : n.match === 'users'
@@ -377,7 +373,8 @@ export function CmsLayout() {
           collapsible ? 'hidden group-hover/sidebar:block' : ''
         }`}
       >
-        {user?.email ?? (authRequired ? 'Niet ingelogd' : 'Lokaal')}
+        {user?.email ??
+          (authRequired ? 'Niet ingelogd' : 'Lokale modus — geen login')}
       </p>
       <a
         href="/"

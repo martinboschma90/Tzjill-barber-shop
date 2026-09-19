@@ -19,6 +19,16 @@ import { createBlankArtist } from '@/cms/createArtist'
 import { team as defaultTeam } from '@/data/site'
 import type { TeamMember } from '@/types/artist'
 
+const PLACEHOLDER_TEAM_NAMES = new Set(['niels', 'daan', 'sem'])
+
+function publicTeam(members: TeamMember[] | null | undefined): TeamMember[] {
+  if (!Array.isArray(members)) return defaultTeam.map((member) => ({ ...member }))
+  return members.filter((member) => {
+    const name = member.name.trim().toLowerCase()
+    return name && !PLACEHOLDER_TEAM_NAMES.has(name)
+  })
+}
+
 function readJson<T>(key: string): T | null {
   const raw = storageGet(key)
   if (!raw) return null
@@ -44,7 +54,7 @@ function initialPublicContent(): CmsContent {
     typeof site.tagline === 'string'
   return {
     site: siteLooksValid ? normalizeSiteContent(site) : createDefaultSiteContent(),
-    team: Array.isArray(team) && team.length > 0 ? team : defaultTeam.map((member) => ({ ...member })),
+    team: publicTeam(team),
     artists: [],
   }
 }
@@ -87,8 +97,9 @@ export function PublicContentProvider({ children }: { children: ReactNode }) {
       void fetchPublicTeam()
         .then((team) => {
           if (cancelled || !team || team.length === 0) return
-          storageSet(PUBLIC_TEAM_STORAGE_KEY, JSON.stringify(team))
-          setContent((prev) => ({ ...prev, team }))
+          const nextTeam = publicTeam(team)
+          storageSet(PUBLIC_TEAM_STORAGE_KEY, JSON.stringify(nextTeam))
+          setContent((prev) => ({ ...prev, team: nextTeam }))
         })
         .catch((error) => {
           console.warn('[public] team hydrate failed', error)

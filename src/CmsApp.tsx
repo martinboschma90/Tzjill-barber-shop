@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { AuthProvider } from '@/cms/auth/AuthProvider'
+import { CmsAuthGate } from '@/cms/auth/CmsAuthGate'
 import { CmsProvider } from '@/cms/CmsProvider'
 import { CmsThemeProvider } from '@/cms/flow-mates/CmsTheme'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
@@ -16,7 +17,7 @@ const CmsShell = lazy(() =>
 function CmsNoIndex() {
   useEffect(() => {
     const previousTitle = document.title
-    document.title = 'Flow Mates CMS'
+    document.title = 'CMS'
     const robots = document.createElement('meta')
     robots.name = 'robots'
     robots.content = 'noindex, nofollow, noarchive'
@@ -33,16 +34,23 @@ export default function CmsApp() {
   return (
     <CmsThemeProvider>
       <AuthProvider>
-        <CmsProvider>
-          <CmsNoIndex />
-          <ScrollToTop />
-          <Suspense fallback={<RouteFallback />}>
-            <Routes>
-              <Route path="login" element={<CmsLoginPage />} />
-              <Route path="*" element={<CmsShell />} />
-            </Routes>
-          </Suspense>
-        </CmsProvider>
+        <CmsNoIndex />
+        <ScrollToTop />
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
+            <Route path="login" element={<CmsLoginPage />} />
+            <Route
+              path="*"
+              element={
+                <CmsAuthGate>
+                  <CmsProvider>
+                    <CmsShell />
+                  </CmsProvider>
+                </CmsAuthGate>
+              }
+            />
+          </Routes>
+        </Suspense>
       </AuthProvider>
     </CmsThemeProvider>
   )

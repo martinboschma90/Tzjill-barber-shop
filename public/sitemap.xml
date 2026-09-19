@@ -1,18 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://www.notype-mgmt.com/</loc>
+    <loc>https://tzjill-barber-shop.vercel.app/</loc>
   </url>
   <url>
-    <loc>https://www.notype-mgmt.com/about</loc>
+    <loc>https://tzjill-barber-shop.vercel.app/prijzen</loc>
   </url>
   <url>
-    <loc>https://www.notype-mgmt.com/contact</loc>
+    <loc>https://tzjill-barber-shop.vercel.app/lookbook</loc>
   </url>
   <url>
-    <loc>https://www.notype-mgmt.com/booking</loc>
+    <loc>https://tzjill-barber-shop.vercel.app/products</loc>
   </url>
   <url>
-    <loc>https://www.notype-mgmt.com/faq</loc>
+    <loc>https://tzjill-barber-shop.vercel.app/collabs</loc>
+  </url>
+  <url>
+    <loc>https://tzjill-barber-shop.vercel.app/team</loc>
+  </url>
+  <url>
+    <loc>https://tzjill-barber-shop.vercel.app/over-ons</loc>
+  </url>
+  <url>
+    <loc>https://tzjill-barber-shop.vercel.app/contact</loc>
+  </url>
+  <url>
+    <loc>https://tzjill-barber-shop.vercel.app/booking</loc>
+  </url>
+  <url>
+    <loc>https://tzjill-barber-shop.vercel.app/faq</loc>
   </url>
 </urlset>

@@ -22,7 +22,7 @@ export function FaqPreview() {
           <motion.div initial={false}>
             {site.faqVisible !== false ? (
               <FaqHub
-                title={site.faqTitle.trim() || 'Promoter FAQ'}
+                title={site.faqTitle.trim() || 'Vragen'}
                 intro={site.faqIntro}
                 categories={site.faqCategories}
               />

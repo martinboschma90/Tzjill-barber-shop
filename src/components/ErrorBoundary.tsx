@@ -67,7 +67,7 @@ export class ErrorBoundary extends Component<Props, State> {
         >
           <div>
             <p style={{ margin: 0, fontSize: '1.125rem', letterSpacing: '0.04em' }}>
-              {this.props.label?.startsWith('cms') ? 'Flow Mates CMS' : 'NOTYPE'}
+              {this.props.label?.startsWith('cms') ? 'CMS' : 'Tzjill'}
             </p>
             <p style={{ margin: '0.75rem 0 1.25rem', opacity: 0.7, fontSize: '0.95rem' }}>
               {this.props.label

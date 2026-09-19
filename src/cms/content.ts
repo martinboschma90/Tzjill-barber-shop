@@ -1,4 +1,6 @@
 import { createDefaultFaqCategories } from '@/data/faq'
+import { FALLBACK_PUBLIC_SITE_URL } from '@/lib/publicSiteUrl'
+import { stripLeftoverMusicArtists } from '@/cms/leftoverArtists'
 import { withArtDirection } from '@/cms/imageFocus'
 import { normalizeSiteContent } from '@/cms/mappers/site'
 import { storageGet, storageSet } from '@/lib/safeStorage'
@@ -204,7 +206,7 @@ export type SiteContent = {
   phoneNumber: string
   /** WhatsApp number for artist CTAs and footer (display or E.164). */
   whatsappNumber: string
-  /** Promoter FAQ page (`/faq`) headline. */
+  /** FAQ page (`/faq`) headline. */
   faqTitle: string
   /** Optional intro under the FAQ title. */
   faqIntro: string
@@ -212,7 +214,7 @@ export type SiteContent = {
   faqVisible: boolean
   /** Ordered FAQ categories (tabs) with questions. */
   faqCategories: FaqCategory[]
-  /** Canonical public site origin, e.g. https://www.notype-mgmt.com */
+  /** Canonical public site origin, e.g. https://tzjill-barber-shop.vercel.app */
   publicSiteUrl: string
   /** Search / social meta description. */
   metaDescription: string
@@ -261,8 +263,7 @@ export function createDefaultSiteContent(): SiteContent {
     aboutTitle: 'Over ons',
     about: [...defaultSite.about],
     aboutImages: [],
-    aboutHeroVideoUrl:
-      'https://www.youtube.com/watch?v=xXt3erMFs8w&t=14m11s',
+    aboutHeroVideoUrl: '',
     photoCredits: defaultSite.photoCredits,
     legalLinks: defaultSite.legalLinks.map((link) => ({ ...link })),
     logoUrl: '',
@@ -278,15 +279,14 @@ export function createDefaultSiteContent(): SiteContent {
     bookingVisible: true,
     phoneNumber: '058 844 7025',
     whatsappNumber: DEFAULT_WHATSAPP_NUMBER,
-    faqTitle: 'Promoter FAQ',
-    faqIntro:
-      'Answers for promoters, festivals, clubs, brands and event organisers.',
+    faqTitle: 'Vragen',
+    faqIntro: 'Boeken, te laat, kids — de rest regel je aan de balie.',
     faqVisible: true,
     faqCategories: createDefaultFaqCategories(),
-    publicSiteUrl: '',
+    publicSiteUrl: FALLBACK_PUBLIC_SITE_URL,
     metaDescription:
       'Tzjill Barber & Lounge in Leeuwarden. Trendy haircuts and hot towel straight razor shaves.',
-    searchIndexing: true,
+    searchIndexing: false,
     shopMenu: cloneShopMenu(),
     lookbookImages: cloneLookbook(),
     products: cloneProducts(),
@@ -314,7 +314,9 @@ export function loadStoredContent(): CmsContent | null {
     return {
       ...parsed,
       site: normalizeSiteContent(parsed.site),
-      artists: parsed.artists.map((artist) => withArtDirection(artist)),
+      artists: stripLeftoverMusicArtists(parsed.artists).map((artist) =>
+        withArtDirection(artist),
+      ),
     }
   } catch {
     return null

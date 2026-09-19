@@ -1,4 +1,3 @@
-import { CmsAuthGate } from '@/cms/auth/CmsAuthGate'
 import { CmsLayout } from '@/cms/CmsLayout'
 import { MediaProvider } from '@/cms/media/MediaProvider'
 
@@ -6,9 +5,7 @@ import { MediaProvider } from '@/cms/media/MediaProvider'
 export function CmsShell() {
   return (
     <MediaProvider>
-      <CmsAuthGate>
-        <CmsLayout />
-      </CmsAuthGate>
+      <CmsLayout />
     </MediaProvider>
   )
 }

@@ -13,7 +13,7 @@ const COMMANDS: { to: string; label: string; group: string }[] = [
   { to: '/cms/contact', label: 'Contact', group: "Pagina's" },
   { to: '/cms/faq', label: 'FAQ', group: 'Inhoud' },
   { to: '/cms/footer', label: 'Footer', group: "Pagina's" },
-  { to: '/cms/artists', label: 'Artiesten', group: 'Inhoud' },
+  { to: '/cms/team', label: 'Team', group: 'Inhoud' },
   { to: '/cms/media', label: 'Mediabibliotheek', group: 'Inhoud' },
   { to: '/cms/settings', label: 'Instellingen', group: 'Systeem' },
   { to: '/cms/settings/users', label: 'Team en rollen', group: 'Systeem' },

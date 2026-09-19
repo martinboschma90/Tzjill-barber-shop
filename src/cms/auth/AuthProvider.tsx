@@ -16,6 +16,7 @@ import {
   signInWithPassword,
   signOut as authSignOut,
 } from '@/lib/auth'
+import { isCmsLocalBypassAllowed } from '@/lib/cmsLocalBypass'
 
 export type CmsRole = 'admin' | 'editor' | 'viewer'
 
@@ -44,15 +45,16 @@ function asRole(value: unknown): CmsRole {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [ready, setReady] = useState(!isSupabaseConfigured)
+  const localBypass = isCmsLocalBypassAllowed()
+  const [ready, setReady] = useState(!isSupabaseConfigured || localBypass)
   const [session, setSession] = useState<Session | null>(null)
-  const [role, setRole] = useState<CmsRole>(isSupabaseConfigured ? 'viewer' : 'admin')
+  const [role, setRole] = useState<CmsRole>('viewer')
   const [displayName, setDisplayName] = useState('')
 
   const loadRole = useCallback(async (user: User | null) => {
     if (!isSupabaseConfigured || !supabase || !user) {
-      setRole('admin')
-      setDisplayName('Lokaal')
+      setRole('viewer')
+      setDisplayName('')
       return
     }
     const owner =
@@ -85,7 +87,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!isSupabaseConfigured) {
       setReady(true)
       setSession(null)
-      setRole('admin')
+      setRole('viewer')
+      setDisplayName('')
       return
     }
 
@@ -146,17 +149,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ready,
       session,
       user: session?.user ?? null,
-      authRequired: isSupabaseConfigured,
-      role: isSupabaseConfigured ? role : 'admin',
-      displayName:
-        displayName || session?.user?.email || (isSupabaseConfigured ? '' : 'Lokaal'),
-      canEdit: !isSupabaseConfigured || role === 'admin' || role === 'editor',
-      canSettings: !isSupabaseConfigured || role === 'admin',
-      canManageUsers: !isSupabaseConfigured || role === 'admin',
+      authRequired: !localBypass,
+      role: localBypass ? 'admin' : role,
+      displayName: displayName || session?.user?.email || (localBypass ? 'Lokale modus' : ''),
+      canEdit: localBypass || (Boolean(session) && (role === 'admin' || role === 'editor')),
+      canSettings: localBypass || (Boolean(session) && role === 'admin'),
+      canManageUsers: Boolean(session) && role === 'admin',
       signIn,
       signOut,
     }),
-    [displayName, ready, role, session, signIn, signOut],
+    [displayName, localBypass, ready, role, session, signIn, signOut],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -5,6 +5,7 @@ import path from 'path'
 import { bookingRequestPlugin } from './vite-plugin-booking-request.js'
 import { cmsUsersPlugin } from './vite-plugin-cms-users.ts'
 import { publicBootPlugin } from './vite-plugin-public-boot.ts'
+import { seoOriginPlugin } from './vite-plugin-seo-origin.ts'
 import { siteLivePlugin } from './vite-plugin-site-live.ts'
 
 export default defineConfig(({ mode }) => {
@@ -19,6 +20,7 @@ export default defineConfig(({ mode }) => {
       bookingRequestPlugin(),
       cmsUsersPlugin(env),
       publicBootPlugin(env),
+      seoOriginPlugin(env),
       siteLivePlugin(env),
     ],
     resolve: {

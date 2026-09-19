@@ -1,4 +1,5 @@
 import type { Artist, ArtistStatus } from '@/types/artist'
+import { stripLeftoverMusicArtists } from '@/cms/leftoverArtists'
 
 export function getArtistStatus(artist: Artist): ArtistStatus {
   if (artist.status === 'draft' || artist.status === 'published') {
@@ -22,7 +23,9 @@ export function sortArtistsByName(artists: Artist[]) {
 
 /** Public roster — published only, A–Z. */
 export function visibleArtists(artists: Artist[]) {
-  return sortArtistsByName(artists.filter(isArtistVisible))
+  return sortArtistsByName(
+    stripLeftoverMusicArtists(artists).filter(isArtistVisible),
+  )
 }
 
 /** Apply draft/published + keep legacy `visible` aligned for RLS. */

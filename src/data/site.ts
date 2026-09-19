@@ -53,23 +53,5 @@ export const site = {
   ],
 } as const
 
-export const team: TeamMember[] = [
-  {
-    id: 't1',
-    name: 'Niels',
-    role: 'Senior barber',
-    imageUrl: '/lookbook/01.jpg',
-  },
-  {
-    id: 't2',
-    name: 'Daan',
-    role: 'Barber',
-    imageUrl: '/lookbook/02.jpg',
-  },
-  {
-    id: 't3',
-    name: 'Sem',
-    role: 'Barber',
-    imageUrl: '/lookbook/03.jpg',
-  },
-]
+/** Public fallback is empty until real names are set in the CMS. */
+export const team: TeamMember[] = []

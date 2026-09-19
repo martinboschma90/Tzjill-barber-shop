@@ -7,7 +7,6 @@ import { Testimonials } from '@/components/home/Testimonials'
 import { PillButton } from '@/components/ui/PillButton'
 import { BookButton } from '@/components/booking/BookButton'
 import { useCms } from '@/cms/CmsContext'
-import { team as fallbackTeam } from '@/data/site'
 import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
 
 const stats = [
@@ -78,8 +77,7 @@ export function AboutPage() {
   const { content } = useCms()
   const { site } = content
   const [open, setOpen] = useState(0)
-  const fromCms = content.team.filter((member) => member.name.trim())
-  const team = fromCms.length ? fromCms : fallbackTeam
+  const team = content.team.filter((member) => member.name.trim())
 
   return (
     <AppShell navVariant="wordmark">
@@ -202,17 +200,29 @@ export function AboutPage() {
             the team
           </h2>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
-            De kappers achter de coupe.
+            {team.length
+              ? 'De kappers achter de coupe.'
+              : 'Kies je kapper bij het boeken in Salonhub.'}
           </p>
         </div>
-        <div className="mt-14">
-          <TeamSection members={team} />
-        </div>
-        <div className="mt-10 text-center">
-          <Link to="/team" className="type-ui text-white/50 hover:text-white">
-            Alle kappers →
-          </Link>
-        </div>
+        {team.length ? (
+          <>
+            <div className="mt-14">
+              <TeamSection members={team} />
+            </div>
+            <div className="mt-10 text-center">
+              <Link to="/team" className="type-ui text-white/50 hover:text-white">
+                Alle kappers →
+              </Link>
+            </div>
+          </>
+        ) : (
+          <div className="mt-10 text-center">
+            <Link to="/booking" className="type-ui text-white/50 hover:text-white">
+              Afspraak maken →
+            </Link>
+          </div>
+        )}
       </PageFrame>
 
       <Testimonials />
