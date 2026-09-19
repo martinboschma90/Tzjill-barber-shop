@@ -166,6 +166,8 @@ export function PromoSignupModal({ blocked = false }: PromoSignupModalProps) {
                 name="tel"
                 inputMode="tel"
                 autoComplete="tel"
+                pattern="(\+31|0)\s*6[\s-]*(\d[\s-]*){8}"
+                title="Vul een 06-nummer in"
                 placeholder="06 12 34 56 78"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
