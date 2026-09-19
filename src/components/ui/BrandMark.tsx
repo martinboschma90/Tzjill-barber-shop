@@ -6,7 +6,7 @@ type BrandMarkProps = {
   duration?: number
 }
 
-/** Circular No Type seal — CSS spin only (no Framer on first paint). */
+/** Official white lockup — CSS spin only (no Framer on first paint). */
 export function BrandMark({ className = '', duration = 52 }: BrandMarkProps) {
   return (
     <div className="relative" aria-hidden>

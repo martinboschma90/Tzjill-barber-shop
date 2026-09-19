@@ -64,7 +64,7 @@ export function Navbar({
       }`}
     >
       <div
-        className={`relative mx-auto flex h-[4.75rem] max-w-[1600px] items-center justify-center px-5 sm:h-[5rem] sm:px-8 ${ink}`}
+        className={`relative mx-auto flex h-[5.25rem] max-w-[1600px] items-center justify-center px-5 sm:h-[5.5rem] sm:px-8 ${ink}`}
       >
         <div className="pointer-events-auto flex items-center gap-8 lg:gap-12 xl:gap-16">
           <nav className="hidden items-center gap-7 lg:flex xl:gap-10" aria-label="Primary left">
@@ -74,7 +74,7 @@ export function Navbar({
           </nav>
 
           <Link to="/" aria-label="Tzjill Barber & Lounge — home">
-            <Logo tone="white" height={54} fetchPriority="high" />
+            <Logo tone="white" height={64} fetchPriority="high" />
           </Link>
 
           <nav className="hidden items-center gap-7 lg:flex xl:gap-10" aria-label="Primary right">

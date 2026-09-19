@@ -4,7 +4,7 @@ type BrandLoaderProps = {
   label?: string
 }
 
-/** Full-viewport loading state with spinning seal. */
+/** Full-viewport splash with the official white lockup. */
 export function BrandLoader({ label = 'Loading' }: BrandLoaderProps) {
   return (
     <div

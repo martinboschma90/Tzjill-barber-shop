@@ -98,7 +98,7 @@ export function AppShell({
         ) : null}
         <div
           className={`flex flex-col ${
-            navVariant === 'hero' ? '' : 'pt-[5.5rem] sm:pt-[6rem]'
+            navVariant === 'hero' ? '' : 'pt-[6.25rem] sm:pt-[6.75rem]'
           }`}
         >
           <main
