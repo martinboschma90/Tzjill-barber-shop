@@ -1,0 +1,50 @@
+import { sendPromoSignupEmail, isValidPromoPayload } from './promo-signup-lib.mjs'
+import { json, rateLimit, setCors, allowedOrigin, isSiteHost } from './http-security.mjs'
+
+export default async function handler(req, res) {
+  const origin = req.headers.origin
+  setCors(res, origin)
+
+  if (req.method === 'OPTIONS') {
+    res.statusCode = 204
+    res.end()
+    return
+  }
+
+  if (req.method !== 'POST') {
+    json(res, 405, { error: 'Method not allowed' })
+    return
+  }
+
+  if (!allowedOrigin(origin) && !isSiteHost(req.headers.host)) {
+    json(res, 403, { error: 'Forbidden' })
+    return
+  }
+
+  if (!rateLimit(req, { limit: 6, windowMs: 15 * 60 * 1000 })) {
+    json(res, 429, { error: 'Te veel aanmeldingen. Probeer later opnieuw.' })
+    return
+  }
+
+  try {
+    const payload =
+      typeof req.body === 'string' ? JSON.parse(req.body) : req.body || {}
+
+    if (!isValidPromoPayload(payload)) {
+      json(res, 400, { error: 'Vul naam, e-mail en een 06-nummer in.' })
+      return
+    }
+
+    const sent = await sendPromoSignupEmail(payload)
+    if (!sent.ok) {
+      json(res, 502, {
+        error: sent.error || 'Aanmelding kon niet worden verstuurd.',
+      })
+      return
+    }
+
+    json(res, 200, { ok: true })
+  } catch {
+    json(res, 500, { error: 'Aanmelding mislukt. Probeer het opnieuw.' })
+  }
+}

@@ -95,9 +95,9 @@ function publicEmailError(status, detail) {
   return 'Could not send your request. Please try again.'
 }
 
-export async function sendBookingEmail({ subject, text, replyTo }) {
+export async function sendBookingEmail({ subject, text, replyTo, to }) {
   const inbox = String(
-    process.env.BOOKING_TO_EMAIL || BOOKING_REQUEST_EMAIL,
+    to || process.env.BOOKING_TO_EMAIL || BOOKING_REQUEST_EMAIL,
   ).trim()
   const cc = String(replyTo || '').trim()
   const copy =

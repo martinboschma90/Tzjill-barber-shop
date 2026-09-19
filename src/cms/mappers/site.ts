@@ -335,7 +335,16 @@ function asCollabs(
       }
     })
     .filter((item): item is ShopCollab => Boolean(item))
+    .filter((item) => !isLeftoverEventsPlaceholder(item))
   return mapped.length ? mapped : cloneCollabs(fallback)
+}
+
+/** Drop the old third seed row so the public carousel stays at the two shop collabs. */
+function isLeftoverEventsPlaceholder(item: ShopCollab): boolean {
+  return (
+    item.name.trim().toLowerCase() === 'events' &&
+    item.text.includes('Avonden in de zaak, shoots en lokale collabs')
+  )
 }
 
 function asTreatments(

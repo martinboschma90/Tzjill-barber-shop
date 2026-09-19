@@ -7,4 +7,5 @@ export function sendBookingEmail(input: {
   subject: string
   text: string
   replyTo: string
+  to?: string
 }): Promise<{ ok: true } | { ok: false; error: string }>
