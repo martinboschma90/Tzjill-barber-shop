@@ -44,12 +44,12 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative min-h-svh w-full overflow-hidden bg-[#1c1612]"
+      className="full-bleed-hero"
       aria-label="Hero"
     >
       <motion.div
-        className="absolute inset-0 overflow-hidden"
-        style={{ backgroundColor: '#efeae3', y: mediaY }}
+        className="absolute inset-0 overflow-hidden rounded-none"
+        style={{ backgroundColor: '#1c1612', y: mediaY }}
       >
         <div
           className={`absolute inset-0 ${reduce ? 'scale-105' : 'wf-hero-zoom'}`}
@@ -57,7 +57,7 @@ export function Hero() {
           {playVideo ? (
             <video
               ref={videoRef}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full min-h-full min-w-full object-cover"
               src={videoSrc}
               poster={posterSrc}
               autoPlay

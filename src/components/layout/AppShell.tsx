@@ -66,7 +66,7 @@ export function AppShell({
 
   return (
     <>
-      <div className="relative z-[1] min-h-svh bg-[var(--body-bg)]">
+      <div className="relative z-[1] min-h-svh overflow-x-clip bg-[var(--body-bg)]">
         <Navbar
           menuOpen={menuOpen}
           onMenuToggle={() => {
