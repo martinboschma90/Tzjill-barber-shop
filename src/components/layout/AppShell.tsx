@@ -9,7 +9,6 @@ import {
 import { Navbar } from '@/components/layout/Navbar'
 import { StickyContactBar } from '@/components/layout/StickyContactBar'
 import { SalonhubWidget } from '@/components/booking/SalonhubWidget'
-import { PromoSignupModal } from '@/components/promo/PromoSignupModal'
 import { prefetchRoute } from '@/lib/prefetchRoute'
 import { useIsCmsPreview } from '@/cms/previews/PreviewMode'
 
@@ -129,7 +128,6 @@ export function AppShell({
           <>
             <StickyContactBar hidden={salonhubOpen || menuOpen} />
             <SalonhubWidget open={salonhubOpen} onOpenChange={setSalonhubOpen} />
-            <PromoSignupModal blocked={salonhubOpen || menuOpen} />
           </>
         )}
       </div>

@@ -13,11 +13,7 @@ const OPEN_DELAY_MS = 1400
 const fieldClass =
   'mt-2 w-full rounded-full border border-white/20 bg-white/5 px-5 py-3 type-body text-white outline-none placeholder:text-white/35 transition-colors focus:border-[#efeae3]'
 
-type PromoSignupModalProps = {
-  blocked?: boolean
-}
-
-export function PromoSignupModal({ blocked = false }: PromoSignupModalProps) {
+export function PromoSignupModal() {
   const titleId = useId()
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
@@ -28,10 +24,10 @@ export function PromoSignupModal({ blocked = false }: PromoSignupModalProps) {
   const [sent, setSent] = useState(false)
 
   useEffect(() => {
-    if (blocked || promoAlreadySeen()) return
+    if (promoAlreadySeen()) return
     const id = window.setTimeout(() => setOpen(true), OPEN_DELAY_MS)
     return () => window.clearTimeout(id)
-  }, [blocked])
+  }, [])
 
   useEffect(() => {
     if (!open) return
