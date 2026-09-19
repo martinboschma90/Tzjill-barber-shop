@@ -16,12 +16,12 @@ const SRC = {
   black: '/brand/tzjill-logo-black.png',
 } as const
 
-/** Official EPS lockup, 1200 × 1151. */
+/** Official lockup (BARBERSHOP & MORE + stylized tzjill), 1200 × 1151. */
 const INTRINSIC_W = 1200
 const INTRINSIC_H = 1151
 const RATIO = INTRINSIC_W / INTRINSIC_H
 
-/** Official Tzjill Barber & Lounge mark (white or black). */
+/** Official Tzjill Barber & Lounge lockup. Never invert or use legacy scrapes. */
 export function Logo({
   className = '',
   height = 40,
@@ -37,8 +37,6 @@ export function Logo({
   return (
     <img
       src={src}
-      srcSet={`${src} ${INTRINSIC_W}w`}
-      sizes={`${width}px`}
       alt={title}
       width={width}
       height={height}

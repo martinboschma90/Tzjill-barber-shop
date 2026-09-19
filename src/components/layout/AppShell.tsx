@@ -66,7 +66,7 @@ export function AppShell({
 
   return (
     <>
-      <div className="relative z-[1] min-h-svh bg-[var(--body-bg)]">
+      <div className="relative z-[1] min-h-svh overflow-x-clip bg-[var(--body-bg)]">
         <Navbar
           menuOpen={menuOpen}
           onMenuToggle={() => {
@@ -98,7 +98,7 @@ export function AppShell({
         ) : null}
         <div
           className={`flex flex-col ${
-            navVariant === 'hero' ? '' : 'pt-[5.5rem] sm:pt-[6rem]'
+            navVariant === 'hero' ? '' : 'pt-[6.25rem] sm:pt-[6.75rem]'
           }`}
         >
           <main

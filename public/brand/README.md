@@ -2,14 +2,15 @@
 
 ## Tzjill lockup (official)
 
-Source: owner-supplied EPS, converted to PNG.
+Source: owner-supplied official lockup (BARBERSHOP & MORE + stylized tzjill).
+Files are 32-bit RGBA, 1200 × 1151. Do not CSS-invert these files.
 
 | File | Use |
 |------|-----|
-| `tzjill-logo-white.png` | Dark hero, dark header, dark footer (1200 × 1151) |
-| `tzjill-logo-black.png` | Cream / light backgrounds and favicon (1200 × 1151) |
+| `tzjill-logo-white.png` | Dark hero, dark header, splash, dark footer |
+| `tzjill-logo-black.png` | Cream / light backgrounds and favicon |
 
-Do not use CSS invert on these files. Do not restore the scraped `tzjill-logo.png` from the old site.
+Do not restore the scraped `tzjill-logo.png` or any No Type wordmark on the public site.
 
 ---
 

@@ -44,12 +44,12 @@ export function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative mx-3 mt-3 min-h-[calc(100svh-0.75rem)] overflow-hidden bg-[#1c1612] sm:mx-4 sm:mt-4 sm:min-h-[calc(100svh-1rem)]"
+      className="full-bleed-hero"
       aria-label="Hero"
     >
       <motion.div
-        className="absolute inset-0 overflow-hidden"
-        style={{ backgroundColor: '#efeae3', y: mediaY }}
+        className="absolute inset-0 overflow-hidden rounded-none"
+        style={{ backgroundColor: '#1c1612', y: mediaY }}
       >
         <div
           className={`absolute inset-0 ${reduce ? 'scale-105' : 'wf-hero-zoom'}`}
@@ -57,7 +57,7 @@ export function Hero() {
           {playVideo ? (
             <video
               ref={videoRef}
-              className="absolute inset-0 h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full min-h-full min-w-full object-cover"
               src={videoSrc}
               poster={posterSrc}
               autoPlay
@@ -87,7 +87,7 @@ export function Hero() {
         aria-hidden
       />
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100svh-0.75rem)] max-w-[1600px] flex-col justify-end px-8 pb-10 pt-28 sm:min-h-[calc(100svh-1rem)] sm:px-12 sm:pb-14 lg:px-16">
+      <div className="relative z-10 mx-auto flex min-h-svh max-w-[1600px] flex-col justify-end px-8 pb-10 pt-28 sm:px-12 sm:pb-14 lg:px-16">
         <div className="max-w-4xl">
           <Reveal variant="clip" trigger="load" delay={0.08}>
             <p className="type-label text-white/70">Tzjill Barber & Lounge · Leeuwarden</p>

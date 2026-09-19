@@ -32,7 +32,7 @@ export function Footer() {
       <div className="grid gap-3 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
         <div className="flex flex-col justify-between rounded-[1.75rem] border border-white/10 bg-[#252421] px-8 py-8 text-white sm:rounded-[2rem] sm:px-10 sm:py-10">
           <div>
-            <Logo tone="white" height={42} />
+            <Logo tone="white" height={64} />
             <p className="type-lead mt-8 max-w-xs text-white/55">
               A man’s world. Knippen, scheren, baard — Voorstreek, Leeuwarden.
             </p>

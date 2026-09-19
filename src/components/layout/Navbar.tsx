@@ -59,12 +59,12 @@ export function Navbar({
 
   return (
     <header
-      className={`pointer-events-none fixed inset-x-0 top-0 z-50 pt-3 transition-colors duration-300 sm:pt-4 ${
+      className={`pointer-events-none fixed inset-x-0 top-0 z-50 pt-[max(0.75rem,env(safe-area-inset-top,0px))] transition-colors duration-300 sm:pt-[max(1rem,env(safe-area-inset-top,0px))] ${
         solid ? 'bg-[var(--body-bg)]' : 'bg-transparent'
       }`}
     >
       <div
-        className={`relative mx-auto flex h-[4.75rem] max-w-[1600px] items-center justify-center px-5 sm:h-[5rem] sm:px-8 ${ink}`}
+        className={`relative mx-auto flex h-[5.25rem] max-w-[1600px] items-center justify-center px-5 sm:h-[5.5rem] sm:px-8 ${ink}`}
       >
         <div className="pointer-events-auto flex items-center gap-8 lg:gap-12 xl:gap-16">
           <nav className="hidden items-center gap-7 lg:flex xl:gap-10" aria-label="Primary left">
@@ -74,7 +74,7 @@ export function Navbar({
           </nav>
 
           <Link to="/" aria-label="Tzjill Barber & Lounge — home">
-            <Logo tone="white" height={54} fetchPriority="high" />
+            <Logo tone="white" height={64} fetchPriority="high" />
           </Link>
 
           <nav className="hidden items-center gap-7 lg:flex xl:gap-10" aria-label="Primary right">
