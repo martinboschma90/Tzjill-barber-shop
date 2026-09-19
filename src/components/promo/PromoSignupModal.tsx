@@ -102,23 +102,23 @@ export function PromoSignupModal() {
         aria-labelledby={titleId}
         className="relative z-[1] flex max-h-[min(92svh,880px)] w-full max-w-[26rem] flex-col overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#141210] text-white shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:max-w-[44rem] sm:flex-row sm:rounded-[2rem]"
       >
-        <div className="relative h-[min(38svh,20rem)] shrink-0 overflow-hidden bg-black sm:h-auto sm:w-[46%]">
+        <div className="relative h-[min(26svh,13.5rem)] shrink-0 overflow-hidden bg-black sm:h-auto sm:w-[46%]">
           <img
             src={PROMO_IMAGE}
             alt="10 jaar Tzjill, 2016–2026"
             width={1080}
             height={1356}
-            className="h-full w-full object-cover object-center"
+            className="h-full w-full object-cover object-[center_42%]"
             decoding="async"
             fetchPriority="high"
           />
         </div>
 
-        <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-6 py-6 sm:px-8 sm:py-8">
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-y-auto px-5 py-5 sm:px-8 sm:py-8">
           <button
             type="button"
             onClick={() => dismiss('dismissed')}
-            className="type-ui absolute right-4 top-4 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 text-white/70 transition-colors hover:border-white hover:bg-white hover:text-[#2c241c] sm:right-5 sm:top-5"
+            className="type-ui absolute right-3 top-3 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 text-white/70 transition-colors hover:border-white hover:bg-white hover:text-[#2c241c] sm:right-5 sm:top-5"
             aria-label="Popup sluiten"
           >
             ×
@@ -130,11 +130,15 @@ export function PromoSignupModal() {
           </p>
           <h2
             id={titleId}
-            className="type-headline mt-3 max-w-[14ch] text-[1.7rem] sm:text-[2rem]"
+            className="type-headline mt-2.5 text-[1.65rem] leading-[0.95] sm:text-[2rem]"
           >
-            Meld je aan voor te gekke prijzen
+            Meld je aan
+            <br />
+            voor te gekke
+            <br />
+            prijzen
           </h2>
-          <p className="type-lead mt-3 text-[0.95rem] text-white/55">
+          <p className="type-lead mt-3 text-[0.92rem] text-white/55">
             2016–2026. Winacties en cadeaus volgen dit jubileumjaar — laat je
             gegevens achter en je hoort het als eerste.
           </p>
@@ -144,7 +148,7 @@ export function PromoSignupModal() {
               Staat. We mailen je als er iets te pakken valt.
             </p>
           ) : (
-            <form onSubmit={onSubmit} className="mt-6 flex flex-col gap-3.5">
+            <form onSubmit={onSubmit} className="mt-5 flex flex-col gap-3 sm:mt-6 sm:gap-3.5">
               <label className="block">
                 <span className="type-label text-white/40">Naam</span>
                 <input
