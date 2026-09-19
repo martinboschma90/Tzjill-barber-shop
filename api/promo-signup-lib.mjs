@@ -33,9 +33,9 @@ export function isValidPromoPayload(payload) {
 export function formatPromoEmail({ name, email, phone }) {
   const mobile = normalizeNlMobile(phone)
   return {
-    subject: `Promo-aanmelding: ${name}`,
+    subject: `10 jaar Tzjill — aanmelding: ${name}`,
     text: [
-      'NIEUWE PROMO-AANMELDING — Tzjill Barber & Lounge',
+      'NIEUWE AANMELDING — 10 jaar Tzjill (2016–2026)',
       '',
       `Naam: ${name}`,
       `E-mail: ${email}`,
