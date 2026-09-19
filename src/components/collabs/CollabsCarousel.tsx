@@ -31,10 +31,9 @@ export function CollabCaption({
 
 type CollabsCarouselProps = {
   items: ShopCollab[]
-  fallbackVideo: string
 }
 
-export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) {
+export function CollabsCarousel({ items }: CollabsCarouselProps) {
   const trackRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<{
     pointerId: number
@@ -166,7 +165,7 @@ export function CollabsCarousel({ items, fallbackVideo }: CollabsCarouselProps) 
               <div className="overflow-hidden rounded-[1.75rem] bg-[#100e0c] ring-1 ring-white/15 sm:rounded-[2rem]">
                 <CollabMedia
                   image={item.image}
-                  video={collabVideoUrl(item, fallbackVideo)}
+                  video={collabVideoUrl(item)}
                   priority={index === 0}
                   frame="carousel"
                   embedded

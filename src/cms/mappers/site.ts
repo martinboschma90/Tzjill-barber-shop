@@ -324,7 +324,10 @@ function asCollabs(
       const text = asString(row.text) || asString(row.description)
       const image =
         asString(row.image) || asString(row.poster) || asString(row.photo)
-      const video = asString(row.video) || asString(row.videoUrl)
+      const video =
+        asString(row.video) ||
+        asString(row.videoUrl) ||
+        seedVideoForName(name, fallback)
       if (!name && !text && !image && !video) return null
       return {
         name: name || `Collab ${index + 1}`,
@@ -345,6 +348,12 @@ function isLeftoverEventsPlaceholder(item: ShopCollab): boolean {
     item.name.trim().toLowerCase() === 'events' &&
     item.text.includes('Avonden in de zaak, shoots en lokale collabs')
   )
+}
+
+function seedVideoForName(name: string, fallback: ShopCollab[]): string {
+  const key = name.trim().toLowerCase()
+  if (!key) return ''
+  return fallback.find((item) => item.name.trim().toLowerCase() === key)?.video ?? ''
 }
 
 function asTreatments(

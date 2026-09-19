@@ -3,11 +3,7 @@ import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
 import { PillButton } from '@/components/ui/PillButton'
 import { useCms } from '@/cms/CmsContext'
-import {
-  SHOP_FALLBACK_VIDEO,
-  cloneCollabs,
-  collabVideoUrl,
-} from '@/cms/content'
+import { cloneCollabs, collabVideoUrl } from '@/cms/content'
 import { CollabMedia } from '@/components/collabs/CollabMedia'
 import {
   CollabCaption,
@@ -17,9 +13,7 @@ import {
 export function CollabsPage() {
   const { content } = useCms()
   const collabs = content.site.collabs ?? cloneCollabs()
-  // Each CMS/seed collab is its own slide (video + matching text together).
-  const fallbackVideo =
-    content.site.homeHeroVideoUrl?.trim() || SHOP_FALLBACK_VIDEO
+  // Two distinct slides: each collab's own video + matching text, together.
 
   return (
     <AppShell navVariant="wordmark">
@@ -41,7 +35,7 @@ export function CollabsPage() {
           </PillButton>
         </div>
 
-        <CollabsCarousel items={collabs} fallbackVideo={fallbackVideo} />
+        <CollabsCarousel items={collabs} />
 
         <ul className="mt-16 hidden space-y-24 lg:block">
           {collabs.map((item, index) => {
@@ -58,7 +52,7 @@ export function CollabsPage() {
                 >
                   <CollabMedia
                     image={item.image}
-                    video={collabVideoUrl(item, fallbackVideo)}
+                    video={collabVideoUrl(item)}
                     priority={index === 0}
                   />
                 </div>

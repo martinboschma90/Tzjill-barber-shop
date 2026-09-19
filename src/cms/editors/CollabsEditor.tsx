@@ -94,7 +94,7 @@ export function CollabsEditor() {
             label="Video"
             kind="video"
             value={item.video ?? ''}
-            hint="Optioneel. Leeg = shop hero-film. De foto hierboven is de poster."
+            hint="Eigen clip van deze collab. Leeg = alleen de foto — geen gedeelde film."
             onChange={(video) =>
               setSite((s) => ({
                 ...s,
