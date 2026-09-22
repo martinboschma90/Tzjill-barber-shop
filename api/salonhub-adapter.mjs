@@ -66,13 +66,20 @@ function flattenTreatments(payload) {
   const items = []
   for (const [groupId, rows] of Object.entries(groups)) {
     if (!Array.isArray(rows)) continue
+    let section = ''
     for (const row of rows) {
-      if (!row || row.type !== 'treatment' || row.id == null) continue
+      if (!row) continue
+      if (row.type === 'section') {
+        section = String(row.name || '').trim()
+        continue
+      }
+      if (row.type !== 'treatment' || row.id == null) continue
       items.push({
         id: String(row.id),
         name: String(row.name || '').trim(),
         groupId,
         group: GROUP_LABELS[groupId] || groupId,
+        section: section || 'Behandeling',
         minutes: Number(row.length) || 0,
         priceLabel: priceLabel(row.price),
         priceCents: Number(row.price?.value) || 0,

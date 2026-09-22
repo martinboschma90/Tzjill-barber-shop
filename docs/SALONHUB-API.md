@@ -1,6 +1,6 @@
 # Salonhub online appointment
 
-Customers book on Tzjill. The browser talks only to `/api/salonhub`. That route calls Salonhub from the server. Nothing redirects the customer to `afspraak.salonhub.nl`.
+Stap 1 loads treatments through `/api/salonhub`. Stap 2 embeds `afspraak.salonhub.nl` in our page after **Naar de agenda**. The browser does not navigate away. Create and verify stay on the server for a later on-site confirm; the customer path is the embedded agenda.
 
 Checked 22 Sep 2026 against the live widget for client `tzjill`, salon `tzjill`.
 

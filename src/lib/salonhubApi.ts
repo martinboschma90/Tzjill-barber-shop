@@ -3,6 +3,7 @@ export type LiveTreatment = {
   name: string
   groupId: string
   group: string
+  section: string
   minutes: number
   priceLabel: string
   priceCents: number
