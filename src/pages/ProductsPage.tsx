@@ -3,6 +3,7 @@ import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
 import { useCms } from '@/cms/CmsContext'
 import { cloneProducts } from '@/cms/content'
+import { feedFrameClass } from '@/data/feed'
 
 export function ProductsPage() {
   const { content } = useCms()
@@ -27,7 +28,7 @@ export function ProductsPage() {
                 <img
                   src={item.image}
                   alt=""
-                  className="wf-media-zoom aspect-[3/4] w-full object-cover"
+                  className={`wf-media-zoom aspect-[3/4] w-full ${feedFrameClass}`}
                   loading="lazy"
                 />
               </figure>

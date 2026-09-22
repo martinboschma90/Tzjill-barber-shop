@@ -91,7 +91,7 @@ export function ProductsEditor() {
               {
                 name: 'Nieuw product',
                 text: 'Koop je in de zaak.',
-                image: '/lookbook/04.jpg',
+                image: '/feed/DSC00062.jpg',
               },
             ],
           }))
