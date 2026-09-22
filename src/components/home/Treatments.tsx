@@ -3,6 +3,7 @@ import { Reveal } from '@/components/motion/Reveal'
 import { MediaReveal } from '@/components/motion/MediaReveal'
 import { useCms } from '@/cms/CmsContext'
 import { cloneTreatments } from '@/cms/content'
+import { feedFrameClass } from '@/data/feed'
 
 export function Treatments() {
   const { content } = useCms()
@@ -40,7 +41,7 @@ export function Treatments() {
                       <img
                         src={item.image}
                         alt=""
-                        className="wf-media-zoom h-full w-full object-cover"
+                        className={`wf-media-zoom h-full w-full ${feedFrameClass}`}
                         loading="lazy"
                       />
                       <span className="type-ui absolute bottom-4 left-4 text-white/80">

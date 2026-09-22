@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react'
 import { useReducedMotion } from 'framer-motion'
+import { feedFrameClass } from '@/data/feed'
 import { lookbookImages } from '@/data/lookbook'
 import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
 
@@ -123,7 +124,7 @@ export function InstagramFeed() {
                 <img
                   src={image.src}
                   alt={image.alt}
-                  className="h-full w-full object-cover"
+                  className={`h-full w-full ${feedFrameClass}`}
                   draggable={false}
                 />
                 {isCenter ? (

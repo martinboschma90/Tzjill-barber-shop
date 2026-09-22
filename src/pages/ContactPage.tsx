@@ -6,6 +6,7 @@ import { LocationMap } from '@/components/contact/LocationMap'
 import { BookButton } from '@/components/booking/BookButton'
 import { PillButton } from '@/components/ui/PillButton'
 import { useCms } from '@/cms/CmsContext'
+import { feed, feedWideClass } from '@/data/feed'
 import {
   INSTAGRAM_URL,
   PHONE_DISPLAY,
@@ -45,9 +46,9 @@ export function ContactPage() {
 
         <MediaReveal className="mt-10 overflow-hidden rounded-[1.75rem] bg-black sm:mt-12 sm:rounded-[2rem]">
           <img
-            src="/lookbook/05.png"
+            src={feed.dsc09971}
             alt="Tzjill Barber & Lounge, Voorstreek 18 Leeuwarden"
-            className="aspect-[16/9] w-full object-cover object-center sm:aspect-[2.4/1]"
+            className={`aspect-[16/9] w-full sm:aspect-[2.4/1] ${feedWideClass}`}
           />
         </MediaReveal>
 

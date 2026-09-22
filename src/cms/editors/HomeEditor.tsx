@@ -19,7 +19,7 @@ export function HomeEditor() {
         title="Hero"
         description="Eerste indruk — grote kop, foto of video."
         defaultOpen
-        thumbnail={site.homeHeroImageUrl || '/brand/hero.jpg'}
+        thumbnail={site.homeHeroImageUrl || '/feed/DSC00064.jpg'}
         visible={site.homeHeroVisible !== false}
         onVisibleChange={(homeHeroVisible) =>
           setSite((current) => ({ ...current, homeHeroVisible }))
@@ -96,7 +96,7 @@ export function HomeEditor() {
         sectionKey="welcome"
         title="Welkom"
         description="Intro onder de hero, met portret."
-        thumbnail={site.welcomeImageUrl || '/lookbook/05.png'}
+        thumbnail={site.welcomeImageUrl || '/feed/DSC00030.jpg'}
         tabs={[
           {
             id: 'content',
@@ -241,7 +241,7 @@ export function HomeEditor() {
                           {
                             title: 'Nieuwe behandeling',
                             text: '',
-                            image: '/lookbook/01.jpg',
+                            image: '/feed/DSC00016.jpg',
                           },
                         ],
                       }))

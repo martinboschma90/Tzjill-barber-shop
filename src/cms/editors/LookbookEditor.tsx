@@ -97,7 +97,7 @@ export function LookbookEditor() {
             ...s,
             lookbookImages: [
               ...s.lookbookImages,
-              { src: '/lookbook/01.jpg', alt: 'Look', tags: ['haircut'] },
+              { src: '/feed/DSC00016.jpg', alt: 'Look', tags: ['haircut'] },
             ],
           }))
         }

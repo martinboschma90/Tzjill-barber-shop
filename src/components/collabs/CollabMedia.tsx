@@ -3,6 +3,7 @@ import { useReducedMotion } from 'framer-motion'
 import { MediaContext } from '@/cms/media/MediaContext'
 import { parseMediaRef } from '@/cms/media/refs'
 import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
+import { feedFrameClass, feedWideClass } from '@/data/feed'
 import {
   bindMobilePlayback,
   browserCanPlayWebm,
@@ -111,9 +112,9 @@ export function CollabMedia({
         <img
           src={posterUrl}
           alt=""
-          className={`wf-media-zoom absolute inset-0 h-full w-full object-cover transition-opacity duration-300 ${
-            playing ? 'opacity-0' : 'opacity-100'
-          }`}
+          className={`wf-media-zoom absolute inset-0 h-full w-full transition-opacity duration-300 ${
+            frame === 'carousel' ? feedWideClass : feedFrameClass
+          } ${playing ? 'opacity-0' : 'opacity-100'}`}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
         />

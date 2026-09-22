@@ -7,6 +7,7 @@ import { Testimonials } from '@/components/home/Testimonials'
 import { PillButton } from '@/components/ui/PillButton'
 import { BookButton } from '@/components/booking/BookButton'
 import { useCms } from '@/cms/CmsContext'
+import { feed, feedFrameClass, HERO_POSTER } from '@/data/feed'
 import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
 
 const stats = [
@@ -60,7 +61,7 @@ function AboutHeroVideo() {
         ref={videoRef}
         className="aspect-[16/10] w-full object-cover sm:aspect-[2/1]"
         src="/brand/hero.mp4"
-        poster="/brand/hero.jpg"
+        poster={HERO_POSTER}
         autoPlay
         muted
         loop
@@ -185,9 +186,9 @@ export function AboutPage() {
 
           <div className="overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem] lg:col-span-6">
             <img
-              src="/lookbook/05.png"
+              src={feed.dsc09968}
               alt=""
-              className="aspect-[4/5] w-full object-cover lg:aspect-auto lg:h-full lg:min-h-[36rem]"
+              className={`aspect-[4/5] w-full lg:aspect-auto lg:h-full lg:min-h-[36rem] ${feedFrameClass}`}
             />
           </div>
         </div>
