@@ -1,5 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useCms } from '@/cms/CmsContext'
+import { BookButton } from '@/components/booking/BookButton'
+import { BookingWell } from '@/components/booking/BookingWell'
 import { FALLBACK_TREATMENTS, presentTreatments } from '@/data/salonhubCatalog'
 import { LOCATION_ADDRESS, PHONE_DISPLAY, PHONE_TEL } from '@/data/site'
 import {
@@ -69,12 +71,57 @@ function formatTime(value: string) {
   return value.slice(0, 5)
 }
 
-function rowClass(active: boolean) {
-  return `flex w-full items-center gap-4 rounded-2xl border px-4 py-3.5 text-left transition-[color,background-color,border-color] duration-300 ${
-    active
-      ? 'border-[#f6f3ee] bg-[#f6f3ee] text-[#1c1b19]'
-      : 'border-white/[0.1] bg-white/[0.04] text-[#f6f3ee] hover:border-white/25 hover:bg-white/[0.07]'
-  }`
+const chipClass =
+  'type-ui rounded-full border border-white/75 bg-white/5 px-4 py-3 text-white transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-px hover:border-[#efeae3] hover:bg-[#efeae3] hover:text-[#2c241c]'
+
+function ChoiceRow({
+  active = false,
+  title,
+  meta,
+  aside,
+  onClick,
+}: {
+  active?: boolean
+  title: string
+  meta?: string
+  aside?: string
+  onClick: () => void
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={`flex w-full items-baseline gap-4 border-b py-4 text-left transition-colors ${
+        active
+          ? 'rounded-2xl border-transparent bg-[#efeae3] px-4 text-[#2c241c]'
+          : 'border-white/10 text-white'
+      }`}
+    >
+      <span className="min-w-0">
+        <span className="type-lead block">{title}</span>
+        {meta ? (
+          <span className={`type-label mt-1.5 block ${active ? 'text-[#2c241c]/50' : 'text-white/40'}`}>
+            {meta}
+          </span>
+        ) : null}
+      </span>
+      <span
+        aria-hidden
+        className={`min-w-6 flex-1 border-b border-dotted ${
+          active ? 'border-[#2c241c]/25' : 'border-white/20'
+        }`}
+      />
+      {aside ? (
+        <span className={`type-ui shrink-0 ${active ? 'text-[#2c241c]/70' : 'text-white/45'}`}>
+          {aside}
+        </span>
+      ) : null}
+      <span aria-hidden className={`type-ui shrink-0 ${active ? 'text-[#2c241c]' : 'text-white/50'}`}>
+        →
+      </span>
+    </button>
+  )
 }
 
 export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
@@ -312,16 +359,16 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
             {title}
           </h1>
           {step === 'treatment' ? (
-            <p className="type-lead mt-4 max-w-md text-[#f6f3ee]/55">
+            <p className="type-lead mt-4 max-w-md text-white/55">
               Kies een behandeling, daarna kapper, dag en tijd. Je blijft op deze pagina.{' '}
               {LOCATION_ADDRESS}. Tel{' '}
-              <a href={`tel:${PHONE_TEL}`} className="text-[#f6f3ee]/80 hover:text-[#f6f3ee]">
+              <a href={`tel:${PHONE_TEL}`} className="text-white/80 hover:text-white">
                 {PHONE_DISPLAY}
               </a>
               .
             </p>
           ) : summary ? (
-            <p className="mt-3 text-[13px] text-[#f6f3ee]/55">{summary}</p>
+            <p className="mt-3 text-[13px] text-white/55">{summary}</p>
           ) : null}
         </header>
 
@@ -347,8 +394,10 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
                       role="tab"
                       aria-selected={active}
                       onClick={() => setAudienceId(item.id)}
-                      className={`type-ui rounded-full px-4 py-2 transition-colors ${
-                        active ? 'bg-[#f6f3ee] text-[#1c1b19]' : 'text-[#f6f3ee]/65 hover:text-[#f6f3ee]'
+                      className={`type-ui rounded-full border px-4 py-2 transition-colors ${
+                        active
+                          ? 'border-[#efeae3] bg-[#efeae3] text-[#2c241c]'
+                          : 'border-white/20 text-white/65 hover:border-white hover:text-white'
                       }`}
                     >
                       {item.label}
@@ -357,47 +406,26 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
                 })}
               </div>
             ) : null}
-            <div className="mt-7 space-y-7">
-              {loading ? <p className="type-label text-[#f6f3ee]/40">Laden…</p> : null}
+            <div className="mt-7 space-y-8">
+              {loading ? <p className="type-label text-white/40">Laden…</p> : null}
               {audience?.sections.map((section) => (
                 <section key={section.label}>
-                  <h2 className="type-label text-[#f6f3ee]/40">{section.label}</h2>
-                  <ul className="mt-3 grid gap-2">
-                    {section.items.map((item) => {
-                      const active = selected?.id === item.id
-                      return (
+                  <h2 className="type-label text-white/40">{section.label}</h2>
+                  <BookingWell className="mt-3">
+                    <ul>
+                      {section.items.map((item) => (
                         <li key={item.id}>
-                          <button
-                            type="button"
-                            aria-pressed={active}
+                          <ChoiceRow
+                            active={selected?.id === item.id}
+                            title={item.name}
+                            meta={item.minutes ? `${item.minutes} min` : undefined}
+                            aside={item.priceLabel || '—'}
                             onClick={() => setSelectedId(item.id)}
-                            className={rowClass(active)}
-                          >
-                            <span className="min-w-0 flex-1">
-                              <span className="block text-[15px] font-semibold tracking-[-0.015em]">
-                                {item.name}
-                              </span>
-                              {item.minutes ? (
-                                <span
-                                  className={`type-label mt-1.5 block ${
-                                    active ? 'text-[#1c1b19]/50' : 'text-[#f6f3ee]/40'
-                                  }`}
-                                >
-                                  {item.minutes} min
-                                </span>
-                              ) : null}
-                            </span>
-                            <span className="type-ui shrink-0">
-                              {item.priceLabel || '—'}
-                              <span aria-hidden className="ml-2">
-                                →
-                              </span>
-                            </span>
-                          </button>
+                          />
                         </li>
-                      )
-                    })}
-                  </ul>
+                      ))}
+                    </ul>
+                  </BookingWell>
                 </section>
               ))}
             </div>
@@ -411,43 +439,32 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
         ) : null}
 
         {step === 'employee' ? (
-          <ul className="mt-7 grid gap-2">
-            {busy && !employees.length ? (
-              <li className="type-label text-[#f6f3ee]/40">Laden…</li>
-            ) : null}
-            {employees.map((item) => (
-              <li key={item.id}>
-                <button type="button" onClick={() => void goDates(item)} className={rowClass(false)}>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-[15px] font-semibold tracking-[-0.015em]">
-                      {item.name}
-                    </span>
-                    {item.any ? (
-                      <span className="type-label mt-1.5 block text-[#f6f3ee]/40">Wie er vrij is</span>
-                    ) : null}
-                  </span>
-                  <span aria-hidden className="type-ui text-[#f6f3ee]/50">
-                    →
-                  </span>
-                </button>
-              </li>
-            ))}
-          </ul>
+          <BookingWell className="mt-7">
+            <ul>
+              {busy && !employees.length ? (
+                <li className="type-label py-4 text-white/40">Laden…</li>
+              ) : null}
+              {employees.map((item) => (
+                <li key={item.id}>
+                  <ChoiceRow
+                    title={item.name}
+                    meta={item.any ? 'Wie er vrij is' : undefined}
+                    onClick={() => void goDates(item)}
+                  />
+                </li>
+              ))}
+            </ul>
+          </BookingWell>
         ) : null}
 
         {step === 'date' ? (
           <div className="mt-7 flex flex-wrap gap-2">
-            {busy && !dates.length ? <p className="type-label text-[#f6f3ee]/40">Laden…</p> : null}
+            {busy && !dates.length ? <p className="type-label text-white/40">Laden…</p> : null}
             {!busy && !dates.length ? (
-              <p className="text-[13px] text-[#f6f3ee]/55">Geen vrije dagen in de komende weken.</p>
+              <p className="text-[13px] text-white/55">Geen vrije dagen in de komende weken.</p>
             ) : null}
             {dates.map((iso) => (
-              <button
-                key={iso}
-                type="button"
-                onClick={() => void goTimes(iso)}
-                className="type-ui rounded-full border border-white/15 px-4 py-3 text-[#f6f3ee] transition-colors hover:border-[#f6f3ee] hover:bg-[#f6f3ee] hover:text-[#1c1b19]"
-              >
+              <button key={iso} type="button" onClick={() => void goTimes(iso)} className={chipClass}>
                 {formatDay(iso)}
               </button>
             ))}
@@ -456,16 +473,16 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
 
         {step === 'time' ? (
           <div className="mt-7 flex flex-wrap gap-2">
-            {busy && !times.length ? <p className="type-label text-[#f6f3ee]/40">Laden…</p> : null}
+            {busy && !times.length ? <p className="type-label text-white/40">Laden…</p> : null}
             {!busy && !times.length ? (
-              <p className="text-[13px] text-[#f6f3ee]/55">Geen tijden op deze dag.</p>
+              <p className="text-[13px] text-white/55">Geen tijden op deze dag.</p>
             ) : null}
             {times.map((slot) => (
               <button
                 key={slot}
                 type="button"
                 onClick={() => pickTime(slot)}
-                className="type-ui min-w-[4.5rem] rounded-full border border-white/15 px-4 py-3 text-[#f6f3ee] transition-colors hover:border-[#f6f3ee] hover:bg-[#f6f3ee] hover:text-[#1c1b19]"
+                className={`${chipClass} min-w-[4.5rem]`}
               >
                 {formatTime(slot)}
               </button>
@@ -482,18 +499,18 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
               void confirm()
             }}
           >
-            <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-5">
-              <p className="text-[15px] font-semibold tracking-[-0.015em]">{selected.name}</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-[#f6f3ee]/55">
+            <BookingWell>
+              <p className="type-lead py-3 text-white">{selected.name}</p>
+              <p className="pb-4 text-[13px] leading-relaxed text-white/55">
                 {selected.minutes ? `${selected.minutes} min · ` : ''}
                 {selected.priceLabel}
                 <br />
                 {employee.name} · {formatDay(date)} · {formatTime(time)}
               </p>
-              <p className="mt-4 text-[12.5px] leading-relaxed text-[#f6f3ee]/40">
+              <p className="pb-3 text-[12.5px] leading-relaxed text-white/40">
                 No-show €20 als je niet komt of binnen 2 uur afzegt.
               </p>
-            </div>
+            </BookingWell>
             <div className="mt-6 grid gap-3 sm:grid-cols-2">
               <Field
                 label="Voornaam"
@@ -524,13 +541,15 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
                 onChange={(telephone) => setCustomer((current) => ({ ...current, telephone }))}
               />
             </div>
-            <button
+            <BookButton
               type="submit"
+              openWidget={false}
+              surface="dark"
               disabled={busy}
-              className="type-ui mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#f6f3ee] px-6 py-4 text-[#3a2f28] transition-[transform,background-color] duration-300 hover:-translate-y-px hover:bg-white disabled:opacity-50 sm:w-auto"
+              className="mt-6 w-full sm:w-auto"
             >
               {busy ? 'Bezig…' : 'Afspraak bevestigen'}
-            </button>
+            </BookButton>
           </form>
         ) : null}
 
@@ -554,13 +573,16 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
               className="type-headline mt-6 w-full rounded-2xl border border-white/15 bg-transparent px-4 py-4 text-center tracking-[0.4em] text-[#f6f3ee] outline-none focus:border-[#f6f3ee]"
               aria-label="Bevestigingscode"
             />
-            <button
+            <BookButton
               type="submit"
+              openWidget={false}
+              surface="dark"
+              arrow={false}
               disabled={busy || code.length !== 4}
-              className="type-ui mt-6 inline-flex w-full items-center justify-center rounded-full bg-[#f6f3ee] px-6 py-4 text-[#3a2f28] disabled:opacity-50"
+              className="mt-6 w-full sm:w-auto"
             >
               {busy ? 'Bezig…' : 'Code bevestigen'}
-            </button>
+            </BookButton>
           </form>
         ) : null}
 
@@ -597,17 +619,15 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
             compact ? 'shrink-0 border-t border-white/[0.08] px-5 py-4' : 'px-4 pb-12 sm:px-8 sm:pb-16'
           }`}
         >
-          <button
-            type="button"
+          <BookButton
+            openWidget={false}
+            surface="dark"
             disabled={!selected || busy}
             onClick={() => void continueFromTreatment()}
-            className="type-ui group inline-flex w-full items-center justify-center gap-2.5 rounded-full bg-[#f6f3ee] px-6 py-4 text-[#3a2f28] transition-[color,background-color,transform] duration-300 hover:-translate-y-px hover:bg-white disabled:opacity-40 sm:w-auto"
+            className="w-full sm:w-auto"
           >
             {busy ? 'Bezig…' : 'Kies een kapper'}
-            <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">
-              →
-            </span>
-          </button>
+          </BookButton>
           {onBack ? (
             <button
               type="button"
@@ -640,14 +660,14 @@ function Field({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="type-label text-[#f6f3ee]/40">{label}</span>
+      <span className="type-label text-white/40">{label}</span>
       <input
         type={type}
         value={value}
         autoComplete={autoComplete}
         required={label !== 'Achternaam'}
         onChange={(event) => onChange(event.target.value)}
-        className="mt-2 w-full rounded-full border border-white/15 bg-transparent px-4 py-3 text-[15px] text-[#f6f3ee] outline-none focus:border-[#f6f3ee]"
+        className="mt-2 w-full rounded-full border border-white/20 bg-transparent px-4 py-3 text-[15px] text-white outline-none focus:border-[#efeae3]"
       />
     </label>
   )
