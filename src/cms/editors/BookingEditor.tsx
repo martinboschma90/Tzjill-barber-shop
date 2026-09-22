@@ -1,12 +1,59 @@
+import { useState } from 'react'
 import { useCms } from '@/cms/CmsProvider'
+import type { BookingTreatmentSetting } from '@/cms/content'
 import { ArtistVisibilityToggle } from '@/cms/editors/ArtistVisibilityToggle'
-import { EditorSection, TextArea, TextInput } from '@/cms/fields'
-import { SALONHUB_BOOKING_URL } from '@/data/site'
+import { listBtnClass } from '@/cms/editors/listBtn'
+import { EditorSection, TextArea, TextInput, CompactInput } from '@/cms/fields'
+import { loadTreatments, type LiveTreatment } from '@/lib/salonhubApi'
 
 export function BookingEditor() {
   const { content, setSite } = useCms()
   const { site } = content
   const visible = site.bookingVisible !== false
+  const [live, setLive] = useState<LiveTreatment[] | null>(null)
+  const [loadError, setLoadError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const settings = site.bookingTreatments
+
+  async function loadLive() {
+    setLoading(true)
+    setLoadError('')
+    try {
+      const result = await loadTreatments(crypto.randomUUID())
+      setLive(result.treatments)
+      setSite((current) => {
+        const existing = new Map(
+          current.bookingTreatments.map((item) => [item.salonhubTreatmentId, item]),
+        )
+        const bookingTreatments: BookingTreatmentSetting[] = result.treatments.map(
+          (item, index) => {
+            const saved = existing.get(item.id)
+            return {
+              salonhubTreatmentId: item.id,
+              label: saved?.label ?? '',
+              sortOrder: saved?.sortOrder ?? index,
+              active: saved?.active ?? true,
+            }
+          },
+        )
+        return { ...current, bookingTreatments }
+      })
+    } catch (error) {
+      setLoadError(error instanceof Error ? error.message : 'Lijst laden mislukt.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  function patch(id: string, next: Partial<BookingTreatmentSetting>) {
+    setSite((current) => ({
+      ...current,
+      bookingTreatments: current.bookingTreatments.map((item) =>
+        item.salonhubTreatmentId === id ? { ...item, ...next } : item,
+      ),
+    }))
+  }
 
   return (
     <>
@@ -56,16 +103,74 @@ export function BookingEditor() {
       </EditorSection>
 
       <EditorSection
-        title="Agenda"
-        description="Bezoekers boeken via Salonhub. Geen eigen booking-backend."
+        title="Behandelingen"
+        description="De widget leest naam, prijs en duur live uit Salonhub. Hier verberg, hernoem of sorteer je ze. Een lege lijst toont de hele live catalogus."
+        defaultOpen
+        badge="Salonhub"
       >
-        <p className="type-body rounded-xl border border-ink/8 bg-ink/[0.03] px-3.5 py-3 text-xs text-ink/55">
-          {SALONHUB_BOOKING_URL}
-        </p>
+        <button type="button" className={listBtnClass} onClick={() => void loadLive()} disabled={loading}>
+          {loading ? 'Laden…' : 'Salonhub-lijst laden'}
+        </button>
+        {loadError ? <p className="text-xs text-red-700">{loadError}</p> : null}
+        {!settings.length ? (
+          <p className="type-body text-xs leading-relaxed text-ink/45">
+            Nog geen uitzonderingen. Bezoekers zien elke behandeling die Salonhub teruggeeft.
+          </p>
+        ) : (
+          <ul className="space-y-3">
+            {settings
+              .slice()
+              .sort((a, b) => a.sortOrder - b.sortOrder)
+              .map((item) => {
+                const fromLive = live?.find((row) => row.id === item.salonhubTreatmentId)
+                return (
+                  <li
+                    key={item.salonhubTreatmentId}
+                    className="rounded-xl border border-ink/8 px-3 py-3"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm text-ink">
+                        {fromLive?.name || `Salonhub ${item.salonhubTreatmentId}`}
+                        {fromLive?.priceLabel ? (
+                          <span className="text-ink/45"> · {fromLive.priceLabel}</span>
+                        ) : null}
+                      </p>
+                      <label className="flex items-center gap-2 text-[11px] text-ink/55">
+                        <input
+                          type="checkbox"
+                          checked={item.active}
+                          onChange={(event) =>
+                            patch(item.salonhubTreatmentId, { active: event.target.checked })
+                          }
+                        />
+                        Zichtbaar
+                      </label>
+                    </div>
+                    <div className="mt-2 grid grid-cols-[1fr_5rem] gap-2">
+                      <CompactInput
+                        value={item.label}
+                        placeholder="Label (leeg = Salonhub-naam)"
+                        onChange={(label) => patch(item.salonhubTreatmentId, { label })}
+                      />
+                      <CompactInput
+                        value={String(item.sortOrder)}
+                        placeholder="0"
+                        onChange={(value) => {
+                          const sortOrder = Number(value.replace(/\D/g, ''))
+                          patch(item.salonhubTreatmentId, {
+                            sortOrder: Number.isFinite(sortOrder) ? sortOrder : 0,
+                          })
+                        }}
+                      />
+                    </div>
+                  </li>
+                )
+              })}
+          </ul>
+        )}
         <p className="type-body text-xs leading-relaxed text-ink/40">
-          De publieke /booking-pagina toont eerst Tzjill-chrome, daarna de
-          Salonhub-agenda. Health checks en de publieke URL staan onder
-          Instellingen (tzjill-barber-shop.vercel.app tot tzjill.nl hierop wijst).
+          Afspraak aanmaken gaat via de server naar Salonhub. De klant blijft op Tzjill.
+          Zie docs/SALONHUB-API.md.
         </p>
       </EditorSection>
     </>

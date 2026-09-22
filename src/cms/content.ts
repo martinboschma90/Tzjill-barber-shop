@@ -27,6 +27,15 @@ export type ShopMenuItem = {
   price: string
 }
 
+/** Admin-only display tweak for a live Salonhub treatment. Prices stay on Salonhub. */
+export type BookingTreatmentSetting = {
+  salonhubTreatmentId: string
+  /** Empty keeps the live Salonhub name. */
+  label: string
+  sortOrder: number
+  active: boolean
+}
+
 export type ShopMenuGroup = {
   title: string
   items: ShopMenuItem[]
@@ -211,6 +220,11 @@ export type SiteContent = {
   bookingIntro: string
   /** When false, `/booking` redirects home and the nav link is hidden. */
   bookingVisible: boolean
+  /**
+   * Optional hide/reorder/label for the live Salonhub catalog.
+   * Empty means the widget shows every treatment Salonhub returns.
+   */
+  bookingTreatments: BookingTreatmentSetting[]
   /** Public phone number (footer + contact). */
   phoneNumber: string
   /** WhatsApp number for artist CTAs and footer (display or E.164). */
@@ -292,6 +306,7 @@ export function createDefaultSiteContent(): SiteContent {
     bookingTitle: 'Booking Request',
     bookingIntro: "Send us your booking request and we'll get back to you.",
     bookingVisible: true,
+    bookingTreatments: [],
     phoneNumber: '058 844 7025',
     whatsappNumber: DEFAULT_WHATSAPP_NUMBER,
     faqTitle: 'Vragen',

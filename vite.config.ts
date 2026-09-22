@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import path from 'path'
 import { bookingRequestPlugin } from './vite-plugin-booking-request.js'
+import { salonhubPlugin } from './vite-plugin-salonhub.ts'
 import { promoSignupPlugin } from './vite-plugin-promo-signup.ts'
 import { cmsUsersPlugin } from './vite-plugin-cms-users.ts'
 import { publicBootPlugin } from './vite-plugin-public-boot.ts'
@@ -19,6 +20,7 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
       bookingRequestPlugin(),
+      salonhubPlugin(),
       promoSignupPlugin(),
       cmsUsersPlugin(env),
       publicBootPlugin(env),
