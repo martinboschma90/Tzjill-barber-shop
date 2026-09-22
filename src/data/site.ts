@@ -15,12 +15,6 @@ export const openingHours = [
 export const INSTAGRAM_URL = 'https://www.instagram.com/tzjill.barber.lounge/'
 export const INSTAGRAM_HANDLE = '@tzjill.barber.lounge'
 
-/**
- * Salonhub agenda, embedded after our treatment step.
- * The direct afspraak URL keeps a ?treatment= id. The legacy link.html redirect drops it.
- */
-export const SALONHUB_BOOKING_URL = 'https://afspraak.salonhub.nl/tzjill/tzjill'
-
 export const LOCATION_ADDRESS = 'Voorstreek 18, 8911 JP Leeuwarden'
 export const MAPS_EMBED_URL = `https://www.google.com/maps?q=${encodeURIComponent(LOCATION_ADDRESS)}&hl=nl&z=16&output=embed`
 export const MAPS_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(LOCATION_ADDRESS)}`

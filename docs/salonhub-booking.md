@@ -1,7 +1,7 @@
 # Booking flow
 
-Stap 1 is on Tzjill: treatment rows with live prices, grouped the way Salonhub groups them (Heren / Kinderen, then Haircut / Scheren). The customer picks a row, then **Naar de agenda**.
+The customer finishes the appointment on Tzjill: behandeling, kapper, dag, tijd, gegevens, and a mail code when Salonhub asks for one. The page and the sticky modal never embed `afspraak.salonhub.nl` and never send the browser there.
 
-Stap 2 embeds the Salonhub agenda in our page. The chrome around it stays Tzjill (dark `#1c1b19`, cream `#f6f3ee`). The widget inside the frame is not restyled. A chosen treatment is passed as `?treatment=` on `https://afspraak.salonhub.nl/tzjill/tzjill`.
+Each step calls `/api/salonhub`. That route proxies `public.salonhub.nl` OnlineAppointment. Treatments, employees, dates, and times are anonymous reads. Create and verify stay on the server and use `SALONHUB_API_KEY` when it is accepted, otherwise the public widget bearer resolved at runtime. See [SALONHUB-API.md](./SALONHUB-API.md).
 
-`/api/salonhub` still loads the catalog so prices stay Salonhub’s. See [SALONHUB-API.md](./SALONHUB-API.md).
+A successful create books a real chair. Do not call it from automated tests.

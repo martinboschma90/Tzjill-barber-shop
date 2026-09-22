@@ -1,6 +1,8 @@
 # Salonhub online appointment
 
-Stap 1 loads treatments through `/api/salonhub`. Stap 2 embeds `afspraak.salonhub.nl` in our page after **Naar de agenda**. The browser does not navigate away. Create and verify stay on the server for a later on-site confirm; the customer path is the embedded agenda.
+The customer books in the Tzjill UI: behandeling, kapper, dag, tijd, gegevens, and a 4-digit code when Salonhub returns `verify`. The browser only calls `/api/salonhub`. It does not load `afspraak.salonhub.nl` and it never sees a bearer token.
+
+`SALONHUB_API_KEY` is optional and server-only (no `VITE_` prefix). Reads do not use it. Create and verify try that key first when it is set, then the public widget bearer from the current `afspraak.salonhub.nl` bundle if the admin key is missing or returns 401. A successful create books a real appointment in the live salon. Do not call create from automated tests.
 
 Checked 22 Sep 2026 against the live widget for client `tzjill`, salon `tzjill`.
 
