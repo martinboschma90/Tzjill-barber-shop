@@ -1,4 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useCms } from '@/cms/CmsContext'
 import { BookButton } from '@/components/booking/BookButton'
 import { BookingWell } from '@/components/booking/BookingWell'
@@ -17,7 +18,6 @@ import {
 
 type BookingFlowProps = {
   compact?: boolean
-  onBack?: () => void
 }
 
 type Step = 'treatment' | 'employee' | 'date' | 'time' | 'details' | 'verify' | 'success'
@@ -92,16 +92,26 @@ function ChoiceRow({
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`flex w-full items-baseline gap-4 border-b py-4 text-left transition-colors ${
+      className={`group -mx-5 flex w-full items-baseline gap-4 border-b px-5 py-4 text-left ${
         active
-          ? 'rounded-2xl border-transparent bg-[#efeae3] px-4 text-[#2c241c]'
-          : 'border-white/10 text-white'
+          ? 'border-transparent bg-[#efeae3] text-[#2c241c]'
+          : 'border-white/10 text-[#f6f3ee] hover:border-transparent hover:bg-[#efeae3] hover:text-[#2c241c]'
       }`}
     >
       <span className="min-w-0">
-        <span className="type-lead block">{title}</span>
+        <span
+          className={`type-lead block ${
+            active ? 'text-[#2c241c]' : 'text-[#f6f3ee] group-hover:text-[#2c241c]'
+          }`}
+        >
+          {title}
+        </span>
         {meta ? (
-          <span className={`type-label mt-1.5 block ${active ? 'text-[#2c241c]/50' : 'text-white/40'}`}>
+          <span
+            className={`type-label mt-1.5 block ${
+              active ? 'text-[#2c241c]/55' : 'text-white/40 group-hover:text-[#2c241c]/55'
+            }`}
+          >
             {meta}
           </span>
         ) : null}
@@ -109,23 +119,33 @@ function ChoiceRow({
       <span
         aria-hidden
         className={`min-w-6 flex-1 border-b border-dotted ${
-          active ? 'border-[#2c241c]/25' : 'border-white/20'
+          active ? 'border-[#2c241c]/25' : 'border-white/20 group-hover:border-[#2c241c]/25'
         }`}
       />
       {aside ? (
-        <span className={`type-ui shrink-0 ${active ? 'text-[#2c241c]/70' : 'text-white/45'}`}>
+        <span
+          className={`type-ui shrink-0 ${
+            active ? 'text-[#2c241c]/75' : 'text-white/45 group-hover:text-[#2c241c]/75'
+          }`}
+        >
           {aside}
         </span>
       ) : null}
-      <span aria-hidden className={`type-ui shrink-0 ${active ? 'text-[#2c241c]' : 'text-white/50'}`}>
+      <span
+        aria-hidden
+        className={`type-ui shrink-0 ${
+          active ? 'text-[#2c241c]' : 'text-white/50 group-hover:text-[#2c241c]'
+        }`}
+      >
         →
       </span>
     </button>
   )
 }
 
-export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
+export function BookingFlow({ compact = false }: BookingFlowProps) {
   const { content } = useCms()
+  const reduceMotion = useReducedMotion()
   const sessionRef = useRef(crypto.randomUUID())
   const formId = useId()
   const [step, setStep] = useState<Step>('treatment')
@@ -318,39 +338,76 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
     .filter(Boolean)
     .join(' · ')
 
+  const showBack = step !== 'treatment' && step !== 'success'
+  const showConfirm = step === 'details' && Boolean(selected && employee)
+
   return (
     <div
       className={`min-h-0 min-w-0 flex-1 bg-[#1c1b19] text-[#f6f3ee] ${
-        compact ? 'flex flex-col overflow-hidden' : 'overflow-x-hidden overflow-y-auto'
+        compact ? 'flex flex-col overflow-hidden' : 'flex flex-col'
       }`}
     >
       <div
-        className={`mx-auto w-full max-w-[680px] ${
-          compact ? 'min-h-0 flex-1 overflow-y-auto px-5 pb-4 pt-2' : 'px-4 pb-6 pt-4 sm:px-8 sm:pb-8 sm:pt-10'
+        className={`mx-auto flex w-full max-w-[680px] flex-col ${
+          compact ? 'min-h-0 flex-1' : ''
         }`}
       >
-        {step === 'success' || step === 'verify' ? (
-          <p className="type-label text-[#f6f3ee]/40">Tzjill · Leeuwarden</p>
-        ) : (
-          <ol className="flex flex-wrap gap-x-3 gap-y-1">
-            {STEPS.map((item, index) => (
-              <li
-                key={item.id}
-                className={`type-label ${
-                  index === stepIndex
-                    ? 'text-[#f6f3ee]'
-                    : index < stepIndex
-                      ? 'text-[#f6f3ee]/55'
-                      : 'text-[#f6f3ee]/28'
-                }`}
+        <div
+          className={
+            compact
+              ? 'shrink-0 px-5 pb-2 pt-1'
+              : 'sticky top-[6.25rem] z-20 bg-[#1c1b19] px-4 pb-3 pt-4 sm:top-[6.75rem] sm:px-8 sm:pt-8'
+          }
+        >
+          <div className="flex items-center justify-between gap-4">
+            {showBack ? (
+              <button
+                type="button"
+                onClick={back}
+                className="type-ui shrink-0 text-[#f6f3ee]/75 hover:text-[#f6f3ee]"
               >
-                {String(index + 1).padStart(2, '0')} {item.label}
-              </li>
-            ))}
-          </ol>
-        )}
+                ← Terug
+              </button>
+            ) : null}
+            {step === 'success' || step === 'verify' ? (
+              <p className="type-label text-[#f6f3ee]/40">Tzjill · Leeuwarden</p>
+            ) : (
+              <ol className="flex min-w-0 flex-wrap justify-end gap-x-3 gap-y-1">
+                {STEPS.map((item, index) => (
+                  <li
+                    key={item.id}
+                    className={`type-label ${
+                      index === stepIndex
+                        ? 'text-[#f6f3ee]'
+                        : index < stepIndex
+                          ? 'text-[#f6f3ee]/55'
+                          : 'text-[#f6f3ee]/28'
+                    }`}
+                  >
+                    {String(index + 1).padStart(2, '0')} {item.label}
+                  </li>
+                ))}
+              </ol>
+            )}
+          </div>
+        </div>
 
-        <header className="mt-4">
+        <div
+          className={
+            compact
+              ? 'min-h-0 flex-1 overflow-y-auto px-5 pb-6'
+              : `px-4 sm:px-8 ${showConfirm ? 'pb-28' : 'pb-12'}`
+          }
+        >
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={step}
+            initial={reduceMotion ? false : { opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { opacity: 0, y: -8 }}
+            transition={{ duration: reduceMotion ? 0 : 0.18, ease: [0.22, 1, 0.36, 1] }}
+          >
+        <header className="mt-2">
           <h1
             className={`type-headline uppercase ${
               compact ? 'text-[clamp(1.85rem,8vw,2.6rem)]' : ''
@@ -435,6 +492,17 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
               </span>{' '}
               Binnen 2 uur afzeggen of niet komen.
             </p>
+            {compact ? null : (
+              <BookButton
+                openWidget={false}
+                surface="dark"
+                disabled={!selected || busy}
+                onClick={() => void continueFromTreatment()}
+                className="mt-6 w-full sm:w-auto"
+              >
+                {busy ? 'Bezig…' : 'Kies een kapper'}
+              </BookButton>
+            )}
           </>
         ) : null}
 
@@ -541,15 +609,6 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
                 onChange={(telephone) => setCustomer((current) => ({ ...current, telephone }))}
               />
             </div>
-            <BookButton
-              type="submit"
-              openWidget={false}
-              surface="dark"
-              disabled={busy}
-              className="mt-6 w-full sm:w-auto"
-            >
-              {busy ? 'Bezig…' : 'Afspraak bevestigen'}
-            </BookButton>
           </form>
         ) : null}
 
@@ -601,44 +660,47 @@ export function BookingFlow({ compact = false, onBack }: BookingFlowProps) {
             </p>
           </div>
         ) : null}
+          </motion.div>
+        </AnimatePresence>
+        </div>
 
-        {step !== 'treatment' && step !== 'success' ? (
-          <button
-            type="button"
-            onClick={back}
-            className="type-ui mt-8 text-[#f6f3ee]/45 hover:text-[#f6f3ee]"
+        {step === 'treatment' && compact ? (
+          <div className="shrink-0 border-t border-white/[0.08] bg-[#1c1b19] px-5 py-3">
+            <BookButton
+              openWidget={false}
+              surface="dark"
+              disabled={!selected || busy}
+              onClick={() => void continueFromTreatment()}
+              className="w-full"
+            >
+              {busy ? 'Bezig…' : 'Kies een kapper'}
+            </BookButton>
+          </div>
+        ) : null}
+
+        {showConfirm ? (
+          <div
+            className={
+              compact
+                ? 'shrink-0 border-t border-white/[0.08] bg-[#1c1b19] px-5 py-3'
+                : 'fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.08] bg-[#1c1b19]/95 px-4 py-3 backdrop-blur-md sm:px-8'
+            }
           >
-            ← Terug
-          </button>
+            <div className={compact ? '' : 'mx-auto w-full max-w-[680px]'}>
+              <BookButton
+                type="submit"
+                form={formId}
+                openWidget={false}
+                surface="dark"
+                disabled={busy}
+                className="w-full sm:w-auto"
+              >
+                {busy ? 'Bezig…' : 'Afspraak bevestigen'}
+              </BookButton>
+            </div>
+          </div>
         ) : null}
       </div>
-
-      {step === 'treatment' ? (
-        <div
-          className={`mx-auto w-full max-w-[680px] ${
-            compact ? 'shrink-0 border-t border-white/[0.08] px-5 py-4' : 'px-4 pb-12 sm:px-8 sm:pb-16'
-          }`}
-        >
-          <BookButton
-            openWidget={false}
-            surface="dark"
-            disabled={!selected || busy}
-            onClick={() => void continueFromTreatment()}
-            className="w-full sm:w-auto"
-          >
-            {busy ? 'Bezig…' : 'Kies een kapper'}
-          </BookButton>
-          {onBack ? (
-            <button
-              type="button"
-              onClick={onBack}
-              className="type-ui mt-4 block text-[#f6f3ee]/40 hover:text-[#f6f3ee]"
-            >
-              Sluiten
-            </button>
-          ) : null}
-        </div>
-      ) : null}
     </div>
   )
 }
