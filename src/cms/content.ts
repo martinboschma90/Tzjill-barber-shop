@@ -16,7 +16,7 @@ import { shopMenu } from '@/data/menu'
 import { lookbookImages as defaultLookbook } from '@/data/lookbook'
 import { products as defaultProducts } from '@/data/products'
 import { collabs as defaultCollabs } from '@/data/collabs'
-import { site as defaultSite } from '@/data/site'
+import { productsEnabled, site as defaultSite } from '@/data/site'
 import { DEFAULT_WHATSAPP_NUMBER } from '@/data/whatsapp'
 import type { Artist, TeamMember } from '@/types/artist'
 
@@ -232,7 +232,13 @@ export type SiteContent = {
   /** Prijzen page + homepage highlights. */
   shopMenu: ShopMenuCategory[]
   lookbookImages: LookbookImage[]
+  /** Shop items. Kept while `productsEnabled` is false. */
   products: ShopProduct[]
+  /**
+   * When false, Producten is hidden in the CMS and on the public site.
+   * Driven by `productsEnabled` in `src/data/site.ts` — stored JSON cannot turn it back on.
+   */
+  productsEnabled: boolean
   collabs: ShopCollab[]
   welcomeKicker: string
   welcomeTitle: string
@@ -299,6 +305,7 @@ export function createDefaultSiteContent(): SiteContent {
     shopMenu: cloneShopMenu(),
     lookbookImages: cloneLookbook(),
     products: cloneProducts(),
+    productsEnabled,
     collabs: cloneCollabs(),
     welcomeKicker: 'Studio',
     welcomeTitle: 'Elke coupe\nis maatwerk.',

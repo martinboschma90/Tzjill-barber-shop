@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import type { Plugin } from 'vite'
+import { productsEnabled } from './src/data/productsEnabled.ts'
 
 const FALLBACK = 'https://tzjill-barber-shop.vercel.app'
 
@@ -8,7 +9,7 @@ const SITEMAP_PATHS = [
   '/',
   '/prijzen',
   '/lookbook',
-  '/products',
+  ...(productsEnabled ? ['/products'] : []),
   '/collabs',
   '/team',
   '/over-ons',
@@ -40,9 +41,12 @@ function sitemapXml(origin: string): string {
 }
 
 function robotsTxt(origin: string, noindex: boolean): string {
+  const hiddenProducts = productsEnabled
+    ? ''
+    : 'Disallow: /products\nDisallow: /producten\n'
   const rules = noindex
     ? `User-agent: *\nDisallow: /\n`
-    : `User-agent: *\nAllow: /\nDisallow: /cms\nDisallow: /cms/\nDisallow: /admin\nDisallow: /admin/\nDisallow: /api/\n`
+    : `User-agent: *\nAllow: /\nDisallow: /cms\nDisallow: /cms/\nDisallow: /admin\nDisallow: /admin/\nDisallow: /api/\n${hiddenProducts}`
   return `${rules}\nHost: ${origin}\nSitemap: ${origin}/sitemap.xml\n`
 }
 

@@ -3,7 +3,7 @@ import { PreviewFrame } from '@/cms/previews/PreviewFrame'
 
 export function ProductsPreview() {
   return (
-    <PreviewFrame label="Products">
+    <PreviewFrame label="Producten">
       <ProductsPage />
     </PreviewFrame>
   )

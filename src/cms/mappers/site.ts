@@ -489,6 +489,7 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
     shopMenu: asShopMenu(row.shopMenu, defaults.shopMenu),
     lookbookImages: asLookbook(row.lookbookImages, defaults.lookbookImages),
     products: asProducts(row.products, defaults.products),
+    productsEnabled: defaults.productsEnabled,
     collabs: asCollabs(row.collabs, defaults.collabs),
     welcomeKicker: asString(row.welcomeKicker, defaults.welcomeKicker),
     welcomeTitle: asString(row.welcomeTitle, defaults.welcomeTitle),
