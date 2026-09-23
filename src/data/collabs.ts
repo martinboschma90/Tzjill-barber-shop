@@ -5,7 +5,7 @@ export const collabs = [
     name: 'Guest barber',
     year: '2026',
     text: 'Gasten in de stoel. Drop-ins en pop-ups — altijd op afspraak.',
-    image: feed.dsc00080,
+    image: '/reviews/01.jpg',
     video: '/reviews/01.mp4',
   },
   {
