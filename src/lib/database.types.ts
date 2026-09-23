@@ -226,6 +226,42 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_signups: {
+        Row: {
+          id: string
+          name: string
+          email: string
+          phone: string
+          source: string
+          user_agent: string | null
+          path: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          email: string
+          phone: string
+          source?: string
+          user_agent?: string | null
+          path?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          email?: string
+          phone?: string
+          source?: string
+          user_agent?: string | null
+          path?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       booking_requests: {
         Row: {
           id: string
