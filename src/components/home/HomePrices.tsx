@@ -48,6 +48,14 @@ export function HomePrices() {
             </li>
           ))}
         </ul>
+        <p className="type-ui mt-8 flex flex-wrap gap-x-6 gap-y-3 text-white/45">
+          <Link to="/baard-scheren" className="wf-link hover:text-white">
+            Baard en scheren →
+          </Link>
+          <Link to="/barbershop-leeuwarden" className="wf-link hover:text-white">
+            Barbershop in Leeuwarden →
+          </Link>
+        </p>
       </div>
     </section>
   )

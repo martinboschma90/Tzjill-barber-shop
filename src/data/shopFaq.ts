@@ -1,7 +1,17 @@
 export const SHOP_FAQ_ITEMS = [
   {
+    q: 'Waar zit Tzjill?',
+    a: 'Tzjill Barber & Lounge zit aan de Voorstreek 18, 8911 JP Leeuwarden, in de binnenstad. Maandag tot woensdag 10:00–18:00, donderdag tot zaterdag 09:00–20:00. Zondag is de zaak dicht.',
+    tag: 'salon' as const,
+  },
+  {
     q: 'Hoe maak ik een afspraak?',
-    a: 'Boek online via Salonhub. Kies een behandeling, kapper en tijd. Je krijgt een bevestiging per mail.',
+    a: 'Via Afspraak maken kies je een behandeling, kapper en tijd. Je krijgt een bevestiging per mail. Bellen kan op 058 844 7025.',
+    tag: 'afspraak' as const,
+  },
+  {
+    q: 'Wat kost een knipbeurt?',
+    a: 'Een haircut bij Tzjill kost €30. Alle tarieven, inclusief baard en kids, staan op de prijzenpagina.',
     tag: 'afspraak' as const,
   },
   {
@@ -40,4 +50,4 @@ export const SHOP_FAQ_FILTERS = [
 
 export const SHOP_FAQ_TITLE = 'Vragen'
 export const SHOP_FAQ_INTRO =
-  'Boeken, te laat, kids — de rest regel je aan de balie.'
+  'Waar we zitten, hoe je boekt, en wat een knipbeurt kost.'

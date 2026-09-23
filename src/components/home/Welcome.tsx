@@ -25,22 +25,30 @@ export function Welcome() {
             </h2>
           </Reveal>
           <Reveal delay={0.16}>
-            <p className="type-lead mt-6 max-w-xs text-white/55">
+            <p className="type-lead mt-6 max-w-sm text-white/55">
               {content.site.welcomeText ||
-                'Knippen, scheren, baard. Voorstreek, Leeuwarden. A man’s world.'}
+                'Traditioneel barbierwerk, met de technieken van nu. Knippen, baard, scheren en kids t/m 11 — aan de Voorstreek 18.'}
             </p>
-            <Link
-              to="/over-ons"
-              className="type-ui group mt-8 inline-flex items-center justify-center gap-2.5 rounded-full border border-white/70 px-6 py-3 text-white transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-px hover:border-white hover:bg-white hover:text-[#2c241c]"
-            >
-              Over ons
-              <span
-                aria-hidden
-                className="transition-transform duration-300 group-hover:translate-x-0.5"
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link
+                to="/over-ons"
+                className="type-ui group inline-flex items-center justify-center gap-2.5 rounded-full border border-white/70 px-6 py-3 text-white transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-px hover:border-white hover:bg-white hover:text-[#2c241c]"
               >
-                →
-              </span>
-            </Link>
+                Over ons
+                <span
+                  aria-hidden
+                  className="transition-transform duration-300 group-hover:translate-x-0.5"
+                >
+                  →
+                </span>
+              </Link>
+              <Link
+                to="/barbershop-leeuwarden"
+                className="type-ui text-white/55 underline decoration-white/30 underline-offset-4 hover:text-white"
+              >
+                Barbershop in Leeuwarden
+              </Link>
+            </div>
           </Reveal>
         </div>
 

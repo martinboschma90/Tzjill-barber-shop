@@ -56,6 +56,7 @@ export function Navbar({
 
   const solid = !onHomeHero || scrolled || menuOpen
   const ink = 'text-white'
+  const navMid = Math.ceil(publicNav.length / 2)
 
   return (
     <header
@@ -66,9 +67,9 @@ export function Navbar({
       <div
         className={`relative mx-auto flex h-[5.25rem] max-w-[1600px] items-center justify-center px-5 sm:h-[5.5rem] sm:px-8 ${ink}`}
       >
-        <div className="pointer-events-auto flex items-center gap-8 lg:gap-12 xl:gap-16">
-          <nav className="hidden items-center gap-7 lg:flex xl:gap-10" aria-label="Primary left">
-            {publicNav.slice(0, 4).map((link) => (
+        <div className="pointer-events-auto flex items-center gap-5 lg:gap-8 xl:gap-10">
+          <nav className="hidden items-center gap-4 lg:flex xl:gap-6" aria-label="Primary left">
+            {publicNav.slice(0, navMid).map((link) => (
               <NavItem key={link.to} to={link.to} label={link.label} pathname={pathname} />
             ))}
           </nav>
@@ -77,8 +78,8 @@ export function Navbar({
             <Logo tone="white" height={64} fetchPriority="high" />
           </Link>
 
-          <nav className="hidden items-center gap-7 lg:flex xl:gap-10" aria-label="Primary right">
-            {publicNav.slice(4).map((link) => (
+          <nav className="hidden items-center gap-4 lg:flex xl:gap-6" aria-label="Primary right">
+            {publicNav.slice(navMid).map((link) => (
               <NavItem key={link.to} to={link.to} label={link.label} pathname={pathname} />
             ))}
           </nav>

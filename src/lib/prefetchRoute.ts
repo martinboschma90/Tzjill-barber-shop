@@ -12,6 +12,8 @@ const loaders: Record<string, () => Promise<unknown>> = {
   '/lookbook': () => import('@/pages/LookbookPage'),
   '/products': () => import('@/pages/ProductsPage'),
   '/collabs': () => import('@/pages/CollabsPage'),
+  '/barbershop-leeuwarden': () => import('@/pages/LocalLandingPage'),
+  '/baard-scheren': () => import('@/pages/BeardPage'),
 }
 
 const warmed = new Set<string>()
