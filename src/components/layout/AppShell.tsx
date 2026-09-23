@@ -67,28 +67,30 @@ export function AppShell({
   return (
     <>
       <div className="relative z-[1] min-h-svh overflow-x-clip bg-[var(--body-bg)]">
-        <Navbar
-          menuOpen={menuOpen}
-          onMenuToggle={() => {
-            setMenuReady(true)
-            prefetchRoute('/prijzen')
-            prefetchRoute('/lookbook')
-            prefetchRoute('/collabs')
-            prefetchRoute('/team')
-            prefetchRoute('/over-ons')
-            prefetchRoute('/contact')
-            setMenuOpen((v) => !v)
-          }}
-          onMenuIntent={() => {
-            setMenuReady(true)
-            prefetchRoute('/prijzen')
-            prefetchRoute('/lookbook')
-            prefetchRoute('/collabs')
-            prefetchRoute('/team')
-            prefetchRoute('/over-ons')
-          }}
-          variant={navVariant}
-        />
+        {salonhubOpen ? null : (
+          <Navbar
+            menuOpen={menuOpen}
+            onMenuToggle={() => {
+              setMenuReady(true)
+              prefetchRoute('/prijzen')
+              prefetchRoute('/lookbook')
+              prefetchRoute('/collabs')
+              prefetchRoute('/team')
+              prefetchRoute('/over-ons')
+              prefetchRoute('/contact')
+              setMenuOpen((v) => !v)
+            }}
+            onMenuIntent={() => {
+              setMenuReady(true)
+              prefetchRoute('/prijzen')
+              prefetchRoute('/lookbook')
+              prefetchRoute('/collabs')
+              prefetchRoute('/team')
+              prefetchRoute('/over-ons')
+            }}
+            variant={navVariant}
+          />
+        )}
         {menuReady ? (
           <Suspense fallback={null}>
             <MenuOverlay open={menuOpen} onClose={() => setMenuOpen(false)} />
@@ -106,7 +108,7 @@ export function AppShell({
           >
             {children}
           </main>
-          {showFooter && !preview ? (
+          {showFooter && !preview && !salonhubOpen ? (
             <>
               <div
                 ref={footerBoundaryRef}

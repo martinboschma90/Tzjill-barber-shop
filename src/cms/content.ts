@@ -12,6 +12,7 @@ import {
   DEFAULT_ROSTER_GLOW_SECONDARY,
   type RosterGlowPreset,
 } from '@/cms/rosterGlow'
+import { feed, HERO_POSTER } from '@/data/feed'
 import { shopMenu } from '@/data/menu'
 import { lookbookImages as defaultLookbook } from '@/data/lookbook'
 import { products as defaultProducts } from '@/data/products'
@@ -25,6 +26,15 @@ export type { RosterGlowPreset }
 export type ShopMenuItem = {
   name: string
   price: string
+}
+
+/** Admin-only display tweak for a live Salonhub treatment. Prices stay on Salonhub. */
+export type BookingTreatmentSetting = {
+  salonhubTreatmentId: string
+  /** Empty keeps the live Salonhub name. */
+  label: string
+  sortOrder: number
+  active: boolean
 }
 
 export type ShopMenuGroup = {
@@ -76,17 +86,17 @@ export const DEFAULT_TREATMENTS: HomeTreatment[] = [
   {
     title: 'Haircut',
     text: 'Strak, classic of fade — altijd in verhouding met je gezicht.',
-    image: '/lookbook/01.jpg',
+    image: feed.dsc00016,
   },
   {
     title: 'Baard',
     text: 'Trimmen, lijnen of hot towel straight razor.',
-    image: '/lookbook/03.jpg',
+    image: feed.dsc00053,
   },
   {
     title: 'Kids',
     text: 'Kinderen t/m 11. Dezelfde precisie, rustiger tempo.',
-    image: '/lookbook/02.jpg',
+    image: feed.dsc00035,
   },
 ]
 
@@ -171,7 +181,7 @@ export type SiteContent = {
   tagline: string
   /** When false, the homepage hero is hidden while the roster remains visible. */
   homeHeroVisible: boolean
-  /** Full-bleed homepage banner (image URL or media://). Empty uses `/brand/hero.jpg`. */
+  /** Full-bleed homepage banner (image URL or media://). Empty uses the feed poster. */
   homeHeroImageUrl: string
   /** Homepage hero video (mp4/webm or media://). Empty uses `/brand/hero.mp4`. */
   homeHeroVideoUrl: string
@@ -211,6 +221,11 @@ export type SiteContent = {
   bookingIntro: string
   /** When false, `/booking` redirects home and the nav link is hidden. */
   bookingVisible: boolean
+  /**
+   * Optional hide/reorder/label for the live Salonhub catalog.
+   * Empty means the widget shows every treatment Salonhub returns.
+   */
+  bookingTreatments: BookingTreatmentSetting[]
   /** Public phone number (footer + contact). */
   phoneNumber: string
   /** WhatsApp number for artist CTAs and footer (display or E.164). */
@@ -263,7 +278,7 @@ export function createDefaultSiteContent(): SiteContent {
     fullName: defaultSite.fullName,
     tagline: defaultSite.tagline,
     homeHeroVisible: true,
-    homeHeroImageUrl: '/brand/hero.jpg',
+    homeHeroImageUrl: HERO_POSTER,
     homeHeroVideoUrl: '/brand/hero.mp4',
     instagram: defaultSite.instagram,
     year: defaultSite.year,
@@ -292,6 +307,7 @@ export function createDefaultSiteContent(): SiteContent {
     bookingTitle: 'Booking Request',
     bookingIntro: "Send us your booking request and we'll get back to you.",
     bookingVisible: true,
+    bookingTreatments: [],
     phoneNumber: '058 844 7025',
     whatsappNumber: DEFAULT_WHATSAPP_NUMBER,
     faqTitle: 'Vragen',
@@ -310,7 +326,7 @@ export function createDefaultSiteContent(): SiteContent {
     welcomeKicker: 'Studio',
     welcomeTitle: 'Elke coupe\nis maatwerk.',
     welcomeText: 'Knippen, scheren, baard. Voorstreek, Leeuwarden. A man’s world.',
-    welcomeImageUrl: '/lookbook/05.png',
+    welcomeImageUrl: feed.dsc00030,
     treatmentsKicker: 'Behandelingen',
     treatmentsTitle: 'Alles wat je\nin de stoel nodig hebt',
     treatmentsIntro:

@@ -15,6 +15,7 @@ import {
   type ShopCollab,
   type ShopMenuCategory,
   type ShopMenuGroup,
+  type BookingTreatmentSetting,
   type ShopMenuItem,
   type ShopProduct,
   type SiteContent,
@@ -237,6 +238,35 @@ function asMenuItems(value: unknown): ShopMenuItem[] {
       return { name, price }
     })
     .filter((item): item is ShopMenuItem => Boolean(item))
+}
+
+function asBookingTreatments(value: unknown): BookingTreatmentSetting[] {
+  if (!Array.isArray(value)) return []
+  const mapped = value
+    .map((item, index) => {
+      if (!item || typeof item !== 'object') return null
+      const row = item as Record<string, unknown>
+      const rawId = row.salonhubTreatmentId
+      const salonhubTreatmentId =
+        typeof rawId === 'number' && Number.isFinite(rawId)
+          ? String(rawId)
+          : asString(rawId).trim()
+      if (!/^[0-9]+$/.test(salonhubTreatmentId)) return null
+      const sort = asNumber(row.sortOrder, index)
+      return {
+        salonhubTreatmentId,
+        label: asString(row.label).trim(),
+        sortOrder: Number.isFinite(sort) ? sort : index,
+        active: asBoolean(row.active, true),
+      }
+    })
+    .filter((item): item is BookingTreatmentSetting => Boolean(item))
+  const seen = new Set<string>()
+  return mapped.filter((item) => {
+    if (seen.has(item.salonhubTreatmentId)) return false
+    seen.add(item.salonhubTreatmentId)
+    return true
+  })
 }
 
 function asShopMenu(
@@ -468,6 +498,7 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
     bookingTitle: asString(row.bookingTitle, defaults.bookingTitle),
     bookingIntro: asString(row.bookingIntro, defaults.bookingIntro),
     bookingVisible: asBoolean(row.bookingVisible, defaults.bookingVisible),
+    bookingTreatments: asBookingTreatments(row.bookingTreatments),
     phoneNumber: asString(row.phoneNumber, defaults.phoneNumber).trim()
       ? asString(row.phoneNumber, defaults.phoneNumber)
       : defaults.phoneNumber,

@@ -43,8 +43,8 @@ export function clientIp(req) {
 }
 
 /** Best-effort per-instance limit (serverless instances do not share memory). */
-export function rateLimit(req, { limit = 8, windowMs = 15 * 60 * 1000 } = {}) {
-  const key = clientIp(req)
+export function rateLimit(req, { limit = 8, windowMs = 15 * 60 * 1000, bucket = 'default' } = {}) {
+  const key = `${bucket}:${clientIp(req)}`
   const now = Date.now()
   const recent = (hits.get(key) || []).filter((stamp) => now - stamp < windowMs)
   if (recent.length >= limit) {
