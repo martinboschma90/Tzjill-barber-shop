@@ -13,11 +13,7 @@ export function ProductsPage() {
       <PageFrame>
         <PageIntro
           kicker="Shop"
-          title={
-            <>
-              Products
-            </>
-          }
+          title="Producten"
           intro="Haar- en baardverzorging. Koop je in de zaak."
         />
         <ul className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">

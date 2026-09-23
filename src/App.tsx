@@ -9,6 +9,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { RouteFallback } from '@/components/ui/RouteFallback'
 import { HomePage } from '@/pages/HomePage'
 import { reportNotFound, startPublicRum } from '@/lib/siteRum'
+import { productsEnabled } from '@/data/site'
 
 const Analytics = lazy(() =>
   import('@vercel/analytics/react').then((m) => ({ default: m.Analytics })),
@@ -93,8 +94,22 @@ function PublicApp() {
           <Route path="/prijzen" element={<MenuPage />} />
           <Route path="/team" element={<TeamPage />} />
           <Route path="/lookbook" element={<LookbookPage />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/producten" element={<Navigate to="/products" replace />} />
+          <Route
+            path="/products"
+            element={
+              productsEnabled ? <ProductsPage /> : <Navigate to="/" replace />
+            }
+          />
+          <Route
+            path="/producten"
+            element={
+              productsEnabled ? (
+                <Navigate to="/products" replace />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
           <Route path="/collabs" element={<CollabsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/booking" element={<BookingPage />} />

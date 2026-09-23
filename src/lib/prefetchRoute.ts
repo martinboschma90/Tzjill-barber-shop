@@ -1,3 +1,5 @@
+import { productsEnabled } from '@/data/site'
+
 /** Warm lazy route chunks on intent (hover / focus). */
 const loaders: Record<string, () => Promise<unknown>> = {
   '/artists/:slug': () => import('@/pages/ArtistPage'),
@@ -18,6 +20,7 @@ const warmed = new Set<string>()
 
 export function prefetchRoute(to: string) {
   const path = to.split('?')[0]
+  if (!productsEnabled && (path === '/products' || path === '/producten')) return
   if (warmed.has(path)) return
   if (path.startsWith('/artists/') && path !== '/artists') {
     warmed.add(path)

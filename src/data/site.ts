@@ -23,6 +23,8 @@ export const LOCATION_ADDRESS = 'Voorstreek 18, 8911 JP Leeuwarden'
 export const MAPS_EMBED_URL = `https://www.google.com/maps?q=${encodeURIComponent(LOCATION_ADDRESS)}&hl=nl&z=16&output=embed`
 export const MAPS_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(LOCATION_ADDRESS)}`
 
+export { productsEnabled } from '@/data/productsEnabled'
+
 export const site = {
   name: 'Tzjill',
   fullName: 'Tzjill Barber & Lounge',
