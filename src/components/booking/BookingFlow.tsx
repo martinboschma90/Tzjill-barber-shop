@@ -92,12 +92,12 @@ function ChoiceRow({
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`group -mx-5 flex w-full gap-4 border-b px-5 py-3.5 text-left ${
+      className={`group flex w-full gap-4 rounded-xl px-3.5 py-3 text-left sm:px-4 sm:py-3.5 ${
         leading ? 'items-center' : 'items-baseline'
       } ${
         active
-          ? 'border-transparent bg-[#efeae3] text-[#2c241c]'
-          : 'border-white/10 text-[#f6f3ee] hover:border-transparent hover:bg-[#efeae3] hover:text-[#2c241c]'
+          ? 'bg-[#efeae3] text-[#2c241c]'
+          : 'text-[#f6f3ee] hover:bg-[#efeae3] hover:text-[#2c241c]'
       }`}
     >
       {leading}
@@ -489,8 +489,8 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
               {audience?.sections.map((section) => (
                 <section key={section.label}>
                   <h2 className="type-label text-white/40">{section.label}</h2>
-                  <BookingWell className="mt-3">
-                    <ul>
+                  <BookingWell list className="mt-3">
+                    <ul className="flex flex-col gap-2">
                       {section.items.map((item) => (
                         <li key={item.id}>
                           <ChoiceRow
@@ -529,8 +529,8 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
 
         {step === 'employee' ? (
           <>
-            <BookingWell className="mt-7">
-              <ul>
+            <BookingWell list className="mt-7">
+              <ul className="flex flex-col gap-2">
                 {busy && !employees.length ? (
                   <li className="type-label py-4 text-white/40">Laden…</li>
                 ) : null}
