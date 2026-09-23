@@ -1,8 +1,10 @@
 import type { Plugin } from 'vite'
-import type { IncomingMessage } from 'node:http'
+import type { IncomingMessage, ServerResponse } from 'node:http'
 import {
+  acceptPromoSignup,
+  handlePromoSignupList,
   isValidPromoPayload,
-  sendPromoSignupEmail,
+  safePromoPath,
 } from './api/promo-signup-lib.mjs'
 
 async function readJsonBody(req: IncomingMessage) {
@@ -15,11 +17,33 @@ async function readJsonBody(req: IncomingMessage) {
   return JSON.parse(raw) as Record<string, unknown>
 }
 
-/** Dev middleware mirroring `/api/promo-signup` on Vercel. */
+function refererPath(req: IncomingMessage) {
+  const referer = String(req.headers.referer || req.headers.referrer || '')
+  try {
+    return new URL(referer).pathname
+  } catch {
+    return ''
+  }
+}
+
+/** Dev middleware mirroring `/api/promo-signup` and `/api/promo-signups`. */
 export function promoSignupPlugin(): Plugin {
   return {
     name: 'promo-signup-api',
     configureServer(server) {
+      const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || ''
+      const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+      if (!url || !serviceKey) {
+        process.env.PROMO_SIGNUP_MEMORY = '1'
+      }
+
+      server.middlewares.use('/api/promo-signups', async (req, res) => {
+        await handlePromoSignupList(
+          req,
+          res as ServerResponse & { statusCode: number },
+        )
+      })
+
       server.middlewares.use('/api/promo-signup', async (req, res) => {
         if (req.method === 'OPTIONS') {
           res.statusCode = 204
@@ -45,13 +69,16 @@ export function promoSignupPlugin(): Plugin {
             return
           }
 
-          const sent = await sendPromoSignupEmail(payload)
-          if (!sent.ok) {
-            res.statusCode = 502
+          const saved = await acceptPromoSignup(payload, {
+            userAgent: req.headers['user-agent'],
+            path: safePromoPath(payload.path) || refererPath(req),
+          })
+          if (!saved.ok) {
+            res.statusCode = 503
             res.setHeader('Content-Type', 'application/json')
             res.end(
               JSON.stringify({
-                error: sent.error || 'Aanmelding kon niet worden verstuurd.',
+                error: saved.error || 'Aanmelding kon niet worden opgeslagen.',
               }),
             )
             return

@@ -1,5 +1,14 @@
-import { sendPromoSignupEmail, isValidPromoPayload } from './promo-signup-lib.mjs'
+import { acceptPromoSignup, isValidPromoPayload, safePromoPath } from './promo-signup-lib.mjs'
 import { json, rateLimit, setCors, allowedOrigin, isSiteHost } from './http-security.mjs'
+
+function refererPath(req) {
+  const referer = String(req.headers.referer || req.headers.referrer || '')
+  try {
+    return new URL(referer).pathname
+  } catch {
+    return ''
+  }
+}
 
 export default async function handler(req, res) {
   const origin = req.headers.origin
@@ -35,10 +44,13 @@ export default async function handler(req, res) {
       return
     }
 
-    const sent = await sendPromoSignupEmail(payload)
-    if (!sent.ok) {
-      json(res, 502, {
-        error: sent.error || 'Aanmelding kon niet worden verstuurd.',
+    const saved = await acceptPromoSignup(payload, {
+      userAgent: req.headers['user-agent'],
+      path: safePromoPath(payload.path) || refererPath(req),
+    })
+    if (!saved.ok) {
+      json(res, 503, {
+        error: saved.error || 'Aanmelding kon niet worden opgeslagen.',
       })
       return
     }

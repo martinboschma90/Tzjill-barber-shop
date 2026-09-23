@@ -38,6 +38,23 @@ Expected: 12 rows upserted; public site (Phase 2.1) reads them when present.
 Run `migrations/20260729103000_phase3_1_temp_anon_artist_writes.sql` in the SQL Editor
 so the CMS can insert/update/delete artists with the anon key **before** auth lands.
 
+## Promo signups (`promo_signups`)
+
+Run `migrations/20260923120000_promo_signups.sql` in the SQL Editor (or
+`supabase db push`) before the popup is expected to store leads. The 10-year
+popup writes through `/api/promo-signup` with the existing
+`SUPABASE_SERVICE_ROLE_KEY`. Admins and editors read the list in the CMS at
+**Aanmeldingen** (`/cms/aanmeldingen`) and can export CSV. Anonymous clients
+cannot read the table.
+
+A saved row is success even if the Resend mail fails afterwards. The same
+email for this promo updates the existing row and does not send a second mail.
+If the database write fails, the API returns an error and does not claim the
+signup succeeded.
+
+Local `npm run dev` without a service role key keeps signups in the dev-server
+memory so the page can be tried. That store is off on Vercel.
+
 ## Phase 3.3 — CMS auth
 
 1. Dashboard → Authentication → Users → **Add user** (email + password) for the admin.

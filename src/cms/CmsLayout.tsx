@@ -11,6 +11,7 @@ import {
   Search,
   Settings,
   Sun,
+  Ticket,
   UserPlus,
   X,
 } from 'lucide-react'
@@ -35,6 +36,7 @@ import { useCmsTheme } from '@/cms/flow-mates/CmsTheme'
 import { isPagesWorkspacePath, PagesTabBar } from '@/cms/flow-mates/PagesTabBar'
 import type { CmsPanelProps } from '@/cms/panels/types'
 import { UsersAdmin } from '@/cms/editors/UsersAdmin'
+import { PromoSignupsPanel } from '@/cms/editors/PromoSignupsPanel'
 import { RouteFallback } from '@/components/ui/RouteFallback'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 
@@ -62,7 +64,7 @@ const NAV = [
 ]
 
 function useCmsPanels(): {
-  mode: 'dashboard' | 'pages' | 'artists' | 'media' | 'settings'
+  mode: 'dashboard' | 'pages' | 'artists' | 'media' | 'settings' | 'signups'
   title: string
   subtitle: string
   Page: ComponentType<CmsPanelProps> | null
@@ -149,6 +151,14 @@ function useCmsPanels(): {
   }
   if (pathname.startsWith('/cms/footer')) {
     return { mode: 'pages', title: 'Footer', subtitle: 'Globale footer', Page: CmsFooterPanel }
+  }
+  if (pathname.startsWith('/cms/aanmeldingen')) {
+    return {
+      mode: 'signups',
+      title: 'Aanmeldingen',
+      subtitle: '10 jaar Tzjill — popup',
+      Page: null,
+    }
   }
   return {
     mode: 'pages',
@@ -237,6 +247,16 @@ export function CmsLayout() {
 
   const navItems = [
     ...NAV,
+    ...(canEdit
+      ? [
+          {
+            to: '/cms/aanmeldingen',
+            label: 'Aanmeldingen',
+            icon: Ticket,
+            match: 'signups' as const,
+          },
+        ]
+      : []),
     ...(canManageUsers
       ? [
           {
@@ -522,7 +542,7 @@ export function CmsLayout() {
                 {panels.title}
               </h1>
               <p className="mt-1.5 text-sm leading-relaxed text-neutral-500">{panels.subtitle}</p>
-              {panels.mode !== 'dashboard' ? (
+              {panels.mode !== 'dashboard' && panels.mode !== 'signups' ? (
                 <p className="mt-2 text-[11px] uppercase tracking-wide text-neutral-400">
                   {formatSavedAt(savedAt)}
                   {artistSyncError ? ` · Artist: ${artistSyncError}` : ''}
@@ -533,7 +553,9 @@ export function CmsLayout() {
           </div>
           ) : null}
 
-          {usersPath ? (
+          {panels.mode === 'signups' ? (
+            <PromoSignupsPanel />
+          ) : usersPath ? (
             <UsersAdmin />
           ) : panels.mode === 'dashboard' ? (
             <DashboardHome />

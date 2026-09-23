@@ -7,8 +7,10 @@ import {
   Home,
   Phone,
   Settings,
+  Ticket,
   Users,
 } from 'lucide-react'
+import { useAuth } from '@/cms/auth/AuthProvider'
 import { useCms } from '@/cms/CmsProvider'
 import { useMedia } from '@/cms/media/MediaProvider'
 import { PAGE_TABS } from '@/cms/flow-mates/PagesTabBar'
@@ -81,6 +83,7 @@ function ActionTile({
 
 /** First screen — same Frame CMS dashboard, Notype counts. */
 export function DashboardHome() {
+  const { canEdit } = useAuth()
   const { content, savedAt } = useCms()
   const { assets } = useMedia()
   const pagesCount = PAGE_TABS.length
@@ -177,6 +180,15 @@ export function DashboardHome() {
             icon={Settings}
             accent="bg-emerald-500/10 text-emerald-500"
           />
+          {canEdit ? (
+            <ActionTile
+              to="/cms/aanmeldingen"
+              label="Aanmeldingen"
+              description="10 jaar popup — namen, mail en 06."
+              icon={Ticket}
+              accent="bg-emerald-500/10 text-emerald-500"
+            />
+          ) : null}
         </div>
       </section>
 

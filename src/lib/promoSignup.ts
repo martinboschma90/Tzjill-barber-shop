@@ -40,7 +40,10 @@ export async function submitPromoSignup(payload: {
     const res = await fetch('/api/promo-signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+      ...payload,
+      path: typeof window !== 'undefined' ? window.location.pathname : '',
+    }),
     })
     const data = (await res.json().catch(() => null)) as {
       error?: string

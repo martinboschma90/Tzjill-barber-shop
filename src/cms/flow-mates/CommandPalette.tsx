@@ -12,6 +12,7 @@ const COMMANDS: { to: string; label: string; group: string }[] = [
   { to: '/cms/over-ons', label: 'Over ons', group: "Pagina's" },
   { to: '/cms/contact', label: 'Contact', group: "Pagina's" },
   { to: '/cms/faq', label: 'FAQ', group: 'Inhoud' },
+  { to: '/cms/aanmeldingen', label: 'Aanmeldingen', group: 'Inhoud' },
   { to: '/cms/footer', label: 'Footer', group: "Pagina's" },
   { to: '/cms/team', label: 'Team', group: 'Inhoud' },
   { to: '/cms/media', label: 'Mediabibliotheek', group: 'Inhoud' },
