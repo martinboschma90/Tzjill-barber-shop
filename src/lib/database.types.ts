@@ -226,6 +226,36 @@ export type Database = {
         }
         Relationships: []
       }
+      form_submissions: {
+        Row: {
+          id: string
+          form_id: string
+          name: string
+          email: string
+          phone: string
+          created_at: string
+          meta: Json
+        }
+        Insert: {
+          id?: string
+          form_id: string
+          name: string
+          email: string
+          phone?: string
+          created_at?: string
+          meta?: Json
+        }
+        Update: {
+          id?: string
+          form_id?: string
+          name?: string
+          email?: string
+          phone?: string
+          created_at?: string
+          meta?: Json
+        }
+        Relationships: []
+      }
       booking_requests: {
         Row: {
           id: string
@@ -283,6 +313,16 @@ export type Database = {
       cms_ensure_role: { Args: Record<PropertyKey, never>; Returns: string }
       cms_role: { Args: Record<PropertyKey, never>; Returns: string }
       cms_is_editor: { Args: Record<PropertyKey, never>; Returns: boolean }
+      save_form_submission: {
+        Args: {
+          p_form_id: string
+          p_name: string
+          p_email: string
+          p_phone: string
+          p_meta?: Json
+        }
+        Returns: Json
+      }
     }
     Enums: Record<string, never>
     CompositeTypes: Record<string, never>

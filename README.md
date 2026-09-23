@@ -10,6 +10,9 @@ npm run dev
 
 - Site: http://localhost:5174/
 - CMS: http://localhost:5174/cms — **locked** until Supabase env is set
+- Formulieren: `/cms/formulieren` — promo-aanmeldingen. Eerst
+  `supabase/migrations/20260923120000_form_submissions.sql` uitvoeren
+  (zie `supabase/README.md`).
 
 ## Vercel env
 

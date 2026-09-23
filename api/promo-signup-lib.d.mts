@@ -10,3 +10,13 @@ export function formatPromoEmail(payload: {
 export function sendPromoSignupEmail(
   payload: unknown,
 ): Promise<{ ok: true } | { ok: false; error: string }>
+export function acceptPromoSignup(payload: unknown): Promise<{
+  stored: boolean
+  emailed: boolean
+  emailError: string | null
+}>
+export function promoSignupResponse(result: {
+  stored?: boolean
+  emailed?: boolean
+  emailError?: string | null
+}): { status: number; body: { ok?: boolean; stored?: boolean; emailed?: boolean; error?: string } }

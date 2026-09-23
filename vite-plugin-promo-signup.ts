@@ -1,8 +1,10 @@
 import type { Plugin } from 'vite'
 import type { IncomingMessage } from 'node:http'
+import { listDevFormSubmissions, usesDevFormStore } from './api/form-submissions-lib.mjs'
 import {
+  acceptPromoSignup,
   isValidPromoPayload,
-  sendPromoSignupEmail,
+  promoSignupResponse,
 } from './api/promo-signup-lib.mjs'
 
 async function readJsonBody(req: IncomingMessage) {
@@ -20,6 +22,20 @@ export function promoSignupPlugin(): Plugin {
   return {
     name: 'promo-signup-api',
     configureServer(server) {
+      server.middlewares.use('/api/form-submissions', (req, res) => {
+        if (req.method !== 'GET' || !usesDevFormStore()) {
+          res.statusCode = req.method === 'GET' ? 404 : 405
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: 'Not found' }))
+          return
+        }
+        const url = new URL(req.url || '/', 'http://127.0.0.1')
+        const formId = url.searchParams.get('form_id') || ''
+        res.statusCode = 200
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify({ submissions: listDevFormSubmissions(formId) }))
+      })
+
       server.middlewares.use('/api/promo-signup', async (req, res) => {
         if (req.method === 'OPTIONS') {
           res.statusCode = 204
@@ -45,21 +61,11 @@ export function promoSignupPlugin(): Plugin {
             return
           }
 
-          const sent = await sendPromoSignupEmail(payload)
-          if (!sent.ok) {
-            res.statusCode = 502
-            res.setHeader('Content-Type', 'application/json')
-            res.end(
-              JSON.stringify({
-                error: sent.error || 'Aanmelding kon niet worden verstuurd.',
-              }),
-            )
-            return
-          }
-
-          res.statusCode = 200
+          const result = await acceptPromoSignup(payload)
+          const http = promoSignupResponse(result)
+          res.statusCode = http.status
           res.setHeader('Content-Type', 'application/json')
-          res.end(JSON.stringify({ ok: true }))
+          res.end(JSON.stringify(http.body))
         } catch (error) {
           res.statusCode = 500
           res.setHeader('Content-Type', 'application/json')

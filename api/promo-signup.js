@@ -1,4 +1,4 @@
-import { sendPromoSignupEmail, isValidPromoPayload } from './promo-signup-lib.mjs'
+import { acceptPromoSignup, isValidPromoPayload, promoSignupResponse } from './promo-signup-lib.mjs'
 import { json, rateLimit, setCors, allowedOrigin, isSiteHost } from './http-security.mjs'
 
 export default async function handler(req, res) {
@@ -35,15 +35,9 @@ export default async function handler(req, res) {
       return
     }
 
-    const sent = await sendPromoSignupEmail(payload)
-    if (!sent.ok) {
-      json(res, 502, {
-        error: sent.error || 'Aanmelding kon niet worden verstuurd.',
-      })
-      return
-    }
-
-    json(res, 200, { ok: true })
+    const result = await acceptPromoSignup(payload)
+    const http = promoSignupResponse(result)
+    json(res, http.status, http.body)
   } catch {
     json(res, 500, { error: 'Aanmelding mislukt. Probeer het opnieuw.' })
   }
