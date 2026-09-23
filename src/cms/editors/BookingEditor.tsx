@@ -104,7 +104,7 @@ export function BookingEditor() {
 
       <EditorSection
         title="Behandelingen"
-        description="De widget leest naam, prijs en duur live uit Salonhub. Hier verberg, hernoem of sorteer je ze. Een lege lijst toont de hele live catalogus."
+        description="Naam, prijs, duur en categorie komen uit de prijslijst. Thumbnails komen uit de homepage-behandelingen. Salonhub levert het id en de vrije tijden. Hier verberg, hernoem of sorteer je ze. Een lege lijst toont elke boekbare behandeling."
         defaultOpen
         badge="Salonhub"
       >

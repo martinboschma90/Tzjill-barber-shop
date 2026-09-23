@@ -226,6 +226,17 @@ function asFaqCategories(
     .filter((item): item is FaqCategory => Boolean(item))
 }
 
+function asMinutes(value: unknown): number | undefined {
+  const parsed =
+    typeof value === 'number'
+      ? value
+      : typeof value === 'string' && value.trim()
+        ? Number(value.replace(',', '.').replace(/[^\d.]/g, ''))
+        : NaN
+  if (!Number.isFinite(parsed) || parsed <= 0) return undefined
+  return Math.round(parsed)
+}
+
 function asMenuItems(value: unknown): ShopMenuItem[] {
   if (!Array.isArray(value)) return []
   return value
@@ -235,7 +246,8 @@ function asMenuItems(value: unknown): ShopMenuItem[] {
       const name = asString(row.name)
       const price = asString(row.price)
       if (!name && !price) return null
-      return { name, price }
+      const minutes = asMinutes(row.minutes)
+      return minutes ? { name, price, minutes } : { name, price }
     })
     .filter((item): item is ShopMenuItem => Boolean(item))
 }
