@@ -22,13 +22,12 @@ type BookingFlowProps = {
   compact?: boolean
 }
 
-type Step = 'treatment' | 'employee' | 'date' | 'time' | 'details' | 'verify' | 'success'
+type Step = 'treatment' | 'employee' | 'date' | 'details' | 'verify' | 'success'
 
 const STEPS: { id: Step; label: string }[] = [
   { id: 'treatment', label: 'Behandeling' },
   { id: 'employee', label: 'Kapper' },
-  { id: 'date', label: 'Datum' },
-  { id: 'time', label: 'Tijd' },
+  { id: 'date', label: 'Datum & tijd' },
   { id: 'details', label: 'Bevestigen' },
 ]
 
@@ -72,9 +71,6 @@ function formatDay(iso: string) {
 function formatTime(value: string) {
   return value.slice(0, 5)
 }
-
-const chipClass =
-  'type-ui rounded-full border border-white/75 bg-white/5 px-4 py-3 text-white transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-px hover:border-[#efeae3] hover:bg-[#efeae3] hover:text-[#2c241c]'
 
 function ChoiceRow({
   active = false,
@@ -154,6 +150,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
   const { content } = useCms()
   const reduceMotion = useReducedMotion()
   const sessionRef = useRef(crypto.randomUUID())
+  const timesRequest = useRef(0)
   const formId = useId()
   const [step, setStep] = useState<Step>('treatment')
   const [loading, setLoading] = useState(true)
@@ -250,7 +247,11 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
     try {
       const result = await loadDates(sessionRef.current, selected.id, employee.id)
       setDates(result.dates)
-      setDate((current) => (result.dates.includes(current) ? current : ''))
+      if (!result.dates.includes(date)) {
+        setDate('')
+        setTime('')
+        setTimes([])
+      }
     } catch (err) {
       setDates([])
       setError(err instanceof Error ? err.message : 'Dagen laden lukt nu niet.')
@@ -259,33 +260,34 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
     }
   }
 
-  function pickDate(iso: string) {
+  async function pickDate(iso: string) {
+    if (!selected || !employee || iso === date) return
     setDate(iso)
     setTime('')
     setTimes([])
     setError('')
-  }
-
-  async function goTimes(nextDate: string) {
-    if (!selected || !employee) return
-    setDate(nextDate)
-    setTime('')
-    setError('')
+    const request = ++timesRequest.current
     setBusy(true)
-    setStep('time')
     try {
-      const result = await loadTimes(sessionRef.current, selected.id, employee.id, nextDate)
+      const result = await loadTimes(sessionRef.current, selected.id, employee.id, iso)
+      if (timesRequest.current !== request) return
       setTimes(result.times)
     } catch (err) {
+      if (timesRequest.current !== request) return
       setTimes([])
       setError(err instanceof Error ? err.message : 'Tijden laden lukt nu niet.')
     } finally {
-      setBusy(false)
+      if (timesRequest.current === request) setBusy(false)
     }
   }
 
   function pickTime(next: string) {
     setTime(next)
+    setError('')
+  }
+
+  function continueFromSchedule() {
+    if (!date || !time) return
     setError('')
     setStep('details')
   }
@@ -331,8 +333,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
     setError('')
     if (step === 'employee') setStep('treatment')
     else if (step === 'date') setStep('employee')
-    else if (step === 'time') setStep('date')
-    else if (step === 'details') setStep('time')
+    else if (step === 'details') setStep('date')
     else if (step === 'verify') setStep('details')
   }
 
@@ -340,10 +341,8 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
     step === 'employee'
       ? 'Kies een kapper'
       : step === 'date'
-        ? 'Kies een dag'
-        : step === 'time'
-          ? 'Kies een tijd'
-          : step === 'details'
+        ? 'Kies dag en tijd'
+        : step === 'details'
             ? 'Bevestig je afspraak'
             : step === 'verify'
               ? 'Code uit je mail'
@@ -563,7 +562,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
                 onClick={() => void continueFromEmployee()}
                 className="mt-6 w-full sm:w-auto"
               >
-                {busy ? 'Bezig…' : 'Kies een dag'}
+                {busy ? 'Bezig…' : 'Kies dag en tijd'}
               </BookButton>
             )}
           </>
@@ -576,39 +575,58 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
               <p className="mt-7 text-[13px] text-white/55">Geen vrije dagen in de komende weken.</p>
             ) : null}
             {dates.length ? (
-              <DateAgenda dates={dates} value={date} onSelect={pickDate} />
+              <div className="mt-7 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_13.5rem]">
+                <DateAgenda dates={dates} value={date} onSelect={(iso) => void pickDate(iso)} />
+                <div className="min-w-0">
+                  <p className="type-label text-white/40">Tijd</p>
+                  {!date ? (
+                    <p className="mt-3 text-[13px] leading-relaxed text-white/55">
+                      Kies eerst een dag in de agenda.
+                    </p>
+                  ) : null}
+                  {date && busy && !times.length ? (
+                    <p className="type-label mt-3 text-white/40">Laden…</p>
+                  ) : null}
+                  {date && !busy && !times.length ? (
+                    <p className="mt-3 text-[13px] text-white/55">Geen tijden op deze dag.</p>
+                  ) : null}
+                  {times.length ? (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {times.map((slot) => {
+                        const selectedSlot = time === slot
+                        return (
+                          <button
+                            key={slot}
+                            type="button"
+                            aria-pressed={selectedSlot}
+                            onClick={() => pickTime(slot)}
+                            className={`type-ui min-w-[4.5rem] rounded-full border px-4 py-3 ${
+                              selectedSlot
+                                ? 'border-[#efeae3] bg-[#efeae3] text-[#2c241c]'
+                                : 'border-white/75 bg-white/5 text-white hover:border-[#efeae3] hover:bg-[#efeae3] hover:text-[#2c241c]'
+                            }`}
+                          >
+                            {formatTime(slot)}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
             ) : null}
             {compact || !dates.length ? null : (
               <BookButton
                 openWidget={false}
                 surface="dark"
-                disabled={!date || busy}
-                onClick={() => void goTimes(date)}
+                disabled={!date || !time || busy}
+                onClick={continueFromSchedule}
                 className="mt-6 w-full sm:w-auto"
               >
-                {busy ? 'Bezig…' : 'Kies een tijd'}
+                {busy ? 'Bezig…' : 'Verder'}
               </BookButton>
             )}
           </>
-        ) : null}
-
-        {step === 'time' ? (
-          <div className="mt-7 flex flex-wrap gap-2">
-            {busy && !times.length ? <p className="type-label text-white/40">Laden…</p> : null}
-            {!busy && !times.length ? (
-              <p className="text-[13px] text-white/55">Geen tijden op deze dag.</p>
-            ) : null}
-            {times.map((slot) => (
-              <button
-                key={slot}
-                type="button"
-                onClick={() => pickTime(slot)}
-                className={`${chipClass} min-w-[4.5rem]`}
-              >
-                {formatTime(slot)}
-              </button>
-            ))}
-          </div>
         ) : null}
 
         {step === 'details' && selected && employee ? (
@@ -740,7 +758,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
               onClick={() => void continueFromEmployee()}
               className="w-full"
             >
-              {busy ? 'Bezig…' : 'Kies een dag'}
+              {busy ? 'Bezig…' : 'Kies dag en tijd'}
             </BookButton>
           </div>
         ) : null}
@@ -750,11 +768,11 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
             <BookButton
               openWidget={false}
               surface="dark"
-              disabled={!date || busy}
-              onClick={() => void goTimes(date)}
+              disabled={!date || !time || busy}
+              onClick={continueFromSchedule}
               className="w-full"
             >
-              {busy ? 'Bezig…' : 'Kies een tijd'}
+              {busy ? 'Bezig…' : 'Verder'}
             </BookButton>
           </div>
         ) : null}

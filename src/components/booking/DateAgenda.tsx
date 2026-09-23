@@ -68,7 +68,7 @@ export function DateAgenda({ dates, value, onSelect }: DateAgendaProps) {
   const openThisMonth = cells.filter((cell) => cell?.open).length
 
   return (
-    <div className="mt-7 overflow-hidden rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-3 py-4 sm:px-5 sm:py-5">
+    <div className="overflow-hidden rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-3 py-4 sm:px-5 sm:py-5">
       <div className="flex items-center justify-between gap-3">
         <button
           type="button"
@@ -135,9 +135,7 @@ export function DateAgenda({ dates, value, onSelect }: DateAgendaProps) {
         {value ? (
           <>
             <p className="type-lead capitalize text-[#f6f3ee]">{longDay(value)}</p>
-            <p className="mt-1 text-[13px] leading-relaxed text-white/50">
-              Deze dag is vrij. De tijden komen in de volgende stap.
-            </p>
+            <p className="mt-1 text-[13px] leading-relaxed text-white/50">Kies een tijd voor deze dag.</p>
           </>
         ) : (
           <p className="text-[13px] leading-relaxed text-white/50">
