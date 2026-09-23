@@ -5,6 +5,7 @@ import { BookButton } from '@/components/booking/BookButton'
 import { BookingWell } from '@/components/booking/BookingWell'
 import { DateAgenda } from '@/components/booking/DateAgenda'
 import { ResolvedImg } from '@/components/ui/ResolvedMedia'
+import { treatmentStill, type TreatmentStill } from '@/data/treatmentStills'
 import { FALLBACK_TREATMENTS, presentTreatments } from '@/data/salonhubCatalog'
 import { LOCATION_ADDRESS, PHONE_DISPLAY, PHONE_TEL } from '@/data/site'
 import {
@@ -498,6 +499,9 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
                             title={item.name}
                             meta={item.minutes ? `${item.minutes} min` : undefined}
                             aside={item.priceLabel || '—'}
+                            leading={
+                              <TreatmentThumb still={treatmentStill(item)} active={selected?.id === item.id} />
+                            }
                             onClick={() => setSelectedId(item.id)}
                           />
                         </li>
@@ -801,6 +805,33 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
         ) : null}
       </div>
     </div>
+  )
+}
+
+function TreatmentThumb({ still, active }: { still: TreatmentStill; active: boolean }) {
+  if (still.kind === 'kids') {
+    return (
+      <span
+        className={`type-ui flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-[10px] tracking-[0.14em] ${
+          active
+            ? 'bg-[#2c241c] text-[#efeae3]'
+            : 'bg-[#efeae3] text-[#2c241c] group-hover:bg-[#2c241c] group-hover:text-[#efeae3]'
+        }`}
+      >
+        Kids
+      </span>
+    )
+  }
+  return (
+    <img
+      src={still.src}
+      alt=""
+      width={48}
+      height={48}
+      className={`h-12 w-12 shrink-0 rounded-xl object-cover ring-1 ${
+        still.focus === 'beard' ? 'object-bottom' : 'object-[center_28%]'
+      } ${active ? 'ring-[#2c241c]/20' : 'ring-white/15'}`}
+    />
   )
 }
 
