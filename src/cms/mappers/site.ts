@@ -498,6 +498,10 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
     treatmentsTitle: asString(row.treatmentsTitle, defaults.treatmentsTitle),
     treatmentsIntro: asString(row.treatmentsIntro, defaults.treatmentsIntro),
     treatments: asTreatments(row.treatments, defaults.treatments),
+    heroTitle: asString(row.heroTitle, defaults.heroTitle).trim() || defaults.heroTitle,
+    heroSubtitle:
+      asString(row.heroSubtitle, defaults.heroSubtitle).trim() || defaults.heroSubtitle,
+    heroLead: asString(row.heroLead, defaults.heroLead).trim() || defaults.heroLead,
   }
 }
 

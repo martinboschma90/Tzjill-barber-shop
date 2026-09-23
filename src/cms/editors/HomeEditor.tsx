@@ -54,8 +54,33 @@ export function HomeEditor() {
                     label="Tagline"
                     value={site.tagline}
                     rows={2}
+                    hint="Staat boven de H1. “A man’s world” is de tagline, niet de kop."
                     onChange={(tagline) =>
                       setSite((current) => ({ ...current, tagline }))
+                    }
+                  />
+                  <TextInput
+                    label="H1"
+                    value={site.heroTitle}
+                    placeholder="Tzjill"
+                    onChange={(heroTitle) =>
+                      setSite((current) => ({ ...current, heroTitle }))
+                    }
+                  />
+                  <TextInput
+                    label="Onderregel in de H1"
+                    value={site.heroSubtitle}
+                    onChange={(heroSubtitle) =>
+                      setSite((current) => ({ ...current, heroSubtitle }))
+                    }
+                  />
+                  <TextArea
+                    label="Eerste alinea"
+                    value={site.heroLead}
+                    rows={4}
+                    hint="Naam, wat je doet, en waar de zaak zit."
+                    onChange={(heroLead) =>
+                      setSite((current) => ({ ...current, heroLead }))
                     }
                   />
                 </SectionGroup>

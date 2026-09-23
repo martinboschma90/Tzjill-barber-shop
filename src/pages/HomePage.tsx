@@ -24,6 +24,8 @@ export function HomePage() {
       prefetchRoute('/team')
       prefetchRoute('/over-ons')
       prefetchRoute('/contact')
+      prefetchRoute('/barbershop-leeuwarden')
+      prefetchRoute('/baard-scheren')
     }
     const idle = (
       window as Window & {
@@ -43,7 +45,14 @@ export function HomePage() {
 
   return (
     <AppShell navVariant={heroVisible ? 'hero' : 'wordmark'}>
-      {heroVisible ? <Hero /> : null}
+      {heroVisible ? (
+        <Hero />
+      ) : (
+        <h1 className="sr-only">
+          {content.site.heroTitle?.trim() || 'Tzjill'} — barbershop en herenkapper in
+          Leeuwarden
+        </h1>
+      )}
       <Welcome />
       <Treatments />
       <HomePrices />

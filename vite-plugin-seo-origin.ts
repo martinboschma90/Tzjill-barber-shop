@@ -15,6 +15,8 @@ const SITEMAP_PATHS = [
   '/contact',
   '/booking',
   '/faq',
+  '/barbershop-leeuwarden',
+  '/baard-scheren',
 ]
 
 function cleanOrigin(value: string): string {

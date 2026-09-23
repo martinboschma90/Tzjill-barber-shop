@@ -15,8 +15,9 @@ const hoursCompact = [
   { days: 'Zondag', time: 'Gesloten' },
 ]
 
-const navMain = publicNav.slice(0, 4)
-const navMore = publicNav.slice(4)
+const navMid = Math.ceil(publicNav.length / 2)
+const navMain = publicNav.slice(0, navMid)
+const navMore = publicNav.slice(navMid)
 
 export function Footer() {
   const { content } = useCms()

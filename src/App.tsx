@@ -45,6 +45,12 @@ const BookingPage = lazy(() =>
 const FaqPage = lazy(() =>
   import('@/pages/FaqPage').then((m) => ({ default: m.FaqPage })),
 )
+const LocalLandingPage = lazy(() =>
+  import('@/pages/LocalLandingPage').then((m) => ({ default: m.LocalLandingPage })),
+)
+const BeardPage = lazy(() =>
+  import('@/pages/BeardPage').then((m) => ({ default: m.BeardPage })),
+)
 const CmsApp = lazy(() => import('@/CmsApp'))
 
 function publicPageViewsOnly(event: BeforeSendEvent) {
@@ -99,6 +105,13 @@ function PublicApp() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/faq" element={<FaqPage />} />
+          <Route path="/barbershop-leeuwarden" element={<LocalLandingPage />} />
+          <Route
+            path="/herenkapper-leeuwarden"
+            element={<Navigate to="/barbershop-leeuwarden" replace />}
+          />
+          <Route path="/baard-scheren" element={<BeardPage />} />
+          <Route path="/baard" element={<Navigate to="/baard-scheren" replace />} />
           <Route path="*" element={<UnknownPublicPath />} />
         </Routes>
       </Suspense>

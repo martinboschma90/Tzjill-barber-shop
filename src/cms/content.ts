@@ -242,6 +242,12 @@ export type SiteContent = {
   treatmentsTitle: string
   treatmentsIntro: string
   treatments: HomeTreatment[]
+  /** Homepage H1. “A man’s world” stays the tagline above it. */
+  heroTitle: string
+  /** Line inside the homepage H1, under the name. */
+  heroSubtitle: string
+  /** First paragraph under the homepage H1. */
+  heroLead: string
 }
 
 export type CmsContent = {
@@ -289,26 +295,31 @@ export function createDefaultSiteContent(): SiteContent {
     phoneNumber: '058 844 7025',
     whatsappNumber: DEFAULT_WHATSAPP_NUMBER,
     faqTitle: 'Vragen',
-    faqIntro: 'Boeken, te laat, kids — de rest regel je aan de balie.',
+    faqIntro: 'Waar we zitten, hoe je boekt, en wat een knipbeurt kost.',
     faqVisible: true,
     faqCategories: createDefaultFaqCategories(),
     publicSiteUrl: FALLBACK_PUBLIC_SITE_URL,
     metaDescription:
-      'Tzjill Barber & Lounge in Leeuwarden. Trendy haircuts and hot towel straight razor shaves.',
+      'Tzjill is een barbershop en herenkapper aan de Voorstreek 18 in Leeuwarden. Knippen, baard, scheren en kids t/m 11. Maak een afspraak.',
     searchIndexing: false,
     shopMenu: cloneShopMenu(),
     lookbookImages: cloneLookbook(),
     products: cloneProducts(),
     collabs: cloneCollabs(),
-    welcomeKicker: 'Studio',
+    welcomeKicker: 'Tzjill · Leeuwarden',
     welcomeTitle: 'Elke coupe\nis maatwerk.',
-    welcomeText: 'Knippen, scheren, baard. Voorstreek, Leeuwarden. A man’s world.',
+    welcomeText:
+      'Traditioneel barbierwerk, met de technieken van nu. Knippen, baard, scheren en kids t/m 11 — aan de Voorstreek 18.',
     welcomeImageUrl: '/lookbook/05.png',
     treatmentsKicker: 'Behandelingen',
     treatmentsTitle: 'Alles wat je\nin de stoel nodig hebt',
     treatmentsIntro:
       'Knippen, baard, kids — dezelfde precisie, altijd in verhouding met je gezicht.',
     treatments: cloneTreatments(),
+    heroTitle: 'Tzjill',
+    heroSubtitle: 'Barbershop en herenkapper in Leeuwarden',
+    heroLead:
+      'Tzjill is een barbershop en herenkapper aan de Voorstreek 18 in Leeuwarden. Knippen, baard, scheren en kids t/m 11 — maatwerk, traditioneel barbierwerk met de technieken van nu.',
   }
 }
 
