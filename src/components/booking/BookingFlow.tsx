@@ -1,8 +1,10 @@
-import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useCms } from '@/cms/CmsContext'
 import { BookButton } from '@/components/booking/BookButton'
 import { BookingWell } from '@/components/booking/BookingWell'
+import { DateAgenda } from '@/components/booking/DateAgenda'
+import { ResolvedImg } from '@/components/ui/ResolvedMedia'
 import { FALLBACK_TREATMENTS, presentTreatments } from '@/data/salonhubCatalog'
 import { LOCATION_ADDRESS, PHONE_DISPLAY, PHONE_TEL } from '@/data/site'
 import {
@@ -79,12 +81,14 @@ function ChoiceRow({
   title,
   meta,
   aside,
+  leading,
   onClick,
 }: {
   active?: boolean
   title: string
   meta?: string
   aside?: string
+  leading?: ReactNode
   onClick: () => void
 }) {
   return (
@@ -92,12 +96,15 @@ function ChoiceRow({
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`group -mx-5 flex w-full items-baseline gap-4 border-b px-5 py-4 text-left ${
+      className={`group -mx-5 flex w-full gap-4 border-b px-5 py-3.5 text-left ${
+        leading ? 'items-center' : 'items-baseline'
+      } ${
         active
           ? 'border-transparent bg-[#efeae3] text-[#2c241c]'
           : 'border-white/10 text-[#f6f3ee] hover:border-transparent hover:bg-[#efeae3] hover:text-[#2c241c]'
       }`}
     >
+      {leading}
       <span className="min-w-0">
         <span
           className={`type-lead block ${
@@ -225,23 +232,38 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
     }
   }
 
-  async function goDates(next: LiveEmployee) {
-    if (!selected) return
+  function pickEmployee(next: LiveEmployee) {
+    setError('')
+    if (employee?.id === next.id) return
     setEmployee(next)
     setDate('')
     setTime('')
+    setDates([])
+    setTimes([])
+  }
+
+  async function continueFromEmployee() {
+    if (!selected || !employee) return
     setError('')
     setBusy(true)
     setStep('date')
     try {
-      const result = await loadDates(sessionRef.current, selected.id, next.id)
+      const result = await loadDates(sessionRef.current, selected.id, employee.id)
       setDates(result.dates)
+      setDate((current) => (result.dates.includes(current) ? current : ''))
     } catch (err) {
       setDates([])
       setError(err instanceof Error ? err.message : 'Dagen laden lukt nu niet.')
     } finally {
       setBusy(false)
     }
+  }
+
+  function pickDate(iso: string) {
+    setDate(iso)
+    setTime('')
+    setTimes([])
+    setError('')
   }
 
   async function goTimes(nextDate: string) {
@@ -507,36 +529,67 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
         ) : null}
 
         {step === 'employee' ? (
-          <BookingWell className="mt-7">
-            <ul>
-              {busy && !employees.length ? (
-                <li className="type-label py-4 text-white/40">Laden…</li>
-              ) : null}
-              {employees.map((item) => (
-                <li key={item.id}>
-                  <ChoiceRow
-                    title={item.name}
-                    meta={item.any ? 'Wie er vrij is' : undefined}
-                    onClick={() => void goDates(item)}
-                  />
-                </li>
-              ))}
-            </ul>
-          </BookingWell>
+          <>
+            <BookingWell className="mt-7">
+              <ul>
+                {busy && !employees.length ? (
+                  <li className="type-label py-4 text-white/40">Laden…</li>
+                ) : null}
+                {employees.map((item) => (
+                  <li key={item.id}>
+                    <ChoiceRow
+                      active={employee?.id === item.id}
+                      title={item.name}
+                      meta={item.any ? 'Wie er vrij is' : undefined}
+                      leading={
+                        <BarberAvatar
+                          name={item.name}
+                          photo={item.photo || teamPhoto(item.name, content.team)}
+                          any={item.any}
+                          active={employee?.id === item.id}
+                        />
+                      }
+                      onClick={() => pickEmployee(item)}
+                    />
+                  </li>
+                ))}
+              </ul>
+            </BookingWell>
+            {compact || !employees.length ? null : (
+              <BookButton
+                openWidget={false}
+                surface="dark"
+                disabled={!employee || busy}
+                onClick={() => void continueFromEmployee()}
+                className="mt-6 w-full sm:w-auto"
+              >
+                {busy ? 'Bezig…' : 'Kies een dag'}
+              </BookButton>
+            )}
+          </>
         ) : null}
 
         {step === 'date' ? (
-          <div className="mt-7 flex flex-wrap gap-2">
-            {busy && !dates.length ? <p className="type-label text-white/40">Laden…</p> : null}
+          <>
+            {busy && !dates.length ? <p className="type-label mt-7 text-white/40">Laden…</p> : null}
             {!busy && !dates.length ? (
-              <p className="text-[13px] text-white/55">Geen vrije dagen in de komende weken.</p>
+              <p className="mt-7 text-[13px] text-white/55">Geen vrije dagen in de komende weken.</p>
             ) : null}
-            {dates.map((iso) => (
-              <button key={iso} type="button" onClick={() => void goTimes(iso)} className={chipClass}>
-                {formatDay(iso)}
-              </button>
-            ))}
-          </div>
+            {dates.length ? (
+              <DateAgenda dates={dates} value={date} onSelect={pickDate} />
+            ) : null}
+            {compact || !dates.length ? null : (
+              <BookButton
+                openWidget={false}
+                surface="dark"
+                disabled={!date || busy}
+                onClick={() => void goTimes(date)}
+                className="mt-6 w-full sm:w-auto"
+              >
+                {busy ? 'Bezig…' : 'Kies een tijd'}
+              </BookButton>
+            )}
+          </>
         ) : null}
 
         {step === 'time' ? (
@@ -678,6 +731,34 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
           </div>
         ) : null}
 
+        {step === 'employee' && compact && employees.length ? (
+          <div className="shrink-0 border-t border-white/[0.08] bg-[#1c1b19] px-5 py-3">
+            <BookButton
+              openWidget={false}
+              surface="dark"
+              disabled={!employee || busy}
+              onClick={() => void continueFromEmployee()}
+              className="w-full"
+            >
+              {busy ? 'Bezig…' : 'Kies een dag'}
+            </BookButton>
+          </div>
+        ) : null}
+
+        {step === 'date' && compact && dates.length ? (
+          <div className="shrink-0 border-t border-white/[0.08] bg-[#1c1b19] px-5 py-3">
+            <BookButton
+              openWidget={false}
+              surface="dark"
+              disabled={!date || busy}
+              onClick={() => void goTimes(date)}
+              className="w-full"
+            >
+              {busy ? 'Bezig…' : 'Kies een tijd'}
+            </BookButton>
+          </div>
+        ) : null}
+
         {showConfirm ? (
           <div
             className={
@@ -702,6 +783,88 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
         ) : null}
       </div>
     </div>
+  )
+}
+
+function teamPhoto(name: string, team: { name: string; imageUrl: string }[]) {
+  const key = name.trim().toLowerCase()
+  if (!key) return ''
+  const match = team.find((member) => member.name.trim().toLowerCase() === key)
+  const image = match?.imageUrl?.trim() || ''
+  return image
+}
+
+function BarberAvatar({
+  name,
+  photo,
+  any,
+  active,
+}: {
+  name: string
+  photo: string
+  any: boolean
+  active: boolean
+}) {
+  const [failed, setFailed] = useState(false)
+  const ring = active ? 'ring-[#2c241c]/15' : 'ring-white/15'
+  if (any) {
+    return (
+      <span
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full border ${
+          active
+            ? 'border-[#2c241c]/20 bg-[#2c241c] text-[#efeae3]'
+            : 'border-white/15 bg-white/[0.06] text-[#f6f3ee] group-hover:border-[#2c241c]/20 group-hover:bg-[#2c241c] group-hover:text-[#efeae3]'
+        }`}
+      >
+        <AnyBarberIcon />
+      </span>
+    )
+  }
+  if (photo && !failed && /^https:\/\//i.test(photo)) {
+    return (
+      <img
+        src={photo}
+        alt=""
+        width={48}
+        height={48}
+        onError={() => setFailed(true)}
+        className={`h-12 w-12 shrink-0 rounded-full object-cover ring-1 ${ring}`}
+      />
+    )
+  }
+  if (photo && !failed) {
+    return (
+      <span className={`h-12 w-12 shrink-0 overflow-hidden rounded-full ring-1 ${ring}`}>
+        <ResolvedImg src={photo} alt="" className="h-full w-full object-cover" size="thumb" />
+      </span>
+    )
+  }
+  const initials = name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() || '')
+    .join('')
+  return (
+    <span
+      className={`type-ui flex h-12 w-12 shrink-0 items-center justify-center rounded-full ${
+        active ? 'bg-[#2c241c] text-[#efeae3]' : 'bg-[#efeae3] text-[#2c241c] group-hover:bg-[#2c241c] group-hover:text-[#efeae3]'
+      }`}
+      aria-hidden
+    >
+      {initials || '·'}
+    </span>
+  )
+}
+
+function AnyBarberIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden>
+      <circle cx="9" cy="8.2" r="2.1" />
+      <circle cx="15.4" cy="9.1" r="1.7" />
+      <path d="M4.6 17.6c.7-2.5 2.5-3.7 4.4-3.7s3.7 1.2 4.4 3.7" strokeLinecap="round" />
+      <path d="M13.8 14.4c1.4-.5 2.8-.2 3.8 1 .7 1 .9 2.1.8 3" strokeLinecap="round" />
+    </svg>
   )
 }
 

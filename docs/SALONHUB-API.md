@@ -9,7 +9,7 @@ Checked 22 Sep 2026 against the live widget for client `tzjill`, salon `tzjill`.
 ## What the widget does
 
 1. Behandeling — `POST /v3/api/OnlineAppointment.Remote.Treatments/get`
-2. Kapper — `POST /v3/api/OnlineAppointment.Remote.Employees/getForTreatment`
+2. Kapper — `POST /v3/api/OnlineAppointment.Remote.Employees/getForTreatment`. A public `photo` on `images.salonhub.nl` is passed through when the path is an employee portrait. The browser still does not see a bearer token. Missing photos stay empty so the page can use initials or a CMS team image with the same name.
 3. Datum — `POST /v3/api/OnlineAppointment.Remote.Dates/get`
 4. Tijd — `POST /v3/api/OnlineAppointment.Remote.Times/get`
 5. Bevestigen — `POST /v3/api/OnlineAppointment.Remote.Appointments/create`

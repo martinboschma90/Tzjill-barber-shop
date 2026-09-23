@@ -13,6 +13,8 @@ export type LiveEmployee = {
   id: string
   name: string
   any: boolean
+  /** Public Salonhub CDN portrait, or empty when the salon has no photo. */
+  photo: string
 }
 
 type ApiError = { error?: string }

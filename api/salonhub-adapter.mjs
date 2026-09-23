@@ -33,6 +33,21 @@ function uuid(value) {
     : ''
 }
 
+function employeePhoto(value) {
+  const raw = String(value || '').trim()
+  if (!raw) return ''
+  let url
+  try {
+    url = new URL(raw)
+  } catch {
+    return ''
+  }
+  if (url.protocol !== 'https:' || url.hostname !== 'images.salonhub.nl') return ''
+  if (!/^\/images\/employees\/[a-z0-9/._-]+\.(jpe?g|png|webp)$/i.test(url.pathname)) return ''
+  url.search = '?w=192&h=192&fit=crop'
+  return url.toString()
+}
+
 function clip(value, max) {
   return String(value ?? '')
     .replace(/[\u0000-\u001f]/g, '')
@@ -195,6 +210,7 @@ export async function listEmployees(session, treatmentId) {
       id: String(row.id),
       name: String(row.name || '').trim(),
       any: row.type === 'any',
+      photo: row.type === 'any' ? '' : employeePhoto(row.photo),
     }))
     .filter((row) => row.name)
   employees.sort((a, b) => Number(b.any) - Number(a.any) || a.name.localeCompare(b.name, 'nl'))
