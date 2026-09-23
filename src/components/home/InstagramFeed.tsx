@@ -36,6 +36,8 @@ export function InstagramFeed() {
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.button !== 0) return
+    // Arrows live in this drag surface. Capturing their pointer swallows the click.
+    if (event.target instanceof Element && event.target.closest('button')) return
     drag.current = { x: event.clientX }
     event.currentTarget.setPointerCapture(event.pointerId)
   }
@@ -160,6 +162,7 @@ function NavButton({
       type="button"
       aria-label={label}
       onClick={onClick}
+      onPointerDown={(event) => event.stopPropagation()}
       className="flex h-10 w-10 items-center justify-center rounded-full border border-white/25 text-white/80 transition-colors duration-300 hover:border-white hover:bg-white hover:text-[#2c241c]"
     >
       <svg
