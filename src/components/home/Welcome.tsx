@@ -4,8 +4,9 @@ import { MediaReveal } from '@/components/motion/MediaReveal'
 import { Parallax } from '@/components/motion/Parallax'
 import { useCms } from '@/cms/CmsContext'
 import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
+import { feed, feedFrameClass, HERO_POSTER } from '@/data/feed'
 
-const FALLBACK_POSTER = '/brand/hero.jpg'
+const FALLBACK_POSTER = HERO_POSTER
 
 export function Welcome() {
   const { content } = useCms()
@@ -54,7 +55,7 @@ export function Welcome() {
                 <img
                   src={posterSrc}
                   alt=""
-                  className="absolute inset-0 h-full w-full object-cover"
+                  className={`absolute inset-0 h-full w-full ${feedFrameClass}`}
                   loading="lazy"
                 />
               </div>
@@ -66,9 +67,9 @@ export function Welcome() {
           >
             <MediaReveal delay={0.12}>
               <img
-                src={content.site.welcomeImageUrl || '/lookbook/05.png'}
+                src={content.site.welcomeImageUrl || feed.dsc00030}
                 alt=""
-                className="aspect-[3/4] w-full object-cover"
+                className={`aspect-[3/4] w-full ${feedFrameClass}`}
                 loading="lazy"
               />
             </MediaReveal>

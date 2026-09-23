@@ -118,7 +118,7 @@ export function CollabsEditor() {
                 name: 'Nieuwe collab',
                 year: '2026',
                 text: '',
-                image: '/lookbook/01.jpg',
+                image: '/feed/DSC00080.jpg',
               },
             ],
           }))
