@@ -50,14 +50,15 @@ export function PricesEditor() {
                   }))
                 }
               />
-              <div className="grid grid-cols-[1fr_6.5rem] gap-2 px-0.5 text-[11px] text-neutral-500">
+              <div className="grid grid-cols-[1fr_5.5rem_3.5rem] gap-2 px-0.5 text-[11px] text-neutral-500">
                 <span>Behandeling</span>
                 <span>Prijs</span>
+                <span>Min</span>
               </div>
               {group.items.map((item, itemIndex) => (
                 <div
                   key={`${item.name}-${itemIndex}`}
-                  className="grid grid-cols-[1fr_6.5rem_auto] gap-2"
+                  className="grid grid-cols-[1fr_5.5rem_3.5rem_auto] gap-2"
                 >
                   <CompactInput
                     value={item.name}
@@ -110,6 +111,41 @@ export function PricesEditor() {
                         ),
                       }))
                     }
+                  />
+                  <CompactInput
+                    value={item.minutes ? String(item.minutes) : ''}
+                    placeholder="min"
+                    onChange={(value) => {
+                      const minutes = Number(value.replace(/\D/g, ''))
+                      setSite((s) => ({
+                        ...s,
+                        shopMenu: (s.shopMenu ?? cloneShopMenu()).map((c, i) =>
+                          i !== catIndex
+                            ? c
+                            : {
+                                ...c,
+                                groups: c.groups.map((g, gi) =>
+                                  gi !== groupIndex
+                                    ? g
+                                    : {
+                                        ...g,
+                                        items: g.items.map((it, ii) =>
+                                          ii === itemIndex
+                                            ? {
+                                                ...it,
+                                                minutes:
+                                                  Number.isFinite(minutes) && minutes > 0
+                                                    ? minutes
+                                                    : undefined,
+                                              }
+                                            : it,
+                                        ),
+                                      },
+                                ),
+                              },
+                        ),
+                      }))
+                    }}
                   />
                   <button
                     type="button"

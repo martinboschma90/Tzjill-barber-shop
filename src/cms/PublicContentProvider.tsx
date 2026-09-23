@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
-import { useLocation } from 'react-router-dom'
 import { CmsContext } from '@/cms/CmsContext'
 import {
   createDefaultSiteContent,
@@ -64,12 +63,11 @@ const noopAsync = async () => ({ error: null as string | null })
 /** Read-only site/team for the public app — no Auth, no supabase-js. */
 export function PublicContentProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState<CmsContent>(initialPublicContent)
-  const { pathname } = useLocation()
 
   useEffect(() => {
     if (!isSupabaseConfigured) return
     let cancelled = false
-    const run = () => {
+    const timer = window.setTimeout(() => {
       void fetchPublicSite()
         .then((site) => {
           if (cancelled) return
@@ -82,18 +80,6 @@ export function PublicContentProvider({ children }: { children: ReactNode }) {
         .catch((error) => {
           console.warn('[public] site hydrate failed', error)
         })
-    }
-    const timer = window.setTimeout(run, 200)
-    return () => {
-      cancelled = true
-      window.clearTimeout(timer)
-    }
-  }, [])
-
-  useEffect(() => {
-    if (!isSupabaseConfigured || (pathname !== '/about' && pathname !== '/team' && pathname !== '/over-ons')) return
-    let cancelled = false
-    const timer = window.setTimeout(() => {
       void fetchPublicTeam()
         .then((team) => {
           if (cancelled || !team || team.length === 0) return
@@ -104,12 +90,12 @@ export function PublicContentProvider({ children }: { children: ReactNode }) {
         .catch((error) => {
           console.warn('[public] team hydrate failed', error)
         })
-    }, 1400)
+    }, 200)
     return () => {
       cancelled = true
       window.clearTimeout(timer)
     }
-  }, [pathname])
+  }, [])
 
   const value = useMemo(
     () => ({

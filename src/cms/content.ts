@@ -26,6 +26,8 @@ export type { RosterGlowPreset }
 export type ShopMenuItem = {
   name: string
   price: string
+  /** Display length in minutes. Empty keeps the Salonhub length on the appointment. */
+  minutes?: number
 }
 
 /** Admin-only display tweak for a live Salonhub treatment. Prices stay on Salonhub. */

@@ -4,4 +4,6 @@ The customer finishes the appointment on Tzjill: behandeling, kapper, dag en tij
 
 Each step calls `/api/salonhub`. That route proxies `public.salonhub.nl` OnlineAppointment. Treatments, employees, dates, and times are anonymous reads. Create and verify stay on the server and use `SALONHUB_API_KEY` when it is accepted, otherwise the public widget bearer resolved at runtime. See [SALONHUB-API.md](./SALONHUB-API.md).
 
+What the visitor reads (name, price, category, duration, thumbnail) comes from the CMS price list and homepage treatments, matched to the Salonhub id. Barber name and photo prefer `team_members` when the name matches. Salonhub still decides which slots exist, and the minutes sent on create stay Salonhub’s length. “Geen voorkeur” is preselected when Salonhub offers it. The kapper step is skipped only when that list has a single person.
+
 A successful create books a real chair. Do not call it from automated tests.

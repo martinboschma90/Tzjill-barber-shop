@@ -6,8 +6,13 @@ import { BookingWell } from '@/components/booking/BookingWell'
 import { DateAgenda } from '@/components/booking/DateAgenda'
 import { ResolvedImg } from '@/components/ui/ResolvedMedia'
 import { treatmentStill, type TreatmentStill } from '@/data/treatmentStills'
-import { FALLBACK_TREATMENTS, presentTreatments } from '@/data/salonhubCatalog'
-import { LOCATION_ADDRESS, PHONE_DISPLAY, PHONE_TEL } from '@/data/site'
+import {
+  FALLBACK_TREATMENTS,
+  pickDefaultEmployee,
+  presentTreatments,
+  type BookableTreatment,
+} from '@/data/salonhubCatalog'
+import { PHONE_DISPLAY, PHONE_TEL } from '@/data/site'
 import {
   bookAppointment,
   loadDates,
@@ -35,10 +40,10 @@ const STEPS: { id: Step; label: string }[] = [
 type Audience = {
   id: string
   label: string
-  sections: { label: string; items: LiveTreatment[] }[]
+  sections: { label: string; items: BookableTreatment[] }[]
 }
 
-function groupTreatments(items: LiveTreatment[]): Audience[] {
+function groupTreatments(items: BookableTreatment[]): Audience[] {
   const order: string[] = []
   const map = new Map<string, Audience>()
   for (const item of items) {
@@ -88,53 +93,33 @@ function ChoiceRow({
   leading?: ReactNode
   onClick: () => void
 }) {
+  const titleColor = active ? 'text-[#2c241c]' : 'text-[#f6f3ee] group-hover:text-[#2c241c]'
+  const metaColor = active ? 'text-[#2c241c]/55' : 'text-white/40 group-hover:text-[#2c241c]/55'
+  const asideColor = active ? 'text-[#2c241c]/75' : 'text-white/45 group-hover:text-[#2c241c]/75'
+  const rule = active ? 'border-[#2c241c]/25' : 'border-white/20 group-hover:border-[#2c241c]/25'
   return (
     <button
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`group flex w-full gap-4 rounded-xl px-3.5 py-3 text-left sm:px-4 sm:py-3.5 ${
-        leading ? 'items-center' : 'items-baseline'
-      } ${
+      className={`group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left sm:gap-4 sm:px-4 sm:py-3.5 ${
         active
           ? 'bg-[#efeae3] text-[#2c241c]'
           : 'text-[#f6f3ee] hover:bg-[#efeae3] hover:text-[#2c241c]'
       }`}
     >
       {leading}
-      <span className="min-w-0">
-        <span
-          className={`type-lead block ${
-            active ? 'text-[#2c241c]' : 'text-[#f6f3ee] group-hover:text-[#2c241c]'
-          }`}
-        >
-          {title}
-        </span>
-        {meta ? (
-          <span
-            className={`type-label mt-1.5 block ${
-              active ? 'text-[#2c241c]/55' : 'text-white/40 group-hover:text-[#2c241c]/55'
-            }`}
-          >
-            {meta}
+      <span className="min-w-0 flex-1">
+        <span className={`type-lead block line-clamp-2 ${titleColor}`}>{title}</span>
+        {meta || aside ? (
+          <span className={`mt-1 flex items-baseline gap-2 sm:mt-1.5 ${metaColor}`}>
+            {meta ? <span className="type-label">{meta}</span> : null}
+            {aside ? <span className={`type-ui sm:hidden ${asideColor}`}>{aside}</span> : null}
           </span>
         ) : null}
       </span>
-      <span
-        aria-hidden
-        className={`min-w-6 flex-1 border-b border-dotted ${
-          active ? 'border-[#2c241c]/25' : 'border-white/20 group-hover:border-[#2c241c]/25'
-        }`}
-      />
-      {aside ? (
-        <span
-          className={`type-ui shrink-0 ${
-            active ? 'text-[#2c241c]/75' : 'text-white/45 group-hover:text-[#2c241c]/75'
-          }`}
-        >
-          {aside}
-        </span>
-      ) : null}
+      <span aria-hidden className={`hidden min-w-6 flex-1 border-b border-dotted sm:block ${rule}`} />
+      {aside ? <span className={`type-ui hidden shrink-0 sm:inline ${asideColor}`}>{aside}</span> : null}
       <span
         aria-hidden
         className={`type-ui shrink-0 ${
@@ -147,11 +132,100 @@ function ChoiceRow({
   )
 }
 
+function Bone({ className }: { className: string }) {
+  return (
+    <span
+      aria-hidden
+      className={`block animate-pulse bg-white/10 motion-reduce:animate-none ${className}`}
+    />
+  )
+}
+
+function ListSkeleton({
+  count,
+  shape = 'rounded-xl',
+  label,
+}: {
+  count: number
+  shape?: string
+  label: string
+}) {
+  return (
+    <div role="status" aria-busy="true">
+      <BookingWell list>
+        <ul className="flex flex-col gap-2">
+          {Array.from({ length: count }, (_, index) => (
+            <li key={index} className="flex items-center gap-3 px-3 py-3 sm:gap-4 sm:px-4">
+              <Bone className={`h-12 w-12 shrink-0 ${shape}`} />
+              <span className="min-w-0 flex-1 space-y-2">
+                <Bone className="h-3.5 w-[68%] rounded-full" />
+                <Bone className="h-2.5 w-[32%] rounded-full" />
+              </span>
+              <Bone className="h-3 w-12 shrink-0 rounded-full" />
+            </li>
+          ))}
+        </ul>
+      </BookingWell>
+      <span className="sr-only">{label}</span>
+    </div>
+  )
+}
+
+function AgendaSkeleton() {
+  return (
+    <div role="status" aria-busy="true" className="mt-7">
+      <div className="overflow-hidden rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] px-3 py-4 sm:px-5 sm:py-5">
+        <div className="flex items-center justify-between gap-3">
+          <Bone className="h-10 w-10 rounded-full" />
+          <Bone className="h-4 w-32 rounded-full" />
+          <Bone className="h-10 w-10 rounded-full" />
+        </div>
+        <div className="mt-5 grid grid-cols-7 gap-1">
+          {Array.from({ length: 35 }, (_, index) => (
+            <Bone key={index} className="h-11 rounded-xl bg-white/[0.06]" />
+          ))}
+        </div>
+      </div>
+      <span className="sr-only">Dagen laden</span>
+    </div>
+  )
+}
+
+function TimeSkeleton() {
+  return (
+    <div role="status" aria-busy="true" className="mt-3 flex flex-wrap gap-2">
+      {Array.from({ length: 8 }, (_, index) => (
+        <Bone key={index} className="h-11 w-[4.5rem] rounded-full" />
+      ))}
+      <span className="sr-only">Tijden laden</span>
+    </div>
+  )
+}
+
+const STALE_BOOKING_TITLE = 'Booking Request'
+const STALE_BOOKING_INTRO = "Send us your booking request and we'll get back to you."
+
+function phoneTel(display: string) {
+  const compact = display.replace(/[^\d+]/g, '')
+  if (compact.startsWith('+')) return compact
+  if (compact.startsWith('00')) return `+${compact.slice(2)}`
+  if (compact.startsWith('0')) return `+31${compact.slice(1)}`
+  return compact ? `+${compact}` : PHONE_TEL
+}
+
+function cmsBarber(name: string, team: { name: string; imageUrl: string }[]) {
+  const key = name.trim().toLowerCase()
+  if (!key) return null
+  return team.find((member) => member.name.trim().toLowerCase() === key) ?? null
+}
+
 export function BookingFlow({ compact = false }: BookingFlowProps) {
   const { content } = useCms()
   const reduceMotion = useReducedMotion()
   const sessionRef = useRef(crypto.randomUUID())
   const timesRequest = useRef(0)
+  const flowRequest = useRef(0)
+  const employeePrefetch = useRef<{ id: string; promise: Promise<LiveEmployee[]> } | null>(null)
   const formId = useId()
   const [step, setStep] = useState<Step>('treatment')
   const [loading, setLoading] = useState(true)
@@ -177,8 +251,12 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
   })
 
   const visibleTreatments = useMemo(
-    () => presentTreatments(treatments, content.site.bookingTreatments),
-    [treatments, content.site.bookingTreatments],
+    () =>
+      presentTreatments(treatments, content.site.bookingTreatments, {
+        menu: content.site.shopMenu,
+        treatments: content.site.treatments,
+      }),
+    [treatments, content.site.bookingTreatments, content.site.shopMenu, content.site.treatments],
   )
   const audiences = useMemo(() => groupTreatments(visibleTreatments), [visibleTreatments])
   const audience = audiences.find((item) => item.id === audienceId) || audiences[0]
@@ -211,22 +289,47 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
     }
   }, [])
 
+  function requestEmployees(treatmentId: string) {
+    const current = employeePrefetch.current
+    if (current?.id === treatmentId) return current.promise
+    const promise = loadEmployees(sessionRef.current, treatmentId).then((result) => result.employees)
+    employeePrefetch.current = { id: treatmentId, promise }
+    promise.catch(() => {
+      if (employeePrefetch.current?.promise === promise) employeePrefetch.current = null
+    })
+    return promise
+  }
+
   async function continueFromTreatment() {
     if (!selected) return
+    const request = ++flowRequest.current
     setEmployee(null)
     setDate('')
     setTime('')
+    setDates([])
+    setTimes([])
+    setEmployees([])
     setError('')
     setBusy(true)
     setStep('employee')
     try {
-      const result = await loadEmployees(sessionRef.current, selected.id)
-      setEmployees(result.employees)
+      const nextEmployees = await requestEmployees(selected.id)
+      if (flowRequest.current !== request) return
+      setEmployees(nextEmployees)
+      const choice = pickDefaultEmployee(nextEmployees)
+      if (!choice.employee) return
+      setEmployee(choice.employee)
+      if (!choice.skipStep) return
+      setStep('date')
+      const result = await loadDates(sessionRef.current, selected.id, choice.employee.id)
+      if (flowRequest.current !== request) return
+      setDates(result.dates)
     } catch (err) {
+      if (flowRequest.current !== request) return
       setEmployees([])
       setError(err instanceof Error ? err.message : 'Kappers laden lukt nu niet.')
     } finally {
-      setBusy(false)
+      if (flowRequest.current === request) setBusy(false)
     }
   }
 
@@ -333,11 +436,12 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
   function back() {
     setError('')
     if (step === 'employee') setStep('treatment')
-    else if (step === 'date') setStep('employee')
+    else if (step === 'date') setStep(employees.length <= 1 ? 'treatment' : 'employee')
     else if (step === 'details') setStep('date')
     else if (step === 'verify') setStep('details')
   }
 
+  const customTitle = content.site.bookingTitle.trim()
   const title =
     step === 'employee'
       ? 'Kies een kapper'
@@ -349,11 +453,22 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
               ? 'Code uit je mail'
               : step === 'success'
                 ? 'Afspraak staat'
-                : 'Afspraak maken'
+                : customTitle && customTitle !== STALE_BOOKING_TITLE
+                  ? customTitle
+                  : 'Afspraak maken'
+
+  const phone = content.site.phoneNumber.trim() || PHONE_DISPLAY
+  const address = content.site.legal.addressLines.map((line) => line.trim()).filter(Boolean).join(', ')
+  const customIntro = content.site.bookingIntro.trim()
+  const barberName = (person: LiveEmployee | null) => {
+    if (!person) return ''
+    if (person.any) return person.name
+    return cmsBarber(person.name, content.team)?.name || person.name
+  }
 
   const summary = [
     selected?.name,
-    employee?.name,
+    barberName(employee),
     date ? formatDay(date) : '',
     time ? formatTime(time) : '',
   ]
@@ -394,21 +509,30 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
             {step === 'success' || step === 'verify' ? (
               <p className="type-label text-[#f6f3ee]/40">Tzjill · Leeuwarden</p>
             ) : (
-              <ol className="flex min-w-0 flex-wrap justify-end gap-x-3 gap-y-1">
-                {STEPS.map((item, index) => (
-                  <li
-                    key={item.id}
-                    className={`type-label ${
-                      index === stepIndex
-                        ? 'text-[#f6f3ee]'
-                        : index < stepIndex
-                          ? 'text-[#f6f3ee]/55'
-                          : 'text-[#f6f3ee]/28'
-                    }`}
-                  >
-                    {String(index + 1).padStart(2, '0')} {item.label}
-                  </li>
-                ))}
+              <ol
+                aria-label="Stappen"
+                className="ml-auto flex min-w-0 flex-nowrap items-center justify-end gap-x-2 sm:gap-x-3"
+              >
+                {STEPS.map((item, index) => {
+                  const state =
+                    index === stepIndex ? 'current' : index < stepIndex ? 'done' : 'upcoming'
+                  return (
+                    <li
+                      key={item.id}
+                      aria-current={state === 'current' ? 'step' : undefined}
+                      className={`type-label whitespace-nowrap ${
+                        state === 'current'
+                          ? 'text-[#f6f3ee]'
+                          : state === 'done'
+                            ? 'text-[#f6f3ee]/55'
+                            : 'text-[#f6f3ee]/28'
+                      }`}
+                    >
+                      <span className="tabular-nums">{String(index + 1).padStart(2, '0')}</span>
+                      <span className="max-sm:sr-only sm:ml-1.5">{item.label}</span>
+                    </li>
+                  )
+                })}
               </ol>
             )}
           </div>
@@ -417,8 +541,16 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
         <div
           className={
             compact
-              ? 'min-h-0 flex-1 overflow-y-auto px-5 pb-6'
-              : `px-4 sm:px-8 ${showConfirm ? 'pb-28' : 'pb-12'}`
+              ? `min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 ${
+                  step === 'date'
+                    ? 'pb-[max(2.25rem,calc(1.75rem+env(safe-area-inset-bottom,0px)))]'
+                    : 'pb-6'
+                }`
+              : `px-4 sm:px-8 ${
+                  showConfirm
+                    ? 'pb-[max(7rem,calc(6rem+env(safe-area-inset-bottom,0px)))]'
+                    : 'pb-[max(4.5rem,calc(3rem+env(safe-area-inset-bottom,0px)))]'
+                }`
           }
         >
         <AnimatePresence mode="wait" initial={false}>
@@ -439,12 +571,18 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
           </h1>
           {step === 'treatment' ? (
             <p className="type-lead mt-4 max-w-md text-white/55">
-              Kies een behandeling, daarna kapper, dag en tijd. Je blijft op deze pagina.{' '}
-              {LOCATION_ADDRESS}. Tel{' '}
-              <a href={`tel:${PHONE_TEL}`} className="text-white/80 hover:text-white">
-                {PHONE_DISPLAY}
-              </a>
-              .
+              {customIntro && customIntro !== STALE_BOOKING_INTRO ? (
+                customIntro
+              ) : (
+                <>
+                  Kies een behandeling, daarna kapper, dag en tijd. Je blijft op deze pagina.
+                  {address ? ` ${address}.` : null} Tel{' '}
+                  <a href={`tel:${phoneTel(phone)}`} className="text-white/80 hover:text-white">
+                    {phone}
+                  </a>
+                  .
+                </>
+              )}
             </p>
           ) : summary ? (
             <p className="mt-3 text-[13px] text-white/55">{summary}</p>
@@ -486,8 +624,8 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
               </div>
             ) : null}
             <div className="mt-7 space-y-8">
-              {loading ? <p className="type-label text-white/40">Laden…</p> : null}
-              {audience?.sections.map((section) => (
+              {loading ? <ListSkeleton count={5} label="Behandelingen laden" /> : null}
+              {!loading && audience?.sections.map((section) => (
                 <section key={section.label}>
                   <h2 className="type-label text-white/40">{section.label}</h2>
                   <BookingWell list className="mt-3">
@@ -497,12 +635,19 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
                           <ChoiceRow
                             active={selected?.id === item.id}
                             title={item.name}
-                            meta={item.minutes ? `${item.minutes} min` : undefined}
+                            meta={item.displayMinutes ? `${item.displayMinutes} min` : undefined}
                             aside={item.priceLabel || '—'}
                             leading={
-                              <TreatmentThumb still={treatmentStill(item)} active={selected?.id === item.id} />
+                              <TreatmentThumb
+                                image={item.image}
+                                still={treatmentStill(item)}
+                                active={selected?.id === item.id}
+                              />
                             }
-                            onClick={() => setSelectedId(item.id)}
+                            onClick={() => {
+                              setSelectedId(item.id)
+                              requestEmployees(item.id)
+                            }}
                           />
                         </li>
                       ))}
@@ -533,21 +678,25 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
 
         {step === 'employee' ? (
           <>
+            {busy && !employees.length ? (
+              <div className="mt-7">
+                <ListSkeleton count={4} shape="rounded-full" label="Kappers laden" />
+              </div>
+            ) : (
             <BookingWell list className="mt-7">
               <ul className="flex flex-col gap-2">
-                {busy && !employees.length ? (
-                  <li className="type-label py-4 text-white/40">Laden…</li>
-                ) : null}
-                {employees.map((item) => (
+                {employees.map((item) => {
+                  const member = item.any ? null : cmsBarber(item.name, content.team)
+                  return (
                   <li key={item.id}>
                     <ChoiceRow
                       active={employee?.id === item.id}
-                      title={item.name}
+                      title={member?.name || item.name}
                       meta={item.any ? 'Wie er vrij is' : undefined}
                       leading={
                         <BarberAvatar
-                          name={item.name}
-                          photo={item.photo || teamPhoto(item.name, content.team)}
+                          name={member?.name || item.name}
+                          photo={member?.imageUrl || item.photo}
                           any={item.any}
                           active={employee?.id === item.id}
                         />
@@ -555,9 +704,11 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
                       onClick={() => pickEmployee(item)}
                     />
                   </li>
-                ))}
+                  )
+                })}
               </ul>
             </BookingWell>
+            )}
             {compact || !employees.length ? null : (
               <BookButton
                 openWidget={false}
@@ -574,7 +725,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
 
         {step === 'date' ? (
           <>
-            {busy && !dates.length ? <p className="type-label mt-7 text-white/40">Laden…</p> : null}
+            {busy && !dates.length ? <AgendaSkeleton /> : null}
             {!busy && !dates.length ? (
               <p className="mt-7 text-[13px] text-white/55">Geen vrije dagen in de komende weken.</p>
             ) : null}
@@ -588,14 +739,12 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
                       Kies eerst een dag in de agenda.
                     </p>
                   ) : null}
-                  {date && busy && !times.length ? (
-                    <p className="type-label mt-3 text-white/40">Laden…</p>
-                  ) : null}
+                  {date && busy && !times.length ? <TimeSkeleton /> : null}
                   {date && !busy && !times.length ? (
                     <p className="mt-3 text-[13px] text-white/55">Geen tijden op deze dag.</p>
                   ) : null}
                   {times.length ? (
-                    <div className="mt-3 flex flex-wrap gap-2">
+                    <div className="mt-3 flex flex-wrap gap-2 pb-1">
                       {times.map((slot) => {
                         const selectedSlot = time === slot
                         return (
@@ -645,10 +794,10 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
             <BookingWell>
               <p className="type-lead py-3 text-white">{selected.name}</p>
               <p className="pb-4 text-[13px] leading-relaxed text-white/55">
-                {selected.minutes ? `${selected.minutes} min · ` : ''}
+                {selected.displayMinutes ? `${selected.displayMinutes} min · ` : ''}
                 {selected.priceLabel}
                 <br />
-                {employee.name} · {formatDay(date)} · {formatTime(time)}
+                {barberName(employee)} · {formatDay(date)} · {formatTime(time)}
               </p>
               <p className="pb-3 text-[12.5px] leading-relaxed text-white/40">
                 No-show €20 als je niet komt of binnen 2 uur afzegt.
@@ -723,13 +872,13 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
         {step === 'success' && selected ? (
           <div className="mt-7 max-w-lg">
             <p className="type-lead text-[#f6f3ee]/70">
-              {selected.name} bij {employee?.name}, {formatDay(date)} om {formatTime(time)}. Je krijgt
+              {selected.name} bij {barberName(employee)}, {formatDay(date)} om {formatTime(time)}. Je krijgt
               een mail ter bevestiging.
             </p>
             <p className="mt-4 text-[13px] text-[#f6f3ee]/45">
               Wijzigen of afzeggen kan via die mail, of bel{' '}
-              <a href={`tel:${PHONE_TEL}`} className="text-[#f6f3ee]/75">
-                {PHONE_DISPLAY}
+              <a href={`tel:${phoneTel(phone)}`} className="text-[#f6f3ee]/75">
+                {phone}
               </a>
               .
             </p>
@@ -740,13 +889,13 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
         </div>
 
         {step === 'treatment' && compact ? (
-          <div className="shrink-0 border-t border-white/[0.08] bg-[#1c1b19] px-5 py-3">
+          <div className="shrink-0 px-5 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
             <BookButton
               openWidget={false}
               surface="dark"
               disabled={!selected || busy}
               onClick={() => void continueFromTreatment()}
-              className="w-full"
+              className="w-full sm:w-auto"
             >
               {busy ? 'Bezig…' : 'Kies een kapper'}
             </BookButton>
@@ -754,13 +903,13 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
         ) : null}
 
         {step === 'employee' && compact && employees.length ? (
-          <div className="shrink-0 border-t border-white/[0.08] bg-[#1c1b19] px-5 py-3">
+          <div className="shrink-0 px-5 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
             <BookButton
               openWidget={false}
               surface="dark"
               disabled={!employee || busy}
               onClick={() => void continueFromEmployee()}
-              className="w-full"
+              className="w-full sm:w-auto"
             >
               {busy ? 'Bezig…' : 'Kies dag en tijd'}
             </BookButton>
@@ -768,13 +917,13 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
         ) : null}
 
         {step === 'date' && compact && dates.length ? (
-          <div className="shrink-0 border-t border-white/[0.08] bg-[#1c1b19] px-5 py-3">
+          <div className="shrink-0 px-5 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]">
             <BookButton
               openWidget={false}
               surface="dark"
               disabled={!date || !time || busy}
               onClick={continueFromSchedule}
-              className="w-full"
+              className="w-full sm:w-auto"
             >
               {busy ? 'Bezig…' : 'Verder'}
             </BookButton>
@@ -785,11 +934,17 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
           <div
             className={
               compact
-                ? 'shrink-0 border-t border-white/[0.08] bg-[#1c1b19] px-5 py-3'
-                : 'fixed inset-x-0 bottom-0 z-40 border-t border-white/[0.08] bg-[#1c1b19]/95 px-4 py-3 backdrop-blur-md sm:px-8'
+                ? 'shrink-0 px-5 pt-2 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]'
+                : 'pointer-events-none fixed inset-x-0 bottom-0 z-40 px-4 pb-[max(0.75rem,env(safe-area-inset-bottom,0px))] sm:px-8'
             }
           >
-            <div className={compact ? '' : 'mx-auto w-full max-w-[680px]'}>
+            <div
+              className={
+                compact
+                  ? ''
+                  : 'pointer-events-auto mx-auto w-full max-w-[680px] bg-[#1c1b19]/95 pt-3 backdrop-blur-md'
+              }
+            >
               <BookButton
                 type="submit"
                 form={formId}
@@ -808,7 +963,34 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
   )
 }
 
-function TreatmentThumb({ still, active }: { still: TreatmentStill; active: boolean }) {
+function TreatmentThumb({
+  image,
+  still,
+  active,
+}: {
+  image?: string
+  still: TreatmentStill
+  active: boolean
+}) {
+  const ring = active ? 'ring-[#2c241c]/20' : 'ring-white/15'
+  if (image) {
+    if (/^https:\/\//i.test(image) || image.startsWith('/')) {
+      return (
+        <img
+          src={image}
+          alt=""
+          width={48}
+          height={48}
+          className={`h-12 w-12 shrink-0 rounded-xl object-cover object-[center_28%] ring-1 ${ring}`}
+        />
+      )
+    }
+    return (
+      <span className={`h-12 w-12 shrink-0 overflow-hidden rounded-xl ring-1 ${ring}`}>
+        <ResolvedImg src={image} alt="" className="h-full w-full object-cover" size="thumb" />
+      </span>
+    )
+  }
   if (still.kind === 'kids') {
     return (
       <span
@@ -833,14 +1015,6 @@ function TreatmentThumb({ still, active }: { still: TreatmentStill; active: bool
       } ${active ? 'ring-[#2c241c]/20' : 'ring-white/15'}`}
     />
   )
-}
-
-function teamPhoto(name: string, team: { name: string; imageUrl: string }[]) {
-  const key = name.trim().toLowerCase()
-  if (!key) return ''
-  const match = team.find((member) => member.name.trim().toLowerCase() === key)
-  const image = match?.imageUrl?.trim() || ''
-  return image
 }
 
 function BarberAvatar({
