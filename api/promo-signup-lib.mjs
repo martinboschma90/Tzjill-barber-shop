@@ -1,4 +1,5 @@
 import { sendBookingEmail } from './booking-request-lib.mjs'
+import { recordFormSubmission } from './form-submissions-lib.mjs'
 
 export function isValidPromoEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim())
@@ -57,4 +58,34 @@ export async function sendPromoSignupEmail(payload) {
     process.env.BOOKING_TO_EMAIL ||
     'info@tzjill.nl'
   return sendBookingEmail({ subject, text, replyTo, to })
+}
+
+/** Save the lead first, then mail. A mail failure does not drop a stored row. */
+export async function acceptPromoSignup(payload) {
+  const stored = await recordFormSubmission(payload).catch(() => ({ ok: false }))
+  const sent = await sendPromoSignupEmail(payload)
+  return {
+    stored: Boolean(stored?.ok),
+    emailed: Boolean(sent?.ok),
+    emailError: sent?.ok ? null : sent?.error || 'Aanmelding kon niet worden verstuurd.',
+  }
+}
+
+export function promoSignupResponse(result) {
+  if (result?.stored || result?.emailed) {
+    return {
+      status: 200,
+      body: {
+        ok: true,
+        stored: Boolean(result.stored),
+        emailed: Boolean(result.emailed),
+      },
+    }
+  }
+  return {
+    status: 502,
+    body: {
+      error: result?.emailError || 'Aanmelding kon niet worden opgeslagen.',
+    },
+  }
 }

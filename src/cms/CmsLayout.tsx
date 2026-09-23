@@ -1,6 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useState, type ComponentType } from 'react'
 import { Link, Navigate, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
+  ClipboardList,
   FileText,
   FolderOpen,
   HelpCircle,
@@ -34,6 +35,7 @@ import { EditorAccordionScope } from '@/cms/flow-mates/EditorAccordionScope'
 import { useCmsTheme } from '@/cms/flow-mates/CmsTheme'
 import { isPagesWorkspacePath, PagesTabBar } from '@/cms/flow-mates/PagesTabBar'
 import type { CmsPanelProps } from '@/cms/panels/types'
+import { FormsInbox } from '@/cms/editors/FormsInbox'
 import { UsersAdmin } from '@/cms/editors/UsersAdmin'
 import { RouteFallback } from '@/components/ui/RouteFallback'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
@@ -58,11 +60,12 @@ const NAV = [
   { to: '/cms/home', label: "Pagina's", icon: FileText, match: 'pages' as const },
   { to: '/cms/faq', label: 'FAQ', icon: HelpCircle, match: 'faq' as const },
   { to: '/cms/media', label: 'Media', icon: FolderOpen, match: 'media' as const },
+  { to: '/cms/formulieren', label: 'Formulieren', icon: ClipboardList, match: 'forms' as const },
   { to: '/cms/settings', label: 'Instellingen', icon: Settings, match: 'settings' as const },
 ]
 
 function useCmsPanels(): {
-  mode: 'dashboard' | 'pages' | 'artists' | 'media' | 'settings'
+  mode: 'dashboard' | 'pages' | 'artists' | 'media' | 'settings' | 'forms'
   title: string
   subtitle: string
   Page: ComponentType<CmsPanelProps> | null
@@ -96,6 +99,14 @@ function useCmsPanels(): {
       title: 'Instellingen',
       subtitle: 'Account, website en team',
       Page: CmsSettingsPanel,
+    }
+  }
+  if (pathname.startsWith('/cms/formulieren')) {
+    return {
+      mode: 'forms',
+      title: 'Formulieren',
+      subtitle: 'Inzendingen van de site',
+      Page: null,
     }
   }
   if (pathname.startsWith('/cms/media')) {
@@ -236,7 +247,7 @@ export function CmsLayout() {
   }
 
   const navItems = [
-    ...NAV,
+    ...NAV.filter((item) => item.match !== 'forms' || canEdit),
     ...(canManageUsers
       ? [
           {
@@ -271,7 +282,9 @@ export function CmsLayout() {
                     ? usersPath
                     : n.match === 'settings'
                       ? pathname.startsWith('/cms/settings') && !usersPath
-                      : pathname.startsWith(n.to)
+                      : n.match === 'forms'
+                        ? pathname.startsWith('/cms/formulieren')
+                        : pathname.startsWith(n.to)
           const Icon = n.icon
           return (
             <li key={n.to}>
@@ -512,7 +525,7 @@ export function CmsLayout() {
           <CmsWorkAlert />
           {pagesWorkspace ? <PagesTabBar /> : null}
 
-          {panels.mode === 'dashboard' || panels.mode === 'media' || panels.mode === 'settings' || usersPath || !panels.Page ? (
+          {panels.mode === 'dashboard' || panels.mode === 'forms' || panels.mode === 'media' || panels.mode === 'settings' || usersPath || !panels.Page ? (
           <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-neutral-200/70 pb-6">
             <div className="min-w-0">
               <h1
@@ -522,7 +535,7 @@ export function CmsLayout() {
                 {panels.title}
               </h1>
               <p className="mt-1.5 text-sm leading-relaxed text-neutral-500">{panels.subtitle}</p>
-              {panels.mode !== 'dashboard' ? (
+              {panels.mode !== 'dashboard' && panels.mode !== 'forms' ? (
                 <p className="mt-2 text-[11px] uppercase tracking-wide text-neutral-400">
                   {formatSavedAt(savedAt)}
                   {artistSyncError ? ` · Artist: ${artistSyncError}` : ''}
@@ -537,6 +550,8 @@ export function CmsLayout() {
             <UsersAdmin />
           ) : panels.mode === 'dashboard' ? (
             <DashboardHome />
+          ) : panels.mode === 'forms' ? (
+            <FormsInbox />
           ) : panels.Page ? (
             panels.mode === 'media' || panels.mode === 'settings' ? (
               <div className="cms-editor-pane min-w-0">

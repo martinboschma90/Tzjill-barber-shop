@@ -38,6 +38,23 @@ Expected: 12 rows upserted; public site (Phase 2.1) reads them when present.
 Run `migrations/20260729103000_phase3_1_temp_anon_artist_writes.sql` in the SQL Editor
 so the CMS can insert/update/delete artists with the anon key **before** auth lands.
 
+## Formulieren (`form_submissions`)
+
+Promo-aanmeldingen (popup “10 jaar Tzjill”) worden opgeslagen in
+`public.form_submissions`, formulier `promo-10y`. Hetzelfde e-mailadres op
+hetzelfde formulier werkt een bestaande rij bij in plaats van een tweede aan
+te maken.
+
+1. Open de Supabase SQL Editor van dit project.
+2. Plak en run `migrations/20260923120000_form_submissions.sql`.
+3. Zet `SUPABASE_SERVICE_ROLE_KEY` in de serveromgeving (Vercel). Die sleutel
+   blijft server-side; de site gebruikt hem om een aanmelding op te slaan
+   vóór de Resend-mail. Mislukt de mail daarna, dan blijft de rij staan.
+4. In het CMS: zijbalk **Formulieren** (of Dashboard → Formulieren).
+   Admins en editors zien de reacties, nieuwste eerst. **Exporteer CSV**
+   downloadt `name,email,phone,created_at`. Zoeken filtert naam, e-mail en
+   telefoon. Viewers zien deze inbox niet.
+
 ## Phase 3.3 — CMS auth
 
 1. Dashboard → Authentication → Users → **Add user** (email + password) for the admin.
