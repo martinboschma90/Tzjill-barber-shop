@@ -240,7 +240,7 @@ export type SiteContent = {
   faqVisible: boolean
   /** Ordered FAQ categories (tabs) with questions. */
   faqCategories: FaqCategory[]
-  /** Canonical public site origin, e.g. https://tzjill-barber-shop.vercel.app */
+  /** Canonical public site origin, e.g. https://www.tzjill.nl */
   publicSiteUrl: string
   /** Search / social meta description. */
   metaDescription: string
@@ -325,7 +325,7 @@ export function createDefaultSiteContent(): SiteContent {
     publicSiteUrl: FALLBACK_PUBLIC_SITE_URL,
     metaDescription:
       'Tzjill is een barbershop en herenkapper aan de Voorstreek 18 in Leeuwarden. Knippen, baard, scheren en kids t/m 11. Maak een afspraak.',
-    searchIndexing: false,
+    searchIndexing: true,
     shopMenu: cloneShopMenu(),
     lookbookImages: cloneLookbook(),
     products: cloneProducts(),

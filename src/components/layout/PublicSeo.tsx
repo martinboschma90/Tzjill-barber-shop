@@ -23,6 +23,16 @@ import {
 
 const JSON_LD_ID = 'tzjill-jsonld'
 
+/** Aliases share the destination title, description and canonical. */
+const SEO_PATH_ALIAS: Record<string, string> = {
+  '/about': '/over-ons',
+  '/menu': '/prijzen',
+  '/products': '/',
+  '/producten': '/',
+  '/herenkapper-leeuwarden': '/barbershop-leeuwarden',
+  '/baard': '/baard-scheren',
+}
+
 function faqNode(items: readonly { q: string; a: string }[]) {
   return {
     '@type': 'FAQPage',
@@ -84,38 +94,41 @@ export function PublicSeo() {
 
   useEffect(() => {
     const origin = resolvePublicSiteUrl(site.publicSiteUrl)
-    const canonical = `${origin}${pathname === '/' ? '/' : pathname}`
-    const page = PAGE_SEO[pathname]
-    const description =
-      page?.description ||
-      site.metaDescription?.trim() ||
-      PAGE_SEO['/'].description
+    const seoPath = SEO_PATH_ALIAS[pathname] ?? pathname
+    const isArtist = /^\/artists\/[^/]+$/.test(pathname)
+    const canonicalPath = isArtist ? pathname : seoPath
+    const canonical = `${origin}${canonicalPath === '/' ? '/' : canonicalPath}`
+    const page = PAGE_SEO[seoPath] ?? PAGE_SEO['/']
+    const description = page.description
     const titleBase = site.fullName?.trim() || site.name || 'Tzjill Barber & Lounge'
-    const title = page?.title || titleBase
-    document.title = title
+    const title = page.title
+
+    if (!isArtist) {
+      document.title = title
+      upsertMeta('meta[name="description"]', {
+        name: 'description',
+        content: description,
+      })
+      upsertMeta('meta[property="og:title"]', {
+        property: 'og:title',
+        content: title,
+      })
+      upsertMeta('meta[property="og:description"]', {
+        property: 'og:description',
+        content: description,
+      })
+    }
 
     upsertLink('canonical', canonical)
-    upsertMeta('meta[name="description"]', {
-      name: 'description',
-      content: description,
-    })
     upsertMeta('meta[name="robots"]', {
       name: 'robots',
-      content: shouldNoIndexPublicSite(origin, site.searchIndexing)
+      content: shouldNoIndexPublicSite(origin, site.searchIndexing, site.publicSiteUrl)
         ? 'noindex, nofollow'
         : 'index, follow',
     })
     upsertMeta('meta[property="og:url"]', {
       property: 'og:url',
       content: canonical,
-    })
-    upsertMeta('meta[property="og:title"]', {
-      property: 'og:title',
-      content: title,
-    })
-    upsertMeta('meta[property="og:description"]', {
-      property: 'og:description',
-      content: description,
     })
 
     const business = {
@@ -182,7 +195,6 @@ export function PublicSeo() {
     pathname,
     site.fullName,
     site.instagram,
-    site.metaDescription,
     site.name,
     site.publicSiteUrl,
     site.searchIndexing,

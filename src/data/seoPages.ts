@@ -179,6 +179,46 @@ export const PAGE_SEO: Record<string, { title: string; description: string }> = 
     title: HOME_SEO.title,
     description: HOME_SEO.description,
   },
+  '/prijzen': {
+    title: 'Prijzen | Tzjill barbershop Leeuwarden',
+    description:
+      'Knippen vanaf €30, baard trimmen €20, scheren €19 en kids t/m 11 €22. Vaste tarieven bij Tzjill, Voorstreek 18 in Leeuwarden.',
+  },
+  '/lookbook': {
+    title: 'Lookbook | Coupes van Tzjill in Leeuwarden',
+    description:
+      'Looks uit de stoel van Tzjill aan de Voorstreek in Leeuwarden. Fade, baard en klassiek. Bekijk het lookbook en tag #tzjill.',
+  },
+  '/collabs': {
+    title: 'Collabs | Gasten en merken bij Tzjill',
+    description:
+      'Gasten en merken in de lounge van Tzjill in Leeuwarden. Samenwerking of gastoptreden? Mail info@tzjill.nl.',
+  },
+  '/team': {
+    title: 'Team | Kappers van Tzjill in Leeuwarden',
+    description:
+      'De kappers van Tzjill Barber & Lounge aan de Voorstreek 18 in Leeuwarden. Kies je kapper bij het maken van een afspraak.',
+  },
+  '/over-ons': {
+    title: 'Over ons | Tzjill Barber & Lounge Leeuwarden',
+    description:
+      'Tzjill is een barbershop en herenkapper aan de Voorstreek 18 in Leeuwarden. Maatwerk, hot towel shaves en baardverzorging.',
+  },
+  '/contact': {
+    title: 'Contact | Tzjill Voorstreek 18 Leeuwarden',
+    description:
+      'Tzjill, Voorstreek 18, 8911 JP Leeuwarden. Bel 058 844 7025 of mail info@tzjill.nl. Ma–wo 10–18, do–za 9–20.',
+  },
+  '/booking': {
+    title: 'Afspraak maken | Tzjill Leeuwarden',
+    description:
+      'Maak een afspraak bij Tzjill in Leeuwarden. Kies een behandeling, kapper en tijd. Voorstreek 18, in de binnenstad.',
+  },
+  '/faq': {
+    title: 'Veelgestelde vragen | Tzjill Leeuwarden',
+    description:
+      'Afspraak, te laat komen, kids t/m 11 en producten in de zaak. Antwoorden van Tzjill Barber & Lounge in Leeuwarden.',
+  },
   [LOCAL_PAGE.path]: {
     title: LOCAL_PAGE.seoTitle,
     description: LOCAL_PAGE.seoDescription,
