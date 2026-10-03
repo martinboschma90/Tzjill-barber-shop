@@ -22,10 +22,12 @@
   "include": [
     "vite.config.ts",
     "vite-plugin-booking-request.ts",
+    "vite-plugin-salonhub.ts",
     "vite-plugin-public-boot.ts",
     "vite-plugin-cms-users.ts",
     "vite-plugin-site-live.ts",
     "vite-plugin-shims.d.ts",
-    "api/booking-request-lib.d.mts"
+    "api/booking-request-lib.d.mts",
+    "api/salonhub-adapter.d.mts"
   ]
 }

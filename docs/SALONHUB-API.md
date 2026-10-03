@@ -1,0 +1,45 @@
+# Salonhub online appointment
+
+The customer books in the Tzjill UI: behandeling, kapper, dag, tijd, gegevens, and a 4-digit code when Salonhub returns `verify`. The browser only calls `/api/salonhub`. It does not load `afspraak.salonhub.nl` and it never sees a bearer token.
+
+`SALONHUB_API_KEY` is optional and server-only (no `VITE_` prefix). Reads do not use it. Create and verify try that key first when it is set, then the public widget bearer from the current `afspraak.salonhub.nl` bundle if the admin key is missing or returns 401. A successful create books a real appointment in the live salon. Do not call create from automated tests.
+
+Checked 22 Sep 2026 against the live widget for client `tzjill`, salon `tzjill`.
+
+## What the widget does
+
+1. Behandeling — `POST /v3/api/OnlineAppointment.Remote.Treatments/get`
+2. Kapper — `POST /v3/api/OnlineAppointment.Remote.Employees/getForTreatment`. A public `photo` on `images.salonhub.nl` is passed through when the path is an employee portrait. The browser still does not see a bearer token. Missing photos stay empty so the page can use initials or a CMS team image with the same name.
+3. Datum & tijd — one step. `POST /v3/api/OnlineAppointment.Remote.Dates/get` fills the month. Choosing a day calls `POST /v3/api/OnlineAppointment.Remote.Times/get` on the same screen.
+4. Bevestigen — `POST /v3/api/OnlineAppointment.Remote.Appointments/create`
+5. If Salonhub answers `verify` — code entry on our page calls `Appointments/verify`
+
+Base: `https://public.salonhub.nl`. Salon is fixed in the adapter (`tzjill` / `tzjill`). The browser cannot choose another salon.
+
+Form fields on the reads: `client`, `salon`, `session`, plus `treatment`, `employee`, `date`, `start`, `limit` where that step needs them. `session` is a UUID we generate. The UUID in a Salonhub page URL (`/tzjill/tzjill/<uuid>/treatment`) is that same client session, not a treatment id.
+
+Reads succeed without a bearer token. Create, verify, and `Session/start` return 401 without one. The booking SPA sends `Authorization: Bearer <key>` with a key compiled into `afspraak.salonhub.nl`’s JavaScript. Our server resolves that public key from the current bundle at runtime, or uses `SALONHUB_API_KEY` when that env var is set and Salonhub accepts it. The key is never sent to the browser and is not committed.
+
+`SALONHUB_API_KEY` is the admin key from Salonhub (Algemeen → API sleutels). Public docs do not describe a separate admin base URL. If that key is for a different API, leave it unset: create still uses the public widget bearer.
+
+## CMS
+
+`site.bookingTreatments` is optional and admin-only. Empty means the widget shows the live Salonhub list, so prices and durations stay Salonhub’s. A saved row can hide a treatment (`active: false`), change sort, or replace the label. It does not store the price.
+
+## Create body
+
+`POST /v3/api/OnlineAppointment.Remote.Appointments/create?client&salon&session`
+
+JSON matches the SPA: `settings` (application `nl.salonhub.afspraak`, guid, email verify template on `afspraak.salonhub.nl`), `appointment.date`, one treatment (`id`, `name`, `length`, `time`) and employee (`id`, `name`; `0` is “Geen voorkeur”), and `customer` (name, email, E.164 phone).
+
+The verify link inside Salonhub’s mail still points at their host. That is their mail, not our page. The code can be entered on Tzjill.
+
+## Still unknown
+
+These are for Salonhub support (`info@salonhub.nl`), not blockers for this booking path:
+
+- Is the admin API key the same bearer as the public widget, or a different host and scheme?
+- Is there a documented swagger, webhook, or cancel/reschedule API we should prefer over the widget’s create call?
+- Will the public widget bearer keep working for server-side create, or should salons use the admin key?
+
+Do not call create from local tests against the live salon. A successful create books a real chair.

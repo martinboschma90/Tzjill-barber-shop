@@ -1,5 +1,6 @@
-import { shopMenu } from '@/data/menu'
 import type { ShopMenuCategory } from '@/cms/content'
+import { feed } from '@/data/feed'
+import { shopMenu } from '@/data/menu'
 
 /**
  * Shipped Dutch copy for the local landing and baard pages.
@@ -41,7 +42,7 @@ export const LOCAL_PAGE = {
   seoTitle: 'Barbershop in Leeuwarden | Tzjill aan de Voorstreek',
   seoDescription:
     'Barbershop en herenkapper in de binnenstad van Leeuwarden. Tzjill, Voorstreek 18. Knippen vanaf €30, baard, scheren en kids. Maak een afspraak.',
-  image: '/lookbook/05.png',
+  image: feed.dsc09971,
   imageAlt: 'Stoel bij Tzjill Barber & Lounge aan de Voorstreek in Leeuwarden',
   whyTitle: 'Maatwerk, traditioneel en modern',
   why: [
@@ -102,12 +103,12 @@ export const BEARD_PAGE = {
   seoTitle: 'Baard trimmen en scheren in Leeuwarden | Tzjill',
   seoDescription:
     'Baard trimmen (€20), contouren (€15), lijnen (€8,50) en scheer (€19) bij Tzjill in Leeuwarden. Maak een afspraak.',
-  image: '/lookbook/03.jpg',
+  image: feed.dsc00053,
   imageAlt: 'Baardfinish bij Tzjill Barber & Lounge in Leeuwarden',
   audience:
     'Je hoeft niet te kiezen tussen een volle baard en een gladde huid. Trimmen, contouren, alleen de lijnen, of een scheerbeurt met hot towel — het staat los van elkaar op het menu, en het kan in één afspraak.',
   products:
-    'Baardolie, pomade en aftershave balm liggen in de lounge. Het assortiment wisselt. Vraag ernaar aan de balie, of bekijk de producten.',
+    'Baardolie, pomade en aftershave balm liggen in de lounge. Het assortiment wisselt. Vraag ernaar aan de balie.',
 } as const
 
 export const BEARD_SERVICES: SeoService[] = [

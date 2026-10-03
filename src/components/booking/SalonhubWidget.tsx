@@ -60,23 +60,21 @@ export function SalonhubWidget({ open, onOpenChange }: SalonhubWidgetProps) {
         aria-labelledby={titleId}
         className="relative z-[1] flex h-[100svh] w-full min-w-0 max-w-full flex-col overflow-hidden bg-[#1c1b19] sm:h-[min(92svh,880px)] sm:max-w-[720px] sm:rounded-[1.75rem] sm:border sm:border-white/10"
       >
-        <div className="flex h-14 shrink-0 items-center justify-between gap-3 px-4 sm:h-16 sm:px-5">
-          <div className="min-w-0">
-            <Logo tone="white" height={32} className="opacity-90" />
-            <p id={titleId} className="type-label mt-1 truncate text-white/45">
-              Afspraak maken
-            </p>
-          </div>
+        <div className="flex h-11 shrink-0 items-center justify-between gap-3 border-b border-white/[0.08] px-4 sm:px-5">
+          <Logo tone="white" height={22} className="opacity-90" />
+          <h2 id={titleId} className="sr-only">
+            Afspraak maken
+          </h2>
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="type-ui flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/20 text-white/70 transition-colors hover:border-white hover:bg-white hover:text-[#2c241c]"
+            className="type-ui flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/20 text-lg leading-none text-white/75 transition-colors hover:border-white hover:bg-white hover:text-[#2c241c]"
             aria-label="Widget sluiten"
           >
             ×
           </button>
         </div>
-        <BookingFlow compact onBack={() => onOpenChange(false)} />
+        <BookingFlow compact />
       </div>
     </div>
   )

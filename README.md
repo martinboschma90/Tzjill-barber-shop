@@ -20,5 +20,6 @@ npm run dev
 | `VITE_SUPABASE_ANON_KEY` | For `/cms` | Same as above. |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server | CMS users / store writes. |
 | `CRON_SECRET` | Server | `/api/site-speed` cron. |
+| `SALONHUB_API_KEY` | Optional, server | Override for appointment create/verify. Never prefix with `VITE_`. Reads work without it. A successful create books a real chair — do not call it from tests. See `docs/SALONHUB-API.md`. |
 
 Preview hosts (`*.vercel.app`) stay `noindex` until a real domain is set in `VITE_PUBLIC_SITE_URL`.

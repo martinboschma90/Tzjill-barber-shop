@@ -10,6 +10,7 @@ import {
   PAGE_SEO,
   menuPrice,
 } from '@/data/seoPages'
+import { HERO_POSTER } from '@/data/feed'
 import {
   INSTAGRAM_URL,
   LOCATION_ADDRESS,
@@ -122,7 +123,7 @@ export function PublicSeo() {
       '@id': `${origin}/#barbershop`,
       name: titleBase,
       url: origin,
-      image: `${origin}/brand/hero.jpg`,
+      image: `${origin}${HERO_POSTER}`,
       telephone: PHONE_TEL,
       priceRange: '€8–€40',
       address: {

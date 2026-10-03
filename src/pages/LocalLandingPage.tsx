@@ -10,6 +10,7 @@ import {
   LOCAL_SERVICES,
   menuPrice,
 } from '@/data/seoPages'
+import { feedWideClass } from '@/data/feed'
 import {
   MAPS_DIRECTIONS_URL,
   PHONE_DISPLAY,
@@ -44,7 +45,7 @@ export function LocalLandingPage() {
           <img
             src={LOCAL_PAGE.image}
             alt={LOCAL_PAGE.imageAlt}
-            className="aspect-[16/9] w-full object-cover sm:aspect-[2.2/1]"
+            className={`aspect-[16/9] w-full sm:aspect-[2.2/1] ${feedWideClass}`}
           />
         </figure>
 

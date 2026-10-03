@@ -1,16 +1,21 @@
 import { Link, useLocation } from 'react-router-dom'
+import { productsEnabled } from '@/data/site'
 
-export const PAGE_TABS = [
+const PAGE_TAB_DEFS = [
   { to: '/cms/home', label: 'Homepage' },
   { to: '/cms/prijzen', label: 'Prijzen' },
   { to: '/cms/lookbook', label: 'Lookbook' },
-  { to: '/cms/products', label: 'Products' },
+  { to: '/cms/products', label: 'Producten' },
   { to: '/cms/collabs', label: 'Collabs' },
   { to: '/cms/team', label: 'Team' },
   { to: '/cms/over-ons', label: 'Over ons' },
   { to: '/cms/contact', label: 'Contact' },
   { to: '/cms/footer', label: 'Footer' },
 ] as const
+
+export const PAGE_TABS = productsEnabled
+  ? PAGE_TAB_DEFS
+  : PAGE_TAB_DEFS.filter((tab) => tab.to !== '/cms/products')
 
 export function isPagesWorkspacePath(pathname: string) {
   if (

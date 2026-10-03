@@ -3,6 +3,7 @@ import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
 import { useCms } from '@/cms/CmsContext'
 import { cloneProducts } from '@/cms/content'
+import { feedFrameClass } from '@/data/feed'
 
 export function ProductsPage() {
   const { content } = useCms()
@@ -13,11 +14,7 @@ export function ProductsPage() {
       <PageFrame>
         <PageIntro
           kicker="Shop"
-          title={
-            <>
-              Products
-            </>
-          }
+          title="Producten"
           intro="Haar- en baardverzorging. Koop je in de zaak."
         />
         <ul className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
@@ -27,7 +24,7 @@ export function ProductsPage() {
                 <img
                   src={item.image}
                   alt=""
-                  className="wf-media-zoom aspect-[3/4] w-full object-cover"
+                  className={`wf-media-zoom aspect-[3/4] w-full ${feedFrameClass}`}
                   loading="lazy"
                 />
               </figure>

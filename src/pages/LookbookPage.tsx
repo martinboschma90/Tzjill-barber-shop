@@ -10,6 +10,7 @@ import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
 import { PillButton } from '@/components/ui/PillButton'
 import { useCms } from '@/cms/CmsContext'
 import { cloneLookbook } from '@/cms/content'
+import { feedFrameClass } from '@/data/feed'
 
 export function LookbookPage() {
   const { content } = useCms()
@@ -80,7 +81,7 @@ export function LookbookPage() {
                   <img
                     src={image.src}
                     alt={image.alt}
-                    className="wf-media-zoom aspect-[3/4] w-full object-cover"
+                    className={`wf-media-zoom aspect-[3/4] w-full ${feedFrameClass}`}
                     loading="lazy"
                   />
                 </figure>

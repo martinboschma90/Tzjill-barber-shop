@@ -19,7 +19,6 @@ export function HomePage() {
     const warm = () => {
       prefetchRoute('/prijzen')
       prefetchRoute('/lookbook')
-      prefetchRoute('/products')
       prefetchRoute('/collabs')
       prefetchRoute('/team')
       prefetchRoute('/over-ons')

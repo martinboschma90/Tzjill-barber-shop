@@ -10,7 +10,8 @@ import {
   BEARD_SERVICES,
   menuPrice,
 } from '@/data/seoPages'
-import { PHONE_DISPLAY, PHONE_TEL } from '@/data/site'
+import { feedFrameClass } from '@/data/feed'
+import { PHONE_DISPLAY, PHONE_TEL, productsEnabled } from '@/data/site'
 
 export function BeardPage() {
   const { content } = useCms()
@@ -38,7 +39,7 @@ export function BeardPage() {
             <img
               src={BEARD_PAGE.image}
               alt={BEARD_PAGE.imageAlt}
-              className="aspect-[4/5] w-full object-cover sm:aspect-[5/4] lg:aspect-[4/5]"
+              className={`aspect-[4/5] w-full sm:aspect-[5/4] lg:aspect-[4/5] ${feedFrameClass}`}
             />
           </figure>
         </div>
@@ -95,13 +96,15 @@ export function BeardPage() {
         <section className="mt-16 rounded-[1.75rem] bg-[#efeae3] px-7 py-8 text-[#1c1b19] sm:rounded-[2rem] sm:px-10 sm:py-10">
           <h2 className="type-subhead">In de lounge</h2>
           <p className="type-lead mt-4 max-w-xl text-[#1c1b19]/70">{BEARD_PAGE.products}</p>
-          <Link
-            to="/products"
-            className="type-ui mt-6 inline-flex items-center gap-2 rounded-full border border-[#1c1b19] px-6 py-3 transition-[color,background-color,transform] duration-300 hover:-translate-y-px hover:bg-[#1c1b19] hover:text-[#efeae3]"
-          >
-            Producten
-            <span aria-hidden>→</span>
-          </Link>
+          {productsEnabled ? (
+            <Link
+              to="/products"
+              className="type-ui mt-6 inline-flex items-center gap-2 rounded-full border border-[#1c1b19] px-6 py-3 transition-[color,background-color,transform] duration-300 hover:-translate-y-px hover:bg-[#1c1b19] hover:text-[#efeae3]"
+            >
+              Producten
+              <span aria-hidden>→</span>
+            </Link>
+          ) : null}
         </section>
 
         <div className="mt-8">

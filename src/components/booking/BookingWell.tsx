@@ -1,26 +1,24 @@
-import { SALONHUB_BOOKING_URL } from '@/data/site'
+import type { ReactNode } from 'react'
 
 type BookingWellProps = {
+  children: ReactNode
   className?: string
+  /** Inset list: each row keeps its own surface inside the rounded frame. */
+  list?: boolean
 }
 
 /**
- * Hosts Salonhub in a cream well. On narrow phones the widget is laid out
- * at ~640px and scaled to the viewport so No-show / Volgende stay on screen
- * without horizontal page overflow.
+ * Dark lounge frame for a booking step. Same border language as the rest of
+ * the site. It does not embed Salonhub.
  */
-export function BookingWell({ className = '' }: BookingWellProps) {
+export function BookingWell({ children, className = '', list = false }: BookingWellProps) {
   return (
     <div
-      className={`relative min-w-0 overflow-hidden bg-[#f6f3ee] ${className}`}
+      className={`overflow-hidden rounded-[1.25rem] border border-white/[0.08] bg-white/[0.03] ${
+        list ? 'p-2' : 'px-5 py-2'
+      } ${className}`}
     >
-      <div className="h-full w-full origin-top-left max-sm:h-[164%] max-sm:w-[164%] max-sm:scale-[0.61]">
-        <iframe
-          title="Salonhub — online afspraak Tzjill"
-          src={SALONHUB_BOOKING_URL}
-          className="block h-full w-full border-0 bg-[#f6f3ee]"
-        />
-      </div>
+      {children}
     </div>
   )
 }

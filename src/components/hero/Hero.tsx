@@ -4,10 +4,11 @@ import { Reveal } from '@/components/motion/Reveal'
 import { BookButton } from '@/components/booking/BookButton'
 import { useCms } from '@/cms/CmsContext'
 import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
+import { feedFrameClass, HERO_POSTER } from '@/data/feed'
 import { HOME_HERO } from '@/data/seoPages'
 import { PHONE_DISPLAY, PHONE_TEL } from '@/data/site'
 
-const FALLBACK_POSTER = '/brand/hero.jpg'
+const FALLBACK_POSTER = HERO_POSTER
 const FALLBACK_VIDEO = '/brand/hero.mp4'
 
 function isDirectVideo(url: string) {
@@ -80,7 +81,7 @@ export function Hero() {
             <img
               src={posterSrc}
               alt=""
-              className="absolute inset-0 h-full w-full object-cover"
+              className={`absolute inset-0 h-full w-full ${feedFrameClass}`}
             />
           )}
         </div>

@@ -36,6 +36,7 @@ import { isPagesWorkspacePath, PagesTabBar } from '@/cms/flow-mates/PagesTabBar'
 import type { CmsPanelProps } from '@/cms/panels/types'
 import { UsersAdmin } from '@/cms/editors/UsersAdmin'
 import { RouteFallback } from '@/components/ui/RouteFallback'
+import { productsEnabled } from '@/data/site'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 const CmsHomePanel = lazy(() => import('@/cms/panels/home'))
@@ -133,7 +134,7 @@ function useCmsPanels(): {
     return { mode: 'pages', title: 'Lookbook', subtitle: '/lookbook', Page: CmsLookbookPanel }
   }
   if (pathname.startsWith('/cms/products')) {
-    return { mode: 'pages', title: 'Products', subtitle: '/products', Page: CmsProductsPanel }
+    return { mode: 'pages', title: 'Producten', subtitle: '/products', Page: CmsProductsPanel }
   }
   if (pathname.startsWith('/cms/collabs')) {
     return { mode: 'pages', title: 'Collabs', subtitle: '/collabs', Page: CmsCollabsPanel }
@@ -225,6 +226,9 @@ export function CmsLayout() {
 
   if (pathname.startsWith('/cms/booking')) {
     return <Navigate to="/cms/contact" replace />
+  }
+  if (!productsEnabled && pathname.startsWith('/cms/products')) {
+    return <Navigate to="/cms/home" replace />
   }
   if (pathname === '/cms' || pathname === '/cms/') {
     return <Navigate to="/cms/dashboard" replace />

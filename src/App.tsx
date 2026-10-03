@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useState, type ReactNode } from 'react'
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import type { BeforeSendEvent } from '@vercel/analytics/react'
 import { ScrollToTop } from '@/components/layout/ScrollToTop'
@@ -8,7 +8,9 @@ import { PublicContentProvider } from '@/cms/PublicContentProvider'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { RouteFallback } from '@/components/ui/RouteFallback'
 import { HomePage } from '@/pages/HomePage'
+import { BookingPage } from '@/pages/BookingPage'
 import { reportNotFound, startPublicRum } from '@/lib/siteRum'
+import { productsEnabled } from '@/data/site'
 
 const Analytics = lazy(() =>
   import('@vercel/analytics/react').then((m) => ({ default: m.Analytics })),
@@ -38,9 +40,6 @@ const CollabsPage = lazy(() =>
 )
 const ProductsPage = lazy(() =>
   import('@/pages/ProductsPage').then((m) => ({ default: m.ProductsPage })),
-)
-const BookingPage = lazy(() =>
-  import('@/pages/BookingPage').then((m) => ({ default: m.BookingPage })),
 )
 const FaqPage = lazy(() =>
   import('@/pages/FaqPage').then((m) => ({ default: m.FaqPage })),
@@ -82,13 +81,24 @@ function RouteErrorBoundary({
   )
 }
 
+function SplashGate({ onReady }: { onReady: () => void }) {
+  useEffect(() => {
+    onReady()
+  }, [onReady])
+  return null
+}
+
 function PublicApp() {
+  const [splash, setSplash] = useState(true)
+  const dismissSplash = useCallback(() => setSplash(false), [])
+
   return (
     <PublicContentProvider>
       <PublicSeo />
       <ScrollToTop />
       <PromoSignupModal />
-      <Suspense fallback={<RouteFallback />}>
+      <Suspense fallback={<RouteFallback splash={splash} />}>
+        <SplashGate onReady={dismissSplash} />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/artists" element={<Navigate to="/" replace />} />
@@ -99,8 +109,22 @@ function PublicApp() {
           <Route path="/prijzen" element={<MenuPage />} />
           <Route path="/team" element={<TeamPage />} />
           <Route path="/lookbook" element={<LookbookPage />} />
-          <Route path="/products" element={<ProductsPage />} />
-          <Route path="/producten" element={<Navigate to="/products" replace />} />
+          <Route
+            path="/products"
+            element={
+              productsEnabled ? <ProductsPage /> : <Navigate to="/" replace />
+            }
+          />
+          <Route
+            path="/producten"
+            element={
+              productsEnabled ? (
+                <Navigate to="/products" replace />
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
           <Route path="/collabs" element={<CollabsPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/booking" element={<BookingPage />} />

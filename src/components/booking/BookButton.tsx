@@ -5,6 +5,8 @@ type BookButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: 'solid' | 'ghost'
   surface?: 'dark' | 'light'
   arrow?: boolean
+  /** Set false for actions inside the booking flow. Default opens the modal. */
+  openWidget?: boolean
   children?: ReactNode
 }
 
@@ -12,6 +14,7 @@ export function BookButton({
   variant = 'solid',
   surface = 'dark',
   arrow = true,
+  openWidget = true,
   className = '',
   children = 'Afspraak maken',
   onClick,
@@ -35,7 +38,7 @@ export function BookButton({
       className={`${base} ${styles} ${className}`}
       onClick={(event) => {
         onClick?.(event)
-        openSalonhub()
+        if (openWidget && !event.defaultPrevented) openSalonhub()
       }}
       {...props}
     >

@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { productsEnabled } from '@/data/site'
 
 const COMMANDS: { to: string; label: string; group: string }[] = [
   { to: '/cms/dashboard', label: 'Dashboard', group: 'Systeem' },
   { to: '/cms/home', label: 'Homepage', group: "Pagina's" },
   { to: '/cms/prijzen', label: 'Prijzen', group: "Pagina's" },
   { to: '/cms/lookbook', label: 'Lookbook', group: "Pagina's" },
-  { to: '/cms/products', label: 'Products', group: "Pagina's" },
+  { to: '/cms/products', label: 'Producten', group: "Pagina's" },
   { to: '/cms/collabs', label: 'Collabs', group: "Pagina's" },
   { to: '/cms/team', label: 'Team', group: "Pagina's" },
   { to: '/cms/over-ons', label: 'Over ons', group: "Pagina's" },
@@ -18,7 +19,7 @@ const COMMANDS: { to: string; label: string; group: string }[] = [
   { to: '/cms/settings', label: 'Instellingen', group: 'Systeem' },
   { to: '/cms/settings/users', label: 'Team en rollen', group: 'Systeem' },
   { to: '/', label: 'Publieke site', group: 'Systeem' },
-]
+].filter((command) => productsEnabled || command.to !== '/cms/products')
 
 export function useFlowMatesSearchHotkey(onOpen: () => void) {
   useEffect(() => {

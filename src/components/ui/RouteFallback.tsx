@@ -5,10 +5,21 @@ type RouteFallbackProps = {
   compact?: boolean
 }
 
-/** Dark-UI loading state for lazy routes. */
-export function RouteFallback({ compact = false }: RouteFallbackProps) {
-  if (!compact) {
+/** Dark-UI loading state for lazy routes. The logo splash is cold load only. */
+export function RouteFallback({
+  compact = false,
+  splash = true,
+}: RouteFallbackProps & { splash?: boolean }) {
+  if (!compact && splash) {
     return <BrandLoader label="Loading" />
+  }
+
+  if (!splash) {
+    return (
+      <div className="min-h-[30vh]" role="status" aria-live="polite" aria-label="Loading">
+        <span className="sr-only">Loading</span>
+      </div>
+    )
   }
 
   return (
