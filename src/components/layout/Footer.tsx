@@ -28,7 +28,7 @@ export function Footer() {
   const instagram = site.instagram.trim() || INSTAGRAM_URL
 
   return (
-    <footer className="mx-3 mb-3 mt-4 sm:mx-4 sm:mb-4 sm:mt-6">
+    <footer className="mx-auto mb-3 mt-4 w-full max-w-[1240px] px-8 pb-[calc(1.5*0.72rem+1.5rem+2px)] sm:mb-4 sm:mt-6 sm:px-12 lg:pb-0">
       <div className="grid gap-3 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
         <div className="flex flex-col justify-between rounded-[1.75rem] border border-white/10 bg-[#252421] px-8 py-8 text-white sm:rounded-[2rem] sm:px-10 sm:py-10">
           <div>
@@ -63,7 +63,7 @@ export function Footer() {
         </div>
 
         <div className="rounded-[1.75rem] bg-black px-8 py-8 text-white sm:rounded-[2rem] sm:px-10 sm:py-10">
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_max-content]">
             <div>
               <h3 className="type-label text-white/40">Pagina’s</h3>
               <nav className="mt-4 flex flex-col gap-2.5">
@@ -124,7 +124,7 @@ export function Footer() {
                   {hoursCompact.map((row) => (
                     <li
                       key={row.days}
-                      className="type-body flex justify-between gap-4 text-[0.9rem]"
+                      className="type-body flex justify-between gap-4 whitespace-nowrap text-[0.9rem]"
                     >
                       <span className="text-white/40">{row.days}</span>
                       <span className="text-white/70">{row.time}</span>
