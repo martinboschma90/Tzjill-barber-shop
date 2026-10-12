@@ -1,4 +1,5 @@
 import type { Plugin } from 'vite'
+import { PUBLIC_ARTISTS_STORAGE_KEY } from './src/cms/storageKeys.ts'
 
 /** Start the roster fetch before React, without painting a separate boot UI. */
 export function publicBootPlugin(env: Record<string, string>): Plugin {
@@ -9,13 +10,12 @@ export function publicBootPlugin(env: Record<string, string>): Plugin {
 
   const source = `(function(){
     if (location.pathname.indexOf('/cms') === 0) return;
-    var STORAGE_KEY = 'tzjill-artists-v3';
-    var STORAGE_KEY_V2 = 'tzjill-public-artists-v3';
+    var STORAGE_KEY = ${JSON.stringify(PUBLIC_ARTISTS_STORAGE_KEY)};
     var SUPABASE_URL = ${url};
     var SUPABASE_ANON_KEY = ${key};
     function readCache() {
       try {
-        var raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY_V2);
+        var raw = localStorage.getItem(STORAGE_KEY);
         return raw ? JSON.parse(raw) : null;
       } catch (e) {
         return null;
@@ -59,8 +59,7 @@ export function publicBootPlugin(env: Record<string, string>): Plugin {
     function fetchArtists() {
       if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return Promise.resolve(readCache());
       return load(STORAGE_KEY).then(function (current) {
-        if (current) return current;
-        return load(STORAGE_KEY_V2).then(function (legacy) { return legacy || readCache(); });
+        return current || readCache();
       }).catch(function () { return readCache(); });
     }
     var cached = readCache();

@@ -1,10 +1,7 @@
 import {
   parsePublicArtistsPayload,
 } from '@/cms/api/publicArtistsFormat'
-import {
-  PUBLIC_ARTISTS_STORAGE_KEY,
-  PUBLIC_ARTISTS_STORAGE_KEY_V2,
-} from '@/cms/storageKeys'
+import { PUBLIC_ARTISTS_STORAGE_KEY } from '@/cms/storageKeys'
 import { withArtDirection } from '@/cms/imageFocus'
 import { coerceArtist } from '@/cms/mappers/artist'
 import { restGet } from '@/lib/publicRest'
@@ -44,16 +41,9 @@ async function fetchPublicCmsArtistsByKey(
   return parsePublicArtistsPayload(data?.[0]?.data)
 }
 
-/** Key opened for anon reads in the Tzjill CMS migration. */
-const TZJILL_ARTISTS_KEY = 'tzjill-artists-v3'
-
-/** Public roster snapshot — REST only, no supabase-js. */
+/** Public roster snapshot — same key pushCmsSnapshot writes. REST only. */
 export async function fetchPublicCmsArtistsRow(): Promise<Artist[] | null> {
-  const named = await fetchPublicCmsArtistsByKey(TZJILL_ARTISTS_KEY)
-  if (named?.length) return named
-  const current = await fetchPublicCmsArtistsByKey(PUBLIC_ARTISTS_STORAGE_KEY)
-  if (current?.length) return current
-  return fetchPublicCmsArtistsByKey(PUBLIC_ARTISTS_STORAGE_KEY_V2)
+  return fetchPublicCmsArtistsByKey(PUBLIC_ARTISTS_STORAGE_KEY)
 }
 
 /** Single published artist blob — REST only, no supabase-js. */
