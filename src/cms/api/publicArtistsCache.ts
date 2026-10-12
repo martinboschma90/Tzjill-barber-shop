@@ -50,9 +50,13 @@ function resultFromPayload(data: unknown): ArtistsReadResult | null {
   return { artists, fromSupabase: true }
 }
 
+function readBoot() {
+  if (typeof window === 'undefined') return undefined
+  return window.__TZJILL_BOOT__ ?? window.__NOTYPE_BOOT__
+}
+
 function adoptBootPayload() {
-  if (typeof window === 'undefined') return
-  const boot = window.__NOTYPE_BOOT__
+  const boot = readBoot()
   if (!boot) return
   const fromCache = resultFromPayload(boot.cached)
   if (fromCache) {
@@ -73,7 +77,7 @@ export function fetchPublicArtistsFromSupabaseCached(
   if (!options?.force && publicInflight) return publicInflight
 
   const bootPromise =
-    !options?.force && !bootConsumed ? window.__NOTYPE_BOOT__?.promise : undefined
+    !options?.force && !bootConsumed ? readBoot()?.promise : undefined
   if (bootPromise) {
     bootConsumed = true
     publicInflight = bootPromise

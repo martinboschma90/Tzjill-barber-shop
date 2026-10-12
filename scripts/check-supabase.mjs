@@ -51,7 +51,7 @@ const placeholder =
 
 const configured = Boolean(urlValue && keyValue && !placeholder)
 
-console.log('=== No Type · Supabase connection check ===\n')
+console.log('=== Tzjill · Supabase connection check ===\n')
 console.log('Env files loaded:', loaded.length ? loaded.join(', ') : '(none)')
 console.log(
   'VITE_SUPABASE_URL:',

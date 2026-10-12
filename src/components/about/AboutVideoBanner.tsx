@@ -332,7 +332,7 @@ export function AboutVideoBanner({ url, title }: AboutVideoBannerProps) {
           aria-hidden
         />
       </div>
-      <h1 className="sr-only">{title || 'About NOTYPE'}</h1>
+      <h1 className="sr-only">{title || 'About Tzjill'}</h1>
       <div className="pointer-events-none absolute bottom-3 right-3 z-10 sm:bottom-5 sm:right-5 lg:bottom-6 lg:right-8">
         <div className="opacity-[0.85]">
           <BrandMark

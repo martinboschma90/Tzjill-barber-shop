@@ -44,7 +44,7 @@ export function getArtistBySlug(slug: string): Artist | undefined {
     ...base,
     bio:
       extra.bio ??
-      `${base.name} is part of the No Type roster — a ${base.genre ?? 'music'} act with a clear signature and ambitious live energy. Full-service management across bookings, strategy and creative direction.`,
+      `${base.name} is part of the Tzjill roster — a ${base.genre ?? 'music'} act with a clear signature and ambitious live energy. Full-service management across bookings, strategy and creative direction.`,
     socials: extra.socials ?? defaultSocials(slug),
     tracks: extra.tracks ?? defaultTracks(base.name),
     presskitUrl: extra.presskitUrl ?? '#',

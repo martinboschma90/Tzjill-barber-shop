@@ -1,4 +1,7 @@
-/** Default NOTYPE MGMT WhatsApp / phone display number. */
+/**
+ * Fallback WhatsApp number when the CMS has not set one.
+ * Tzjill's shop line is 058 844 7025; no separate WhatsApp number is stored.
+ */
 export const DEFAULT_WHATSAPP_NUMBER = '+31 36 236 53232'
 
 export function normalizeWhatsAppDigits(phone: string): string {
@@ -13,5 +16,5 @@ export function buildWhatsAppUrl(phone: string, message: string): string {
 }
 
 export function artistBookingWhatsAppMessage(artistName: string): string {
-  return `Hi NOTYPE MGMT, I would like to discuss booking ${artistName}.`
+  return `Hi Tzjill, I would like to discuss booking ${artistName}.`
 }

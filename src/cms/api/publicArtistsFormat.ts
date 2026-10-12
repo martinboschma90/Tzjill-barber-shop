@@ -122,7 +122,7 @@ function isSlugKeyedMap(data: unknown): boolean {
 
 /**
  * One-time localStorage migration: numeric-keyed (or array) public roster →
- * slug-keyed `notype-public-artists-v3`.
+ * slug-keyed `tzjill-public-artists-v3`.
  */
 export function migrateArtistsV1toV2(): void {
   const v3Raw = storageGet(PUBLIC_ARTISTS_STORAGE_KEY)

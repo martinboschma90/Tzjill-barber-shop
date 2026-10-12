@@ -57,7 +57,7 @@ const loaded = ['.env.local', '.env'].filter((f) => loadEnvFile(f))
 const url = (process.env.VITE_SUPABASE_URL ?? '').trim()
 const serviceKey = (process.env.SUPABASE_SERVICE_ROLE_KEY ?? '').trim()
 
-console.log('=== No Type · Phase 2.2 seed artists ===\n')
+console.log('=== Tzjill · Phase 2.2 seed artists ===\n')
 console.log('Env files loaded:', loaded.length ? loaded.join(', ') : '(none)')
 console.log('Mode:', dryRun ? 'dry-run (no writes)' : 'upsert')
 console.log('VITE_SUPABASE_URL:', url ? `${url.slice(0, 32)}…` : '(missing)')
