@@ -113,7 +113,7 @@ function VideoTile({ video }: { video: ArtistVideo }) {
           autoPlay={inView}
           playsInline
           loop
-          preload={inView ? 'auto' : 'metadata'}
+          preload="none"
           onLoadedMetadata={(event) => {
             bindMobilePlayback(event.currentTarget)
             if (inViewRef.current) requestPlay(event.currentTarget)

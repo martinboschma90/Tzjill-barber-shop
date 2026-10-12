@@ -15,7 +15,7 @@ export function Welcome() {
 
   return (
     <section className="text-white">
-      <div className="mx-auto grid max-w-[1240px] items-center gap-12 px-8 section-y sm:px-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16">
+      <div className="mx-auto grid max-w-[1240px] items-center gap-12 px-6 section-y lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16 lg:px-8">
         <div>
           <Reveal variant="clip">
             <p className="type-label text-white/40">{content.site.welcomeKicker || 'Studio'}</p>

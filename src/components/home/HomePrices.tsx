@@ -12,7 +12,7 @@ export function HomePrices() {
 
   return (
     <section className="text-white">
-      <div className="mx-auto max-w-[1240px] px-8 section-y sm:px-12">
+      <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
         <SectionHead
           kicker="Menu"
           title={

@@ -101,11 +101,7 @@ export function AppShell({
             navVariant === 'hero' ? '' : 'pt-[6.25rem] sm:pt-[6.75rem]'
           }`}
         >
-          <main
-            className={`flex flex-col ${
-              navVariant === 'hero' ? '' : 'px-3 sm:px-4'
-            }`}
-          >
+          <main className="flex flex-col">
             {children}
           </main>
           {showFooter && !preview && !salonhubOpen ? (

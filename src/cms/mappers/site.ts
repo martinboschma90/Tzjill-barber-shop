@@ -42,17 +42,18 @@ function asAboutHeroVideoUrl(value: unknown, fallback: string): string {
   return next
 }
 
-/** Replace legacy brand labels with NOTYPE MGMT defaults. */
+/** Replace leftover No Type / NOTYPE labels with the Tzjill default. */
 function migrateBrandLabel(value: string, fallback: string): string {
   const normalized = value.trim().toLowerCase().replace(/\s+/g, ' ')
+  const compact = normalized.replace(/[\s-]+/g, '')
   if (
     !normalized ||
-    normalized === 'no type' ||
-    normalized === 'no type mgmt' ||
-    normalized === 'no type management' ||
-    normalized === 'notyp' ||
-    normalized === 'notyp mgmt' ||
-    normalized === 'notyp management'
+    compact === 'notype' ||
+    compact === 'notypemgmt' ||
+    compact === 'notypemanagement' ||
+    compact === 'notyp' ||
+    compact === 'notypmgmt' ||
+    compact === 'notypmanagement'
   ) {
     return fallback
   }

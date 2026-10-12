@@ -46,6 +46,7 @@ export function Hero() {
     <section
       ref={sectionRef}
       className="full-bleed-hero"
+      data-home-hero
       aria-label="Hero"
     >
       <motion.div
@@ -56,19 +57,26 @@ export function Hero() {
           className={`absolute inset-0 ${reduce ? 'scale-105' : 'wf-hero-zoom'}`}
         >
           {playVideo ? (
-            <video
-              ref={videoRef}
-              className="absolute inset-0 h-full w-full min-h-full min-w-full object-cover"
-              src={videoSrc}
-              poster={posterSrc}
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              controls={false}
-              disablePictureInPicture
-            />
+            <>
+              <img
+                src={posterSrc}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <video
+                ref={videoRef}
+                className="absolute inset-0 h-full w-full min-h-full min-w-full object-cover"
+                src={videoSrc}
+                poster={posterSrc}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="none"
+                controls={false}
+                disablePictureInPicture
+              />
+            </>
           ) : (
             <img
               src={posterSrc}
@@ -80,11 +88,7 @@ export function Hero() {
       </motion.div>
 
       <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/55 via-[#2c241c]/10 to-[#1a1612]/70"
-        aria-hidden
-      />
-      <div
-        className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom_left,transparent,rgb(0_0_0/0.6))]"
         aria-hidden
       />
 

@@ -66,7 +66,7 @@ function AboutHeroVideo() {
         muted
         loop
         playsInline
-        preload="metadata"
+        preload="none"
         controls={false}
         disablePictureInPicture
       />

@@ -1,10 +1,7 @@
 import {
   parsePublicArtistsPayload,
 } from '@/cms/api/publicArtistsFormat'
-import {
-  PUBLIC_ARTISTS_STORAGE_KEY,
-  PUBLIC_ARTISTS_STORAGE_KEY_V2,
-} from '@/cms/storageKeys'
+import { PUBLIC_ARTISTS_STORAGE_KEY } from '@/cms/storageKeys'
 import { withArtDirection } from '@/cms/imageFocus'
 import { coerceArtist } from '@/cms/mappers/artist'
 import { restGet } from '@/lib/publicRest'
@@ -44,11 +41,9 @@ async function fetchPublicCmsArtistsByKey(
   return parsePublicArtistsPayload(data?.[0]?.data)
 }
 
-/** Public roster snapshot — REST only, no supabase-js. */
+/** Public roster snapshot — same key pushCmsSnapshot writes. REST only. */
 export async function fetchPublicCmsArtistsRow(): Promise<Artist[] | null> {
-  const current = await fetchPublicCmsArtistsByKey(PUBLIC_ARTISTS_STORAGE_KEY)
-  if (current?.length) return current
-  return fetchPublicCmsArtistsByKey(PUBLIC_ARTISTS_STORAGE_KEY_V2)
+  return fetchPublicCmsArtistsByKey(PUBLIC_ARTISTS_STORAGE_KEY)
 }
 
 /** Single published artist blob — REST only, no supabase-js. */

@@ -134,7 +134,7 @@ export function CollabMedia({
           autoPlay={inView}
           playsInline
           loop
-          preload={inView ? 'auto' : 'metadata'}
+          preload="none"
           controls={false}
           disablePictureInPicture
           onLoadedMetadata={(event) => {

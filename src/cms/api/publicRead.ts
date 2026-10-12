@@ -1,6 +1,11 @@
 import { artistFromRow, artistFromRosterRow, type ArtistRosterRow } from '@/cms/mappers/artist'
 import { teamMemberFromRow } from '@/cms/mappers/team'
 import { normalizeSiteContent } from '@/cms/mappers/site'
+import {
+  CMS_STORAGE_KEY,
+  PUBLIC_SITE_STORAGE_KEY,
+  PUBLIC_TEAM_STORAGE_KEY,
+} from '@/cms/storageKeys'
 import { fetchPublicCmsArtistBySlug } from '@/cms/api/publicCmsRead'
 import { slimPublicArtistDetail } from '@/cms/api/publicArtistsFormat'
 import { restGet, publicStorageUrl } from '@/lib/publicRest'
@@ -49,8 +54,37 @@ export async function fetchPublicArtistBySlug(
   return slimPublicArtistDetail(artistFromRow(row))
 }
 
+async function fetchCmsContentData(key: string): Promise<unknown | null> {
+  const rows = await restGet<{ data: unknown }[]>(
+    `cms_content?key=eq.${encodeURIComponent(key)}&select=data&limit=1`,
+  )
+  return rows?.[0]?.data ?? null
+}
+
+function siteFromCmsBlob(data: unknown): SiteContent | null {
+  if (!data || typeof data !== 'object' || !('site' in data)) return null
+  const site = (data as { site?: unknown }).site
+  if (!site || typeof site !== 'object') return null
+  return normalizeSiteContent(site)
+}
+
+function teamFromUnknown(data: unknown): TeamMember[] | null {
+  if (!Array.isArray(data) || data.length === 0) return null
+  const team = data.filter(
+    (item): item is TeamMember =>
+      Boolean(item) &&
+      typeof item === 'object' &&
+      typeof (item as TeamMember).name === 'string',
+  )
+  return team.length ? team : null
+}
+
 export async function fetchPublicSite(): Promise<SiteContent | null> {
   if (!isSupabaseConfigured) return null
+  const direct = await fetchCmsContentData(PUBLIC_SITE_STORAGE_KEY)
+  if (direct && typeof direct === 'object') return normalizeSiteContent(direct)
+  const fromBlob = siteFromCmsBlob(await fetchCmsContentData(CMS_STORAGE_KEY))
+  if (fromBlob) return fromBlob
   const data = await restGet<{ id: string; content: unknown }[]>(
     'site_settings?select=id,content&order=updated_at.desc&limit=1',
   )
@@ -61,6 +95,14 @@ export async function fetchPublicSite(): Promise<SiteContent | null> {
 
 export async function fetchPublicTeam(): Promise<TeamMember[] | null> {
   if (!isSupabaseConfigured) return null
+  const direct = teamFromUnknown(await fetchCmsContentData(PUBLIC_TEAM_STORAGE_KEY))
+  if (direct) return direct
+  const blob = await fetchCmsContentData(CMS_STORAGE_KEY)
+  const fromBlob =
+    blob && typeof blob === 'object' && 'team' in blob
+      ? teamFromUnknown((blob as { team?: unknown }).team)
+      : null
+  if (fromBlob) return fromBlob
   const data = await restGet<TeamMemberRow[]>(
     'team_members?select=id,name,role,image_url,sort_order&order=sort_order.asc',
   )

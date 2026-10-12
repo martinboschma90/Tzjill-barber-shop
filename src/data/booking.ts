@@ -5,7 +5,7 @@ export const BOOKING_REQUEST_EMAIL = 'info@tzjill.nl'
 
 export function formatBookingEmailBody(payload: BookingRequestPayload): string {
   const lines: string[] = [
-    'NEW BOOKING REQUEST — NOTYPE MGMT',
+    'Boekingsaanvraag — Tzjill',
     `Submitted: ${payload.submittedAt}`,
     '',
     '— SELECTED ARTISTS —',

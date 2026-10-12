@@ -3,6 +3,8 @@ import { publicArtistsToSlugMap } from '@/cms/api/publicArtistsFormat'
 import {
   CMS_STORAGE_KEY,
   PUBLIC_ARTISTS_STORAGE_KEY,
+  PUBLIC_SITE_STORAGE_KEY,
+  PUBLIC_TEAM_STORAGE_KEY,
 } from '@/cms/storageKeys'
 import type { CmsContent } from '@/cms/content'
 import { normalizeSiteContent } from '@/cms/mappers/site'
@@ -180,6 +182,14 @@ export async function pushCmsSnapshot(
   )
   if (publicRoster.error) {
     return { error: publicRoster.error, updatedAt: blob.updatedAt }
+  }
+  const publicSite = await upsertCmsContentRow(PUBLIC_SITE_STORAGE_KEY, content.site)
+  if (publicSite.error) {
+    return { error: publicSite.error, updatedAt: blob.updatedAt }
+  }
+  const publicTeam = await upsertCmsContentRow(PUBLIC_TEAM_STORAGE_KEY, content.team)
+  if (publicTeam.error) {
+    return { error: publicTeam.error, updatedAt: blob.updatedAt }
   }
   return blob
 }
