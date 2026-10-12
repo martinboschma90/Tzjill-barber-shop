@@ -3,7 +3,7 @@ import path from 'node:path'
 import type { Plugin } from 'vite'
 import { productsEnabled } from './src/data/productsEnabled.ts'
 
-const FALLBACK = 'https://tzjill-barber-shop.vercel.app'
+const CANONICAL_ORIGIN = 'https://www.tzjill.nl'
 
 const SITEMAP_PATHS = [
   '/',
@@ -16,6 +16,8 @@ const SITEMAP_PATHS = [
   '/contact',
   '/booking',
   '/faq',
+  '/barbershop-leeuwarden',
+  '/baard-scheren',
 ]
 
 function cleanOrigin(value: string): string {
@@ -26,10 +28,20 @@ function isNotype(value: string): boolean {
   return /notype-mgmt\.com/i.test(value)
 }
 
+function isPreviewOrigin(value: string): boolean {
+  return /vercel\.app/i.test(value) || /localhost|127\.0\.0\.1/i.test(value)
+}
+
 function resolveOrigin(env: Record<string, string>): string {
   const fromEnv = cleanOrigin(env.VITE_PUBLIC_SITE_URL ?? '')
-  if (fromEnv && !isNotype(fromEnv)) return fromEnv
-  return FALLBACK
+  if (!fromEnv || isNotype(fromEnv) || isPreviewOrigin(fromEnv)) return CANONICAL_ORIGIN
+  try {
+    const url = new URL(fromEnv)
+    if (url.hostname === 'tzjill.nl') url.hostname = 'www.tzjill.nl'
+    return url.origin
+  } catch {
+    return CANONICAL_ORIGIN
+  }
 }
 
 function sitemapXml(origin: string): string {
@@ -41,19 +53,17 @@ function sitemapXml(origin: string): string {
 }
 
 function robotsTxt(origin: string, noindex: boolean): string {
-  const hiddenProducts = productsEnabled
-    ? ''
-    : 'Disallow: /products\nDisallow: /producten\n'
+  const hiddenProducts = productsEnabled ? '' : 'Disallow: /products\nDisallow: /products/\n'
   const rules = noindex
     ? `User-agent: *\nDisallow: /\n`
     : `User-agent: *\nAllow: /\nDisallow: /cms\nDisallow: /cms/\nDisallow: /admin\nDisallow: /admin/\nDisallow: /api/\n${hiddenProducts}`
-  return `${rules}\nHost: ${origin}\nSitemap: ${origin}/sitemap.xml\n`
+  return `${rules}\nSitemap: ${origin}/sitemap.xml\n`
 }
 
 /** Bake the public origin into index.html / robots / sitemap at build time. */
 export function seoOriginPlugin(env: Record<string, string>): Plugin {
   const origin = resolveOrigin(env)
-  const noindex = !env.VITE_PUBLIC_SITE_URL || origin.includes('vercel.app')
+  const noindex = process.env.VERCEL_ENV === 'preview'
 
   return {
     name: 'seo-origin',
@@ -62,10 +72,16 @@ export function seoOriginPlugin(env: Record<string, string>): Plugin {
         /<link rel="canonical" href="[^"]*" \/>/,
         `<link rel="canonical" href="${origin}/" />`,
       )
-      if (noindex && !/name="robots"/.test(next)) {
+      const robots = noindex ? 'noindex, nofollow' : 'index, follow'
+      if (/name="robots"/.test(next)) {
+        next = next.replace(
+          /<meta name="robots" content="[^"]*" \/>/,
+          `<meta name="robots" content="${robots}" />`,
+        )
+      } else if (noindex) {
         next = next.replace(
           '<meta name="referrer"',
-          '<meta name="robots" content="noindex, nofollow" />\n    <meta name="referrer"',
+          `<meta name="robots" content="${robots}" />\n    <meta name="referrer"`,
         )
       }
       return next

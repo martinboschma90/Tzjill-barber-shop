@@ -4,6 +4,17 @@ import { AppShell } from '@/components/layout/AppShell'
 import { ArtistPageSections } from '@/components/artists/ArtistPageSections'
 import { usePublicArtist, usePublicArtists } from '@/cms/usePublicArtists'
 
+function upsertMeta(selector: string, attrs: Record<string, string>) {
+  let node = document.head.querySelector(selector)
+  if (!node) {
+    node = document.createElement('meta')
+    document.head.appendChild(node)
+  }
+  for (const [key, value] of Object.entries(attrs)) {
+    node.setAttribute(key, value)
+  }
+}
+
 export function ArtistPage() {
   const { slug = '' } = useParams()
   const { artist: publicArtist, checkingRemote } = usePublicArtist(slug)
@@ -12,6 +23,28 @@ export function ArtistPage() {
   useEffect(() => {
     window.scrollTo(0, 0)
   }, [slug])
+
+  useEffect(() => {
+    const name = publicArtist?.name?.trim()
+    const label = name || slug.replace(/-/g, ' ')
+    const title = name
+      ? `${name} | Kapper bij Tzjill in Leeuwarden`
+      : checkingRemote
+        ? `${label} | Kapper bij Tzjill in Leeuwarden`
+        : `${label} | Kapper niet gevonden bij Tzjill`
+    const description = name
+      ? `${name} knipt bij Tzjill Barber & Lounge aan de Voorstreek 18 in Leeuwarden. Bekijk het profiel en maak een afspraak.`
+      : checkingRemote
+        ? `${label} is kapper bij Tzjill Barber & Lounge aan de Voorstreek 18 in Leeuwarden.`
+        : `${label} staat niet op de site van Tzjill in Leeuwarden. Bekijk het team en maak een afspraak.`
+    document.title = title
+    upsertMeta('meta[name="description"]', { name: 'description', content: description })
+    upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title })
+    upsertMeta('meta[property="og:description"]', {
+      property: 'og:description',
+      content: description,
+    })
+  }, [checkingRemote, publicArtist, slug])
 
   if (!publicArtist && checkingRemote) {
     return (

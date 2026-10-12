@@ -16,7 +16,7 @@ export function SettingsEditor() {
   const [dangerPassword, setDangerPassword] = useState('')
   const [dangerError, setDangerError] = useState<string | null>(null)
   const [dangerBusy, setDangerBusy] = useState(false)
-  const publicUrl = site.publicSiteUrl || 'https://tzjill-barber-shop.vercel.app'
+  const publicUrl = site.publicSiteUrl || 'https://www.tzjill.nl'
   const httpsUrl = publicUrl.replace(/^http:\/\//i, 'https://')
 
   useEffect(() => {
@@ -61,8 +61,8 @@ export function SettingsEditor() {
         <TextInput
           label="Publieke URL"
           value={site.publicSiteUrl}
-          placeholder="https://tzjill-barber-shop.vercel.app"
-          hint="Zet VITE_PUBLIC_SITE_URL in Vercel. Laat dit leeg tot tzjill.nl op deze app wijst — niet de oude WordPress-site."
+          placeholder="https://www.tzjill.nl"
+          hint="Canoniek adres is https://www.tzjill.nl. Apex tzjill.nl gaat via de Vercel-domeininstellingen naar www."
           onChange={(publicSiteUrl) => setSite((current) => ({ ...current, publicSiteUrl }))}
         />
         <TextInput

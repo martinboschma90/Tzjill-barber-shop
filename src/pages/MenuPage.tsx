@@ -31,7 +31,7 @@ export function MenuPage() {
 
         <div className="mt-16 grid gap-16 lg:grid-cols-2 lg:gap-20">
           {menu.map((category) => (
-            <section key={category.id}>
+            <section key={category.id} id={category.id} className="scroll-mt-24">
               <h2 className="type-subhead">{category.label}</h2>
               {category.groups.map((group) => (
                 <div key={group.title} className="mt-10">

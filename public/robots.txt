@@ -1,5 +1,11 @@
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /cms
+Disallow: /cms/
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+Disallow: /products
+Disallow: /products/
 
-Host: https://tzjill-barber-shop.vercel.app
-Sitemap: https://tzjill-barber-shop.vercel.app/sitemap.xml
+Sitemap: https://www.tzjill.nl/sitemap.xml

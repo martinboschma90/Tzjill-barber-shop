@@ -5,6 +5,13 @@ import { useCms } from '@/cms/CmsContext'
 import { cloneTreatments } from '@/cms/content'
 import { feedFrameClass } from '@/data/feed'
 
+function treatmentHref(title: string) {
+  const key = title.toLowerCase()
+  if (key.includes('baard')) return '/baard-scheren'
+  if (key.includes('hair') || key.includes('knip')) return '/barbershop-leeuwarden'
+  return '/prijzen'
+}
+
 export function Treatments() {
   const { content } = useCms()
   const items = content.site.treatments?.length
@@ -32,7 +39,7 @@ export function Treatments() {
           {items.map((item, index) => (
             <li key={`${item.title}-${index}`}>
               <Reveal delay={0.08 + index * 0.1}>
-                <Link to="/prijzen" className="group block">
+                <Link to={treatmentHref(item.title)} className="group block">
                   <MediaReveal
                     delay={0.08 + index * 0.08}
                     className="relative overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]"

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
-import { SHOP_FAQ_FILTERS, SHOP_FAQ_ITEMS } from '@/data/shopFaq'
+import { FaqAnswer } from '@/components/faq/FaqAnswer'
+import { SHOP_FAQ_FILTERS, SHOP_FAQ_INTRO, SHOP_FAQ_ITEMS } from '@/data/shopFaq'
 
 type FilterId = (typeof SHOP_FAQ_FILTERS)[number]['id']
 
@@ -29,7 +30,7 @@ export function HomeFaq() {
             de stoel zit
           </h2>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
-            Boeken, te laat, kids — de rest regel je aan de balie.
+            {SHOP_FAQ_INTRO}
           </p>
         </div>
 
@@ -107,7 +108,7 @@ export function HomeFaq() {
                           : 'text-white/50 group-hover:text-[#2c241c]/60'
                       }`}
                     >
-                      {item.a}
+                      <FaqAnswer text={item.a} />
                     </p>
                   </div>
                 </div>
