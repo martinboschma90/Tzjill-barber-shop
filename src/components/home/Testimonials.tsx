@@ -43,22 +43,22 @@ export function Testimonials() {
   return (
     <section className="section-y text-white">
       <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
-        <Reveal>
-          <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-3xl text-center">
             <p className="type-label inline-flex items-center justify-center gap-2 text-white/45">
               <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
               Reviews
             </p>
-            <h2 className="type-headline mt-5">
-              Wat klanten
-              <br />
-              zeggen
-            </h2>
+            <Reveal>
+              <h2 className="type-headline mt-5">
+                Wat klanten
+                <br />
+                zeggen
+              </h2>
+            </Reveal>
             <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
               Niet van ons — van mannen uit de stoel.
             </p>
           </div>
-        </Reveal>
 
         <div className="mt-14 sm:hidden">
           <article className={cardClass} aria-live="polite">

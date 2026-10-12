@@ -224,9 +224,7 @@ export function AboutPage() {
           </>
         ) : (
           <div className="mt-10 text-center">
-            <Link to="/booking" className="type-ui text-white/50 hover:text-white">
-              Afspraak maken →
-            </Link>
+            <BookButton surface="dark">Afspraak maken</BookButton>
           </div>
         )}
       </PageFrame>

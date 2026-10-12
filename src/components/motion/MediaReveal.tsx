@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { Reveal } from '@/components/motion/Reveal'
 
-const ease = [0.16, 1, 0.3, 1] as const
-
+/** Image reveal. Same tokens as Reveal: opacity + translate, once, stagger cap 6. */
 export function MediaReveal({
   children,
   className = '',
@@ -12,17 +11,9 @@ export function MediaReveal({
   className?: string
   delay?: number
 }) {
-  const reduce = useReducedMotion()
-
   return (
-    <motion.div
-      className={className}
-      initial={reduce ? false : { opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.2, margin: '0px 0px -8% 0px' }}
-      transition={{ duration: 0.62, delay, ease }}
-    >
+    <Reveal delay={delay} className={className}>
       {children}
-    </motion.div>
+    </Reveal>
   )
 }

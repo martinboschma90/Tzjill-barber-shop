@@ -7,6 +7,7 @@ import {
   PHONE_DISPLAY,
   PHONE_TEL,
 } from '@/data/site'
+import { OpenStatus } from '@/components/layout/OpenStatus'
 import { buttonClass } from '@/components/ui/buttonStyles'
 import { useCms } from '@/cms/CmsContext'
 
@@ -121,11 +122,12 @@ export function Footer() {
                     <p key={line}>{line}</p>
                   ))}
                 </div>
-                <ul className="max-w-[280px] space-y-2 pt-2">
+                <OpenStatus className="pt-2 text-white/70" />
+                <ul className="max-w-[280px] space-y-2 pt-3">
                   {hoursCompact.map((row) => (
                     <li
                       key={row.days}
-                      className="type-body flex justify-between gap-4 whitespace-nowrap"
+                      className="type-body nums flex justify-between gap-4 whitespace-nowrap"
                     >
                       <span className="text-white/60">{row.days}</span>
                       <span className="text-white/70">{row.time}</span>

@@ -29,7 +29,7 @@ function NavItem({
   return (
     <Link
       to={to}
-      className={`wf-link type-ui ${
+      className={`wf-link type-ui inline-flex min-h-11 items-center ${
         navActive(pathname, to) ? 'opacity-100' : 'opacity-55 hover:opacity-100'
       }`}
     >
@@ -97,7 +97,7 @@ export function Navbar({
 
         <button
           type="button"
-          className="pointer-events-auto absolute right-5 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center lg:hidden sm:right-8"
+          className="pointer-events-auto absolute right-5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center lg:hidden sm:right-8"
           onPointerEnter={onMenuIntent}
           onTouchStart={onMenuIntent}
           onClick={onMenuToggle}

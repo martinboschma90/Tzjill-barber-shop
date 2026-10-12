@@ -45,9 +45,9 @@ export function HomePage() {
     <AppShell navVariant={heroVisible ? 'hero' : 'wordmark'}>
       {heroVisible ? <Hero /> : null}
       <Welcome />
-      <HomeCollabs />
       <Treatments />
       <HomePrices />
+      <HomeCollabs />
       <InstagramFeed />
       <Testimonials />
       <HomeFaq />

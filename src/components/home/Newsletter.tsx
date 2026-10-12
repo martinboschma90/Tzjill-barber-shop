@@ -1,20 +1,26 @@
 import { useState, type FormEvent } from 'react'
+import { buttonClass } from '@/components/ui/buttonStyles'
+import { Check, Spinner } from '@/components/ui/StatusIcon'
 import { site } from '@/data/site'
 
 const STUDIO_EMAIL = site.contact[0]?.email ?? 'info@tzjill.nl'
 
 export function Newsletter() {
   const [email, setEmail] = useState('')
-  const [sent, setSent] = useState(false)
+  const [phase, setPhase] = useState<'idle' | 'sending' | 'done'>('idle')
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault()
+    if (phase !== 'idle') return
     const address = email.trim()
-    const href = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(
-      'Nieuwsbrief Tzjill',
-    )}&body=${encodeURIComponent(`Aanmelden nieuwsbrief\nE-mail: ${address}`)}`
-    window.location.href = href
-    setSent(true)
+    setPhase('sending')
+    window.setTimeout(() => {
+      const href = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(
+        'Nieuwsbrief Tzjill',
+      )}&body=${encodeURIComponent(`Aanmelden nieuwsbrief\nE-mail: ${address}`)}`
+      window.location.href = href
+      setPhase('done')
+    }, 420)
   }
 
   return (
@@ -30,13 +36,7 @@ export function Newsletter() {
             Looks, drops en nieuws uit de lounge. Geen spam.
           </p>
 
-          {sent ? (
-            <p className="type-lead mx-auto mt-8 max-w-md text-white/70">
-              Je mailprogramma opent met je aanmelding. Verstuur het daar — we
-              zetten je op de lijst.
-            </p>
-          ) : (
-            <form
+          <form
               onSubmit={onSubmit}
               className="mx-auto mt-8 flex w-full max-w-xl flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center"
             >
@@ -56,18 +56,23 @@ export function Newsletter() {
               />
               <button
                 type="submit"
-                className="type-ui group inline-flex shrink-0 items-center justify-center gap-2.5 rounded-full border border-[#efeae3] bg-[#efeae3] px-6 py-3 text-[#2c241c] transition-[color,background-color,transform] duration-300 hover:-translate-y-px hover:border-white hover:bg-white"
+                disabled={phase !== 'idle'}
+                className={buttonClass({ variant: 'solid', surface: 'dark', className: 'shrink-0 disabled:opacity-70' })}
               >
-                Aanmelden
-                <span
-                  aria-hidden
-                  className="transition-transform duration-300 group-hover:translate-x-0.5"
-                >
-                  →
-                </span>
+                {phase === 'sending' ? <Spinner /> : phase === 'done' ? <Check /> : null}
+                {phase === 'sending' ? 'Versturen' : phase === 'done' ? 'Aangemeld' : 'Aanmelden'}
+                {phase === 'idle' ? (
+                  <span aria-hidden className="motion-arrow">
+                    →
+                  </span>
+                ) : null}
               </button>
             </form>
-          )}
+            {phase === 'done' ? (
+              <p className="type-lead mx-auto mt-4 max-w-md text-white/70" role="status">
+                Je mailprogramma opent met je aanmelding. Verstuur het daar — we zetten je op de lijst.
+              </p>
+            ) : null}
         </div>
       </div>
     </section>

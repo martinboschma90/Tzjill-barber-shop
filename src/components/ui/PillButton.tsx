@@ -21,7 +21,7 @@ export function PillButton({
     <a className={buttonClass({ variant, surface, className })} {...props}>
       {children}
       {arrow ? (
-        <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">
+        <span aria-hidden className="motion-arrow">
           →
         </span>
       ) : null}

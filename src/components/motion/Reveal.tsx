@@ -1,63 +1,70 @@
-import type { ReactNode } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 
-const ease = [0.16, 1, 0.3, 1] as const
-const duration = 0.62
+const MAX_SLOT = 5
 
 type RevealProps = {
   children: ReactNode
   className?: string
+  /** Stagger in seconds. Slots are 80ms, capped at 6 items (0–5). */
   delay?: number
   variant?: 'up' | 'clip'
+  /** `load` is the above-the-fold intro (max 900ms). `view` waits for scroll. */
   trigger?: 'view' | 'load'
 }
 
+function slotFor(delay: number) {
+  return Math.max(0, Math.min(MAX_SLOT, Math.round(delay / 0.08)))
+}
+
+/**
+ * Scroll reveal via IntersectionObserver. Content stays visible when JS never
+ * adds `html.js`, so a page without the motion script is not blank.
+ */
 export function Reveal({
   children,
   className,
   delay = 0,
-  variant = 'up',
   trigger = 'view',
 }: RevealProps) {
-  const reduce = useReducedMotion()
-  const onLoad = trigger === 'load'
-  const motionIn = reduce ? false : variant === 'clip' ? { y: '108%' } : { opacity: 0, y: 14 }
-  const motionOut = variant === 'clip' ? { y: 0 } : { opacity: 1, y: 0 }
+  const ref = useRef<HTMLDivElement>(null)
+  const [shown, setShown] = useState(false)
+  const slot = slotFor(delay)
 
-  if (variant === 'clip') {
-    const clipVariants = {
-      hidden: { y: '108%' },
-      show: { y: 0 },
+  useEffect(() => {
+    const node = ref.current
+    if (!node) return
+
+    if (trigger === 'load') {
+      const frame = window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => setShown(true))
+      })
+      return () => window.cancelAnimationFrame(frame)
     }
 
-    return (
-      <motion.div
-        className={`overflow-hidden ${className ?? ''}`}
-        initial={reduce ? 'show' : 'hidden'}
-        animate={onLoad && !reduce ? 'show' : undefined}
-        whileInView={onLoad || reduce ? undefined : 'show'}
-        viewport={onLoad ? undefined : { once: true, amount: 0.15, margin: '0px 0px 40px 0px' }}
-      >
-        <motion.div
-          variants={clipVariants}
-          transition={{ duration, delay, ease }}
-        >
-          {children}
-        </motion.div>
-      </motion.div>
+    if (!('IntersectionObserver' in window)) {
+      setShown(true)
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting || entry.intersectionRatio < 0.15) return
+        setShown(true)
+        observer.disconnect()
+      },
+      { threshold: [0, 0.15] },
     )
-  }
+    observer.observe(node)
+    return () => observer.disconnect()
+  }, [trigger])
 
   return (
-    <motion.div
-      className={className}
-      initial={motionIn}
-      animate={onLoad ? motionOut : undefined}
-      whileInView={onLoad ? undefined : motionOut}
-      viewport={onLoad ? undefined : { once: true, amount: 0.18, margin: '0px 0px -8% 0px' }}
-      transition={{ duration, delay, ease }}
+    <div
+      ref={ref}
+      className={`motion-reveal ${trigger === 'load' ? 'motion-load' : ''} ${shown ? 'is-in' : ''} ${className ?? ''}`}
+      style={{ ['--motion-i' as string]: String(slot) }}
     >
       {children}
-    </motion.div>
+    </div>
   )
 }

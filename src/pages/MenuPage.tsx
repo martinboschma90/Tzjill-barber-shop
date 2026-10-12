@@ -2,7 +2,6 @@ import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
 import { BookButton } from '@/components/booking/BookButton'
-import { Reveal } from '@/components/motion/Reveal'
 import { useCms } from '@/cms/CmsContext'
 import { cloneShopMenu, type ShopMenuCategory, type ShopMenuItem } from '@/cms/content'
 
@@ -38,15 +37,14 @@ function blocksFor(menu: ShopMenuCategory[]) {
 function PriceRows({ items }: { items: ShopMenuItem[] }) {
   return (
     <ul className="mt-4">
-      {items.map((item, index) => (
-        <li key={item.name} className="border-b border-white/10 first:border-t first:border-white/10">
-          <Reveal delay={Math.min(index, 5) * 0.05}>
-            <div className="flex items-baseline gap-4 py-4">
-              <span className="type-lead text-white/85">{item.name}</span>
-              <span className="min-w-6 flex-1 border-b border-dotted border-white/20" aria-hidden />
-              <span className="type-ui shrink-0 text-white/40">{item.price}</span>
-            </div>
-          </Reveal>
+      {items.map((item) => (
+        <li
+          key={item.name}
+          className="flex items-baseline gap-4 border-b border-white/10 py-4 first:border-t first:border-white/10"
+        >
+          <span className="type-lead text-white/85">{item.name}</span>
+          <span className="min-w-6 flex-1 border-b border-dotted border-white/20" aria-hidden />
+          <span className="type-ui nums shrink-0 text-white/40">{item.price}</span>
         </li>
       ))}
     </ul>
@@ -73,12 +71,6 @@ export function MenuPage() {
           }
           intro="Knippen, scheren, baard en kids. Wat hier staat, betaal je aan de stoel."
         />
-        <div className="mt-8">
-          <BookButton surface="dark" className="shrink-0">
-            Afspraak maken
-          </BookButton>
-        </div>
-
         <div className="mt-16 grid items-start gap-x-20 gap-y-14 lg:grid-cols-2">
           {columns.map((block) => (
             <section key={block.key}>
@@ -94,6 +86,9 @@ export function MenuPage() {
             <PriceRows items={block.items} />
           </section>
         ))}
+        <div className="mt-12">
+          <BookButton surface="dark">Afspraak maken</BookButton>
+        </div>
       </PageFrame>
     </AppShell>
   )

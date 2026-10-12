@@ -18,29 +18,25 @@ export function Welcome() {
     <section className="text-white">
       <div className="mx-auto grid max-w-[1240px] items-center gap-12 px-6 section-y lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16 lg:px-8">
         <div>
-          <Reveal variant="clip">
-            <p className="type-label text-white/40">{content.site.welcomeKicker || 'Studio'}</p>
-          </Reveal>
-          <Reveal variant="clip" delay={0.08} className="mt-4">
+          <p className="type-label text-white/40">{content.site.welcomeKicker || 'Studio'}</p>
+          <Reveal className="mt-4">
             <h2 className="type-headline max-w-2xl whitespace-pre-line">
               {content.site.welcomeTitle || 'Elke coupe\nis maatwerk.'}
             </h2>
           </Reveal>
-          <Reveal delay={0.16}>
-            <p className="type-lead mt-6 max-w-xs text-white/55">
-              {content.site.welcomeText ||
-                'Knippen, scheren, baard. Voorstreek, Leeuwarden. A man’s world.'}
-            </p>
-            <Link
-              to="/over-ons"
-              className={buttonClass({ variant: 'ghost', surface: 'dark', className: 'mt-8' })}
-            >
-              Over ons
-              <span aria-hidden className="transition-transform duration-500 ease-out group-hover:translate-x-0.5">
-                →
-              </span>
-            </Link>
-          </Reveal>
+          <p className="type-lead mt-6 max-w-xs text-white/55">
+            {content.site.welcomeText ||
+              'Knippen, scheren, baard. Voorstreek, Leeuwarden. A man’s world.'}
+          </p>
+          <Link
+            to="/over-ons"
+            className={buttonClass({ variant: 'ghost', surface: 'dark', className: 'mt-8' })}
+          >
+            Over ons
+            <span aria-hidden className="motion-arrow">
+              →
+            </span>
+          </Link>
         </div>
 
         <div className="relative mx-auto h-[22rem] w-full max-w-lg sm:h-[28rem] lg:h-[32rem]">

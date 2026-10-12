@@ -12,7 +12,7 @@ export function buttonClass({
   className?: string
 }) {
   const base =
-    'type-ui group inline-flex items-center justify-center gap-2.5 rounded-full border px-6 py-3 transition-[color,background-color,border-color,transform] duration-500 ease-out hover:-translate-y-px'
+    'type-ui group inline-flex min-h-11 items-center justify-center gap-2.5 rounded-full border px-6 py-3 transition-[color,background-color,border-color] duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)]'
 
   const styles =
     surface === 'dark'
