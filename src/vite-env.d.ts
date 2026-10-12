@@ -10,11 +10,13 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
-interface NotypePublicBoot {
+interface PublicArtistsBoot {
   cached: unknown
   promise: Promise<unknown>
 }
 
 interface Window {
-  __NOTYPE_BOOT__?: NotypePublicBoot
+  __TZJILL_BOOT__?: PublicArtistsBoot
+  /** Previous boot global, still read if an older HTML document is cached. */
+  __NOTYPE_BOOT__?: PublicArtistsBoot
 }

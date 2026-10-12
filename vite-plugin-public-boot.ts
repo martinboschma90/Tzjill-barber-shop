@@ -1,4 +1,8 @@
 import type { Plugin } from 'vite'
+import {
+  PUBLIC_ARTISTS_STORAGE_KEY,
+  PUBLIC_ARTISTS_STORAGE_KEY_V2,
+} from './src/cms/storageKeys.ts'
 
 /** Start the roster fetch before React, without painting a separate boot UI. */
 export function publicBootPlugin(env: Record<string, string>): Plugin {
@@ -7,15 +11,19 @@ export function publicBootPlugin(env: Record<string, string>): Plugin {
   const key = JSON.stringify((env.VITE_SUPABASE_ANON_KEY ?? '').trim())
   const origin = JSON.stringify(supabaseUrl.replace(/\/$/, ''))
 
+  const storageKey = JSON.stringify(PUBLIC_ARTISTS_STORAGE_KEY)
+  const storageKeyV2 = JSON.stringify(PUBLIC_ARTISTS_STORAGE_KEY_V2)
   const source = `(function(){
     if (location.pathname.indexOf('/cms') === 0) return;
-    var STORAGE_KEY = 'notype-public-artists-v3';
-    var STORAGE_KEY_V2 = 'notype-public-artists-v2';
+    var STORAGE_KEY = ${storageKey};
+    var STORAGE_KEY_V2 = ${storageKeyV2};
+    var LEGACY_KEY = 'notype-public-artists-v3';
+    var LEGACY_KEY_V2 = 'notype-public-artists-v2';
     var SUPABASE_URL = ${url};
     var SUPABASE_ANON_KEY = ${key};
     function readCache() {
       try {
-        var raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY_V2);
+        var raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY_V2) || localStorage.getItem(LEGACY_KEY) || localStorage.getItem(LEGACY_KEY_V2);
         return raw ? JSON.parse(raw) : null;
       } catch (e) {
         return null;
@@ -58,14 +66,16 @@ export function publicBootPlugin(env: Record<string, string>): Plugin {
     }
     function fetchArtists() {
       if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return Promise.resolve(readCache());
-      return load(STORAGE_KEY).then(function (current) {
-        if (current) return current;
-        return load(STORAGE_KEY_V2).then(function (legacy) { return legacy || readCache(); });
-      }).catch(function () { return readCache(); });
+      var keys = [STORAGE_KEY, STORAGE_KEY_V2, LEGACY_KEY, LEGACY_KEY_V2];
+      function next(i) {
+        if (i >= keys.length) return readCache();
+        return load(keys[i]).then(function (data) { return data || next(i + 1); });
+      }
+      return next(0).catch(function () { return readCache(); });
     }
     var cached = readCache();
     preloadRosterImages(cached);
-    window.__NOTYPE_BOOT__ = { cached: cached, promise: fetchArtists() };
+    window.__TZJILL_BOOT__ = { cached: cached, promise: fetchArtists() };
   })();`
 
   const preconnect = supabaseUrl

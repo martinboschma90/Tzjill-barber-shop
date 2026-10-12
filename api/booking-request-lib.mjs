@@ -2,7 +2,7 @@ export const BOOKING_REQUEST_EMAIL = 'martin@notype-mgmt.com'
 
 export function formatBookingEmailBody(payload) {
   const lines = [
-    'NEW BOOKING REQUEST — NOTYP MGMT',
+    'NEW BOOKING REQUEST — Tzjill',
     `Submitted: ${payload.submittedAt}`,
     '',
     '— SELECTED ARTISTS —',
@@ -90,7 +90,7 @@ function publicEmailError(status, detail) {
     status === 403 &&
     /verify a domain|own email address|testing emails/i.test(text)
   ) {
-    return 'Email is not live yet. Verify notype-mgmt.com in Resend, then set BOOKING_FROM_EMAIL to an address on that domain.'
+    return 'Email is not live yet. Verify the sending domain in Resend, then set BOOKING_FROM_EMAIL to an address on that domain.'
   }
   return 'Could not send your request. Please try again.'
 }
@@ -107,7 +107,7 @@ export async function sendBookingEmail({ subject, text, replyTo, to }) {
   if (resendKey) {
     const from =
       process.env.BOOKING_FROM_EMAIL ||
-      'NOTYPE MGMT <bookings@notype-mgmt.com>'
+      'Tzjill <bookings@notype-mgmt.com>'
     const body = {
       from,
       to: [inbox],
@@ -146,7 +146,7 @@ export async function sendBookingEmail({ subject, text, replyTo, to }) {
             from,
             to: copy,
             subject: `Copy: ${subject}`,
-            text: `This is a copy of the booking request sent to NOTYPE MGMT.\n\n${text}`,
+            text: `This is a copy of the booking request sent to Tzjill.\n\n${text}`,
           }),
         }).catch(() => null)
       }
@@ -168,7 +168,7 @@ export async function sendBookingEmail({ subject, text, replyTo, to }) {
     _captcha: 'false',
     _replyto: cc || inbox,
     message: text,
-    from_name: 'NOTYPE booking form',
+    from_name: 'Tzjill booking form',
   }
   if (copy.length) form._cc = copy[0]
 

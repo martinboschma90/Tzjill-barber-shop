@@ -1,5 +1,5 @@
 const ALLOWED_ORIGIN_PATTERN =
-  /^https:\/\/((www\.)?tzjill\.nl|tzjill-barber-shop[\w.-]*\.vercel\.app|(www\.)?notype-mgmt\.com|no-type-mgmt[\w.-]*\.vercel\.app)$/i
+  /^https:\/\/((www\.)?tzjill\.nl|tzjill-barber-shop[\w.-]*\.vercel\.app)$/i
 const LOCAL_ORIGIN_PATTERN =
   /^http:\/\/(localhost|127\.0\.0\.1):(5173|5174|4173)$/i
 
@@ -19,8 +19,6 @@ export function isSiteHost(host) {
   return (
     value === 'tzjill.nl' ||
     value === 'www.tzjill.nl' ||
-    value === 'notype-mgmt.com' ||
-    value === 'www.notype-mgmt.com' ||
     value.endsWith('.vercel.app') ||
     value === 'localhost'
   )

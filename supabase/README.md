@@ -5,7 +5,7 @@ Migrations live in `migrations/`.
 ## CMS JSON store (`cms_content` / `cms_artists`)
 
 Run `migrations/20260827120000_cms_json_store.sql` in the SQL Editor so CMS
-localStorage (`notype-cms-content-v1`, `notype-public-artists-v3`) can sync
+localStorage (`tzjill-cms-content-v1`, `tzjill-public-artists-v3`) can sync
 across devices. Authenticated CMS writes; public can read the published roster
 cache and published artist blobs.
 

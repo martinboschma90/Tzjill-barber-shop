@@ -26,7 +26,7 @@ export function downloadCmsBackup(content: CmsContent) {
   const url = URL.createObjectURL(blob)
   const link = document.createElement('a')
   link.href = url
-  link.download = `notype-cms-backup-${stamp}.json`
+  link.download = `tzjill-cms-backup-${stamp}.json`
   document.body.appendChild(link)
   link.click()
   link.remove()
