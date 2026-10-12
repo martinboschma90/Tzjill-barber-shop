@@ -1,4 +1,6 @@
 import { useState, type FormEvent } from 'react'
+import { buttonClass } from '@/components/ui/buttonStyles'
+import { Check, Spinner } from '@/components/ui/StatusIcon'
 
 const EMAIL = 'info@tzjill.nl'
 
@@ -10,10 +12,11 @@ export function ContactForm() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [message, setMessage] = useState('')
-  const [sent, setSent] = useState(false)
+  const [phase, setPhase] = useState<'idle' | 'sending' | 'done'>('idle')
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault()
+    if (phase !== 'idle') return
     const body = [
       `Naam: ${name.trim()}`,
       `E-mail: ${email.trim()}`,
@@ -21,20 +24,14 @@ export function ContactForm() {
       '',
       message.trim(),
     ].join('\n')
-    const href = `mailto:${EMAIL}?subject=${encodeURIComponent(
-      `Contact Tzjill — ${name.trim() || 'bericht'}`,
-    )}&body=${encodeURIComponent(body)}`
-    window.location.href = href
-    setSent(true)
-  }
-
-  if (sent) {
-    return (
-      <p className="type-lead max-w-sm text-white/70">
-        Je mailprogramma opent met het bericht. Verstuur het daar — we reageren
-        zo snel mogelijk.
-      </p>
-    )
+    setPhase('sending')
+    window.setTimeout(() => {
+      const href = `mailto:${EMAIL}?subject=${encodeURIComponent(
+        `Contact Tzjill — ${name.trim() || 'bericht'}`,
+      )}&body=${encodeURIComponent(body)}`
+      window.location.href = href
+      setPhase('done')
+    }, 420)
   }
 
   return (
@@ -86,13 +83,22 @@ export function ContactForm() {
       </label>
       <button
         type="submit"
-        className="type-ui group mt-1 inline-flex w-fit items-center justify-center gap-2.5 rounded-full border border-[#efeae3] bg-[#efeae3] px-6 py-3 text-[#2c241c] transition-[color,background-color,transform] duration-300 hover:-translate-y-px hover:border-white hover:bg-white"
+        disabled={phase !== 'idle'}
+        className={buttonClass({ variant: 'solid', surface: 'dark', className: 'mt-1 w-fit disabled:opacity-70' })}
       >
-        Verstuur
-        <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">
-          →
-        </span>
+        {phase === 'sending' ? <Spinner /> : phase === 'done' ? <Check /> : null}
+        {phase === 'sending' ? 'Versturen' : phase === 'done' ? 'Verstuurd' : 'Verstuur'}
+        {phase === 'idle' ? (
+          <span aria-hidden className="motion-arrow">
+            →
+          </span>
+        ) : null}
       </button>
+      {phase === 'done' ? (
+        <p className="type-lead max-w-sm text-white/70" role="status">
+          Je mailprogramma opent met het bericht. Verstuur het daar — we reageren zo snel mogelijk.
+        </p>
+      ) : null}
     </form>
   )
 }

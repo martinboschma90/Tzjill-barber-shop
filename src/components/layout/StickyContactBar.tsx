@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { openSalonhub } from '@/lib/salonhub'
+import { PHONE_TEL } from '@/data/site'
 
 type StickyContactBarProps = {
   hidden?: boolean
@@ -12,12 +13,11 @@ export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
   const [footerNear, setFooterNear] = useState(false)
   const [pastHero, setPastHero] = useState(() => {
     if (typeof window === 'undefined' || pathname !== '/') return true
-    return !window.matchMedia('(max-width: 767px)').matches
+    return !window.matchMedia('(max-width: 1023px)').matches
   })
 
   useEffect(() => {
-    const sync = () =>
-      setFaqOpen(Boolean(document.querySelector('[data-faq-open]')))
+    const sync = () => setFaqOpen(Boolean(document.querySelector('[data-faq-open]')))
     sync()
     const observer = new MutationObserver(sync)
     observer.observe(document.body, {
@@ -29,7 +29,7 @@ export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
   }, [pathname])
 
   useEffect(() => {
-    const mobile = window.matchMedia('(max-width: 767px)')
+    const mobile = window.matchMedia('(max-width: 1023px)')
     const hero = document.querySelector('[data-home-hero]')
 
     const update = () => {
@@ -59,8 +59,7 @@ export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
     let observer: IntersectionObserver | null = null
     const observe = () => {
       const target =
-        document.querySelector('footer') ??
-        document.querySelector('[data-footer-boundary]')
+        document.querySelector('footer') ?? document.querySelector('[data-footer-boundary]')
       if (!target) {
         setFooterNear(false)
         return
@@ -85,28 +84,28 @@ export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
     }
   }, [pathname])
 
-  if (
-    hidden ||
-    footerNear ||
-    !pastHero ||
-    pathname === '/booking' ||
-    pathname === '/faq' ||
-    faqOpen
-  ) {
+  if (hidden || footerNear || !pastHero || pathname === '/booking' || pathname === '/faq' || faqOpen) {
     return null
   }
 
   return (
-    <button
-      type="button"
-      onClick={() => openSalonhub()}
+    <div
       data-sticky-afspraak
-      className="type-ui group fixed bottom-5 right-4 z-[55] inline-flex items-center gap-2 rounded-full border border-[#f6f3ee] bg-[#f6f3ee] px-5 py-3 text-[#3a2f28] transition-[color,background-color,transform] duration-300 hover:-translate-y-px hover:bg-white sm:bottom-6 sm:right-6"
+      className="fixed inset-x-0 bottom-0 z-[55] border-t border-white/10 bg-[#1c1b19] lg:hidden"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
-      Afspraak
-      <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">
-        →
-      </span>
-    </button>
+      <div className="grid h-16 grid-cols-2">
+        <button
+          type="button"
+          onClick={() => openSalonhub()}
+          className="type-ui min-h-11 border-r border-white/10 text-[#f6f3ee]"
+        >
+          Afspraak
+        </button>
+        <a href={`tel:${PHONE_TEL}`} className="type-ui flex min-h-11 items-center justify-center text-[#f6f3ee]">
+          Bellen
+        </a>
+      </div>
+    </div>
   )
 }

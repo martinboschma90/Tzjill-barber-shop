@@ -13,6 +13,7 @@ export function TeamPage() {
     <AppShell navVariant="wordmark">
       <PageFrame>
         <PageIntro
+          introPlacement="below"
           kicker="Team"
           title={
             <>
@@ -21,7 +22,7 @@ export function TeamPage() {
               the team
             </>
           }
-          intro="De kappers achter de coupe. Kies wie je knipt via Salonhub."
+          intro="De kappers achter de coupe."
         />
         <div className="mt-16">
           {team.length ? (

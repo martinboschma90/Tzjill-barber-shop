@@ -22,13 +22,18 @@ export function normalizeNlMobile(value: string): string {
   return digits
 }
 
-export function promoAlreadySeen(): boolean {
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000
+
+export function promoAlreadySeen(now = Date.now()): boolean {
   const raw = storageGet(PROMO_STORAGE_KEY)
-  return raw === 'dismissed' || raw === 'submitted'
+  if (!raw) return false
+  if (raw === 'dismissed' || raw === 'submitted') return true
+  const until = Number(raw.split('@')[1])
+  return Number.isFinite(until) && until > now
 }
 
 export function markPromoSeen(state: 'dismissed' | 'submitted'): void {
-  storageSet(PROMO_STORAGE_KEY, state)
+  storageSet(PROMO_STORAGE_KEY, `${state}@${Date.now() + THIRTY_DAYS_MS}`)
 }
 
 export async function submitPromoSignup(payload: {

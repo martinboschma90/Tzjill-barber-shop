@@ -19,10 +19,12 @@ export function Treatments() {
             <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
             {content.site.treatmentsKicker || 'Behandelingen'}
           </p>
-          <h2 className="type-headline mt-5 whitespace-pre-line">
-            {content.site.treatmentsTitle ||
-              'Alles wat je\nin de stoel nodig hebt'}
-          </h2>
+          <Reveal>
+            <h2 className="type-headline mt-5 whitespace-pre-line">
+              {content.site.treatmentsTitle ||
+                'Alles wat je\nin de stoel nodig hebt'}
+            </h2>
+          </Reveal>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
             {content.site.treatmentsIntro ||
               'Knippen, baard, kids — dezelfde precisie, altijd in verhouding met je gezicht.'}

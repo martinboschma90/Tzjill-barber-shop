@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
+import { useReducedMotion } from 'framer-motion'
+import { BookButton } from '@/components/booking/BookButton'
 import { Reveal } from '@/components/motion/Reveal'
 import { useCms } from '@/cms/CmsContext'
 import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
@@ -25,7 +26,6 @@ function isBundledHeroFilm(url: string) {
 export function Hero() {
   const { content } = useCms()
   const reduce = useReducedMotion()
-  const sectionRef = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
   const poster = useResolvedMediaUrl(
     content.site.homeHeroImageUrl,
@@ -55,13 +55,7 @@ export function Hero() {
   // Phones are close to its native size, so the film stays there.
   const showBundledFilm = playVideo && isBundledHeroFilm(videoSrc) && !desktop
   const showCustomFilm = playVideo && !isBundledHeroFilm(videoSrc)
-  const showFilm = showBundledFilm || showCustomFilm
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start start', 'end start'],
-  })
-  const mediaY = useTransform(scrollYProgress, [0, 1], ['0%', reduce ? '0%' : '16%'])
+  const showFilm = (showBundledFilm || showCustomFilm) && !reduce
 
   useEffect(() => {
     const el = videoRef.current
@@ -71,16 +65,8 @@ export function Hero() {
   }, [videoSrc, showFilm])
 
   return (
-    <section
-      ref={sectionRef}
-      className="full-bleed-hero"
-      data-home-hero
-      aria-label="Hero"
-    >
-      <motion.div
-        className="absolute inset-0 overflow-hidden rounded-none"
-        style={{ backgroundColor: '#1c1612', y: mediaY }}
-      >
+    <section className="full-bleed-hero" data-home-hero aria-label="Hero">
+      <div className="absolute inset-0 overflow-hidden rounded-none" style={{ backgroundColor: '#1c1612' }}>
         <div className="absolute inset-0">
           {stockPoster ? (
             <picture className="absolute inset-0 block h-full w-full">
@@ -117,7 +103,7 @@ export function Hero() {
             />
           ) : null}
         </div>
-      </motion.div>
+      </div>
 
       <div
         className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom_left,transparent,rgb(0_0_0/0.6))]"
@@ -126,21 +112,20 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto flex min-h-svh max-w-[1600px] flex-col justify-end px-8 pb-10 pt-28 sm:px-12 sm:pb-14 lg:px-16">
         <div className="max-w-4xl">
-          <Reveal variant="clip" trigger="load" delay={0.08}>
-            <p className="type-label text-white/70">Tzjill Barber & Lounge · Leeuwarden</p>
-          </Reveal>
-          <Reveal variant="clip" trigger="load" delay={0.18} className="mt-5">
-            <h1 className="type-display text-white">
+          <p className="type-label text-white/70">Tzjill Barber & Lounge · Leeuwarden</p>
+          <Reveal trigger="load">
+            <h1 className="type-display mt-5 text-white">
               A man’s
               <br />
               world.
             </h1>
           </Reveal>
-          <Reveal trigger="load" delay={0.38}>
-            <p className="type-lead mt-6 max-w-[16rem] text-white/70">
-              Trendy haircuts. Hot towel straight razor. Elke coupe op maat.
-            </p>
-          </Reveal>
+          <p className="type-lead mt-6 max-w-[16rem] text-white/70">
+            Trendy haircuts. Hot towel straight razor. Elke coupe op maat.
+          </p>
+          <div className="pointer-events-auto mt-8">
+            <BookButton surface="dark">Afspraak</BookButton>
+          </div>
         </div>
       </div>
     </section>
