@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { buttonClass } from '@/components/ui/buttonStyles'
 import { Reveal } from '@/components/motion/Reveal'
 import { MediaReveal } from '@/components/motion/MediaReveal'
 import { Parallax } from '@/components/motion/Parallax'
@@ -32,13 +33,10 @@ export function Welcome() {
             </p>
             <Link
               to="/over-ons"
-              className="type-ui group mt-8 inline-flex items-center justify-center gap-2.5 rounded-full border border-white/70 px-6 py-3 text-white transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-px hover:border-white hover:bg-white hover:text-[#2c241c]"
+              className={buttonClass({ variant: 'ghost', surface: 'dark', className: 'mt-8' })}
             >
               Over ons
-              <span
-                aria-hidden
-                className="transition-transform duration-300 group-hover:translate-x-0.5"
-              >
+              <span aria-hidden className="transition-transform duration-500 ease-out group-hover:translate-x-0.5">
                 →
               </span>
             </Link>
@@ -47,29 +45,29 @@ export function Welcome() {
 
         <div className="relative mx-auto h-[22rem] w-full max-w-lg sm:h-[28rem] lg:h-[32rem]">
           <Parallax
-            distance={28}
-            className="absolute right-0 top-0 w-[62%] overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]"
+            distance={16}
+            className="group absolute right-0 top-0 w-[62%] overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]"
           >
             <MediaReveal>
               <div className="relative aspect-[3/4]">
                 <img
                   src={posterSrc}
                   alt=""
-                  className={`absolute inset-0 h-full w-full ${feedFrameClass}`}
+                  className={`wf-media-zoom absolute inset-0 h-full w-full ${feedFrameClass}`}
                   loading="lazy"
                 />
               </div>
             </MediaReveal>
           </Parallax>
           <Parallax
-            distance={-36}
-            className="absolute bottom-0 left-0 z-10 w-[56%] overflow-hidden rounded-[1.75rem] bg-black shadow-[0_24px_50px_rgb(0_0_0/0.45)] sm:rounded-[2rem]"
+            distance={-16}
+            className="group absolute bottom-0 left-0 z-10 w-[56%] overflow-hidden rounded-[1.75rem] bg-black shadow-[0_24px_50px_rgb(0_0_0/0.45)] sm:rounded-[2rem]"
           >
-            <MediaReveal delay={0.12}>
+            <MediaReveal delay={0.1}>
               <img
                 src={content.site.welcomeImageUrl || feed.dsc00030}
                 alt=""
-                className={`aspect-[3/4] w-full ${feedFrameClass}`}
+                className={`wf-media-zoom aspect-[3/4] w-full ${feedFrameClass}`}
                 loading="lazy"
               />
             </MediaReveal>

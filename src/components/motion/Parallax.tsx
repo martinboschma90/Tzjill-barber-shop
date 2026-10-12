@@ -5,7 +5,7 @@ import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion
 export function Parallax({
   children,
   className = '',
-  distance = 48,
+  distance = 20,
 }: {
   children: ReactNode
   className?: string

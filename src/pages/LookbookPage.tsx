@@ -8,9 +8,11 @@ import {
 } from '@/data/lookbook'
 import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
 import { PillButton } from '@/components/ui/PillButton'
+import { buttonClass } from '@/components/ui/buttonStyles'
 import { useCms } from '@/cms/CmsContext'
 import { cloneLookbook } from '@/cms/content'
 import { feedFrameClass } from '@/data/feed'
+import { Reveal } from '@/components/motion/Reveal'
 
 export function LookbookPage() {
   const { content } = useCms()
@@ -47,11 +49,11 @@ export function LookbookPage() {
                 type="button"
                 aria-pressed={active}
                 onClick={() => setFilter(item.id)}
-                className={`type-ui rounded-full border px-5 py-2.5 transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-px ${
-                  active
-                    ? 'border-[#efeae3] bg-[#efeae3] text-[#2c241c]'
-                    : 'border-white/25 bg-transparent text-white/70 hover:border-white hover:text-white'
-                }`}
+                className={buttonClass({
+                  variant: active ? 'solid' : 'ghost',
+                  surface: 'dark',
+                  className: 'px-5 py-2.5',
+                })}
               >
                 {item.label}
               </button>
@@ -75,8 +77,9 @@ export function LookbookPage() {
           </p>
         ) : (
           <ul className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {images.map((image) => (
+            {images.map((image, index) => (
               <li key={image.src}>
+                <Reveal delay={(index % 3) * 0.08}>
                 <figure className="group overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]">
                   <img
                     src={image.src}
@@ -86,6 +89,7 @@ export function LookbookPage() {
                   />
                 </figure>
                 <p className="type-lead mt-3 text-white/45">{image.alt}</p>
+                </Reveal>
               </li>
             ))}
           </ul>

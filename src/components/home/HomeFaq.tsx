@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { Reveal } from '@/components/motion/Reveal'
+import { buttonClass } from '@/components/ui/buttonStyles'
 import { SHOP_FAQ_FILTERS, SHOP_FAQ_ITEMS } from '@/data/shopFaq'
 
 type FilterId = (typeof SHOP_FAQ_FILTERS)[number]['id']
@@ -18,6 +20,7 @@ export function HomeFaq() {
   return (
     <section id="faq" className="text-white">
       <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
+        <Reveal>
         <div className="mx-auto max-w-3xl text-center">
           <p className="type-label inline-flex items-center justify-center gap-2 text-white/45">
             <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
@@ -32,6 +35,7 @@ export function HomeFaq() {
             Boeken, te laat, kids — de rest regel je aan de balie.
           </p>
         </div>
+        </Reveal>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
           {SHOP_FAQ_FILTERS.map((item) => {
@@ -45,11 +49,11 @@ export function HomeFaq() {
                   setFilter(item.id)
                   setOpen(0)
                 }}
-                className={`type-ui rounded-full border px-5 py-2.5 transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-px ${
-                  active
-                    ? 'border-[#efeae3] bg-[#efeae3] text-[#2c241c]'
-                    : 'border-white/25 bg-transparent text-white/70 hover:border-white hover:text-white'
-                }`}
+                className={buttonClass({
+                  variant: active ? 'solid' : 'ghost',
+                  surface: 'dark',
+                  className: 'px-5 py-2.5',
+                })}
               >
                 {item.label}
               </button>

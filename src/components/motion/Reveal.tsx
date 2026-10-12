@@ -1,7 +1,8 @@
 import type { ReactNode } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 
-const ease = [0.22, 1, 0.36, 1] as const
+const ease = [0.16, 1, 0.3, 1] as const
+const duration = 0.62
 
 type RevealProps = {
   children: ReactNode
@@ -20,7 +21,7 @@ export function Reveal({
 }: RevealProps) {
   const reduce = useReducedMotion()
   const onLoad = trigger === 'load'
-  const motionIn = reduce ? false : variant === 'clip' ? { y: '108%' } : { opacity: 0, y: 36 }
+  const motionIn = reduce ? false : variant === 'clip' ? { y: '108%' } : { opacity: 0, y: 14 }
   const motionOut = variant === 'clip' ? { y: 0 } : { opacity: 1, y: 0 }
 
   if (variant === 'clip') {
@@ -39,7 +40,7 @@ export function Reveal({
       >
         <motion.div
           variants={clipVariants}
-          transition={{ duration: 0.95, delay, ease }}
+          transition={{ duration, delay, ease }}
         >
           {children}
         </motion.div>
@@ -54,7 +55,7 @@ export function Reveal({
       animate={onLoad ? motionOut : undefined}
       whileInView={onLoad ? undefined : motionOut}
       viewport={onLoad ? undefined : { once: true, amount: 0.18, margin: '0px 0px -8% 0px' }}
-      transition={{ duration: 0.9, delay, ease }}
+      transition={{ duration, delay, ease }}
     >
       {children}
     </motion.div>

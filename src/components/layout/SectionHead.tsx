@@ -24,11 +24,11 @@ export function SectionHead({
 
   return (
     <div>
-      <Reveal variant="clip" trigger={trigger}>
+      <Reveal trigger={trigger}>
         <p className={`type-label ${kickerColor}`}>{kicker}</p>
       </Reveal>
       <div className="relative mt-5 lg:pr-[22rem]">
-        <Reveal variant="clip" trigger={trigger} delay={0.08}>
+        <Reveal trigger={trigger} delay={0.08}>
           <Heading className="type-headline">{title}</Heading>
         </Reveal>
         {intro ? (

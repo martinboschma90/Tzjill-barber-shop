@@ -625,11 +625,11 @@
 }
 
 .wf-media-zoom {
-  transition: transform 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 600ms ease-out;
 }
 
 .group:hover .wf-media-zoom {
-  transform: scale(1.07);
+  transform: scale(1.03);
 }
 
 .wf-link {
@@ -673,8 +673,10 @@
     animation: none;
   }
 
+  .wf-media-zoom,
   .group:hover .wf-media-zoom {
     transform: none;
+    transition: none;
   }
 }
 

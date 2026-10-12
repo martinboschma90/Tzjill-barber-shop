@@ -101,7 +101,7 @@ export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
       type="button"
       onClick={() => openSalonhub()}
       data-sticky-afspraak
-      className="type-ui group fixed bottom-5 right-4 z-[55] inline-flex items-center gap-2 rounded-full border border-[#f6f3ee] bg-[#f6f3ee] px-5 py-3 text-[#3a2f28] transition-[color,background-color,transform] duration-300 hover:-translate-y-px hover:bg-white sm:bottom-6 sm:right-6"
+      className="type-ui group fixed bottom-5 right-4 z-[55] inline-flex items-center gap-2 rounded-full border border-[#f6f3ee] bg-[#f6f3ee] px-5 py-3 text-[#3a2f28] transition-[color,background-color,transform] duration-500 ease-out hover:-translate-y-px hover:bg-white sm:bottom-6 sm:right-6 lg:hidden"
     >
       Afspraak
       <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-0.5">

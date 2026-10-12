@@ -14,6 +14,7 @@ export function Treatments() {
   return (
     <section className="text-white">
       <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
+        <Reveal>
         <div className="mx-auto max-w-3xl text-center">
           <p className="type-label inline-flex items-center justify-center gap-2 text-white/45">
             <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
@@ -28,6 +29,7 @@ export function Treatments() {
               'Knippen, baard, kids — dezelfde precisie, altijd in verhouding met je gezicht.'}
           </p>
         </div>
+        </Reveal>
         <ul className="mt-14 grid gap-8 sm:grid-cols-3 sm:gap-5">
           {items.map((item, index) => (
             <li key={`${item.title}-${index}`}>

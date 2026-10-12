@@ -111,7 +111,7 @@ export function InstagramFeed() {
                   event.preventDefault()
                   setActive(index)
                 }}
-                className="absolute left-1/2 top-1/2 block origin-center overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]"
+                className="group absolute left-1/2 top-1/2 block origin-center overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]"
                 style={{
                   width: 'min(78vw, 380px)',
                   aspectRatio: '3 / 4',
@@ -126,7 +126,7 @@ export function InstagramFeed() {
                 <img
                   src={image.src}
                   alt={image.alt}
-                  className={`h-full w-full ${feedFrameClass}`}
+                  className={`wf-media-zoom h-full w-full ${feedFrameClass}`}
                   draggable={false}
                 />
                 {isCenter ? (

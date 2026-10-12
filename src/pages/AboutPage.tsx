@@ -7,6 +7,8 @@ import { Testimonials } from '@/components/home/Testimonials'
 import { PillButton } from '@/components/ui/PillButton'
 import { BookButton } from '@/components/booking/BookButton'
 import { useCms } from '@/cms/CmsContext'
+import { Parallax } from '@/components/motion/Parallax'
+import { Reveal } from '@/components/motion/Reveal'
 import { feed, feedFrameClass, HERO_POSTER } from '@/data/feed'
 import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
 
@@ -99,13 +101,14 @@ export function AboutPage() {
         <AboutHeroVideo />
 
         <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-          {stats.map((item) => (
-            <li
-              key={item.label}
-              className="rounded-[1.5rem] bg-[#efeae3] px-5 py-6 text-[#2c241c] sm:rounded-[1.75rem] sm:px-6 sm:py-8"
-            >
-              <p className="type-headline leading-none">{item.n}</p>
-              <p className="type-label mt-3 text-[#2c241c]/50">{item.label}</p>
+          {stats.map((item, index) => (
+            <li key={item.label}>
+              <Reveal delay={index * 0.06}>
+                <div className="rounded-[1.5rem] bg-[#efeae3] px-5 py-6 text-[#2c241c] sm:rounded-[1.75rem] sm:px-6 sm:py-8">
+                  <p className="type-headline leading-none">{item.n}</p>
+                  <p className="type-label mt-3 text-[#2c241c]/50">{item.label}</p>
+                </div>
+              </Reveal>
             </li>
           ))}
         </ul>
@@ -184,12 +187,14 @@ export function AboutPage() {
             </ul>
           </div>
 
-          <div className="overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem] lg:col-span-6">
-            <img
-              src={feed.dsc09968}
-              alt=""
-              className={`aspect-[4/5] w-full lg:aspect-auto lg:h-full lg:min-h-[36rem] ${feedFrameClass}`}
-            />
+          <div className="group overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem] lg:col-span-6">
+            <Parallax distance={18} className="h-full">
+              <img
+                src={feed.dsc09968}
+                alt=""
+                className={`wf-media-zoom aspect-[4/5] h-[112%] w-full object-cover lg:aspect-auto lg:h-[112%] lg:min-h-[36rem] ${feedFrameClass}`}
+              />
+            </Parallax>
           </div>
         </div>
 

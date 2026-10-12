@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 
-const ease = [0.22, 1, 0.36, 1] as const
+const ease = [0.16, 1, 0.3, 1] as const
 
 export function MediaReveal({
   children,
@@ -15,16 +15,14 @@ export function MediaReveal({
   const reduce = useReducedMotion()
 
   return (
-    <div className={`overflow-hidden ${className}`}>
-      <motion.div
-        className="h-full w-full will-change-transform"
-        initial={reduce ? false : { scale: 1.16 }}
-        whileInView={{ scale: 1 }}
-        viewport={{ once: true, amount: 0.35 }}
-        transition={{ duration: 1.35, delay, ease }}
-      >
-        {children}
-      </motion.div>
-    </div>
+    <motion.div
+      className={className}
+      initial={reduce ? false : { opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2, margin: '0px 0px -8% 0px' }}
+      transition={{ duration: 0.62, delay, ease }}
+    >
+      {children}
+    </motion.div>
   )
 }

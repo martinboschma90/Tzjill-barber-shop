@@ -7,6 +7,7 @@ import {
   PHONE_DISPLAY,
   PHONE_TEL,
 } from '@/data/site'
+import { buttonClass } from '@/components/ui/buttonStyles'
 import { useCms } from '@/cms/CmsContext'
 
 const hoursCompact = [
@@ -45,7 +46,7 @@ export function Footer() {
                 href={instagram}
                 target="_blank"
                 rel="noreferrer"
-                className="type-ui inline-flex items-center gap-2 rounded-full border border-[#efeae3] bg-[#efeae3] px-4 py-2.5 text-[#2c241c] transition-transform duration-300 hover:-translate-y-px hover:border-white hover:bg-white"
+                className={buttonClass({ variant: 'solid', surface: 'dark', className: 'px-4 py-2.5' })}
               >
                 Instagram
               </a>
@@ -53,7 +54,7 @@ export function Footer() {
                 href={MAPS_DIRECTIONS_URL}
                 target="_blank"
                 rel="noreferrer"
-                className="type-ui inline-flex items-center gap-2 rounded-full border border-white/25 px-4 py-2.5 text-white/80 transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-px hover:border-white hover:bg-white hover:text-[#2c241c]"
+                className={buttonClass({ variant: 'ghost', surface: 'dark', className: 'px-4 py-2.5' })}
               >
                 Route
               </a>
