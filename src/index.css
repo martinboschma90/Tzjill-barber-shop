@@ -83,6 +83,7 @@
     font-family: var(--font-sans);
     font-weight: 400;
     font-optical-sizing: auto;
+    font-size: 1rem;
     letter-spacing: -0.011em;
     line-height: 1.5;
     color: var(--color-ink);
@@ -97,6 +98,12 @@
     min-height: 100svh;
     position: relative;
     z-index: 1;
+  }
+
+  @media (min-width: 64rem) {
+    body {
+      font-size: 1.0625rem;
+    }
   }
 
   button {
@@ -168,7 +175,7 @@
   .type-label {
     font-family: var(--font-sans);
     font-weight: 600;
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     line-height: 1.2;
@@ -177,7 +184,7 @@
   .type-ui {
     font-family: var(--font-sans);
     font-weight: 600;
-    font-size: 0.72rem;
+    font-size: 0.8125rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
@@ -185,17 +192,31 @@
   .type-lead {
     font-family: var(--font-sans);
     font-weight: 400;
-    font-size: clamp(0.95rem, 1.15vw, 1.1rem);
+    font-size: 1rem;
     letter-spacing: -0.015em;
-    line-height: 1.45;
+    line-height: 1.5;
   }
 
   .type-body {
     font-family: var(--font-sans);
     font-weight: 400;
-    font-size: 0.95rem;
+    font-size: 1rem;
     letter-spacing: -0.011em;
     line-height: 1.55;
+  }
+
+  @media (min-width: 64rem) {
+    .type-ui {
+      font-size: 0.875rem;
+    }
+
+    .type-lead {
+      font-size: 1.125rem;
+    }
+
+    .type-body {
+      font-size: 1.0625rem;
+    }
   }
 
   /* Roster campaign crop — slight grade so mixed source photos read as one set */

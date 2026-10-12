@@ -10,11 +10,11 @@ interface ImportMeta {
   readonly env: ImportMetaEnv
 }
 
-interface NotypePublicBoot {
+interface TzjillPublicBoot {
   cached: unknown
   promise: Promise<unknown>
 }
 
 interface Window {
-  __NOTYPE_BOOT__?: NotypePublicBoot
+  __TZJILL_BOOT__?: TzjillPublicBoot
 }

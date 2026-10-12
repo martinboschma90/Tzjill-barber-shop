@@ -52,7 +52,7 @@ function resultFromPayload(data: unknown): ArtistsReadResult | null {
 
 function adoptBootPayload() {
   if (typeof window === 'undefined') return
-  const boot = window.__NOTYPE_BOOT__
+  const boot = window.__TZJILL_BOOT__
   if (!boot) return
   const fromCache = resultFromPayload(boot.cached)
   if (fromCache) {
@@ -73,17 +73,31 @@ export function fetchPublicArtistsFromSupabaseCached(
   if (!options?.force && publicInflight) return publicInflight
 
   const bootPromise =
-    !options?.force && !bootConsumed ? window.__NOTYPE_BOOT__?.promise : undefined
+    !options?.force && !bootConsumed ? window.__TZJILL_BOOT__?.promise : undefined
   if (bootPromise) {
     bootConsumed = true
     publicInflight = bootPromise
-      .then((data) => {
-        const result =
-          resultFromPayload(data) ??
-          publicCached ?? { artists: [], fromSupabase: false }
-        publicCached = result
-        publicCachedAt = Date.now()
-        return result
+      .then((data) => resultFromPayload(data))
+      .catch(() => null)
+      .then(async (fromBoot) => {
+        if (fromBoot) {
+          publicCached = fromBoot
+          publicCachedAt = Date.now()
+          return fromBoot
+        }
+        const cached = await fetchPublicCmsArtistsRow()
+        if (cached && cached.length > 0) {
+          const result = { artists: cached, fromSupabase: true } satisfies ArtistsReadResult
+          publicCached = result
+          publicCachedAt = Date.now()
+          return result
+        }
+        const roster = await fetchPublicRoster()
+        if (roster.artists.length > 0 || roster.fromSupabase) {
+          publicCached = roster
+          publicCachedAt = Date.now()
+        }
+        return publicCached ?? roster
       })
       .catch(() => publicCached ?? { artists: [], fromSupabase: false })
       .finally(() => {

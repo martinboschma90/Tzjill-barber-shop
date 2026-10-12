@@ -44,8 +44,13 @@ async function fetchPublicCmsArtistsByKey(
   return parsePublicArtistsPayload(data?.[0]?.data)
 }
 
+/** Key opened for anon reads in the Tzjill CMS migration. */
+const TZJILL_ARTISTS_KEY = 'tzjill-artists-v3'
+
 /** Public roster snapshot — REST only, no supabase-js. */
 export async function fetchPublicCmsArtistsRow(): Promise<Artist[] | null> {
+  const named = await fetchPublicCmsArtistsByKey(TZJILL_ARTISTS_KEY)
+  if (named?.length) return named
   const current = await fetchPublicCmsArtistsByKey(PUBLIC_ARTISTS_STORAGE_KEY)
   if (current?.length) return current
   return fetchPublicCmsArtistsByKey(PUBLIC_ARTISTS_STORAGE_KEY_V2)

@@ -1,5 +1,7 @@
-/** Default NOTYPE MGMT WhatsApp / phone display number. */
-export const DEFAULT_WHATSAPP_NUMBER = '+31 36 236 53232'
+import { PHONE_TEL } from '@/data/site'
+
+/** Salon line from the Tzjill site content. No separate WhatsApp mobile is published. */
+export const DEFAULT_WHATSAPP_NUMBER = PHONE_TEL
 
 export function normalizeWhatsAppDigits(phone: string): string {
   return phone.replace(/\D/g, '')
@@ -13,5 +15,5 @@ export function buildWhatsAppUrl(phone: string, message: string): string {
 }
 
 export function artistBookingWhatsAppMessage(artistName: string): string {
-  return `Hi NOTYPE MGMT, I would like to discuss booking ${artistName}.`
+  return `Hi Tzjill, ik wil graag een afspraak bij ${artistName}.`
 }

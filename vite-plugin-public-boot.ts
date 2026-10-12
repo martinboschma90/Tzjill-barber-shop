@@ -9,8 +9,8 @@ export function publicBootPlugin(env: Record<string, string>): Plugin {
 
   const source = `(function(){
     if (location.pathname.indexOf('/cms') === 0) return;
-    var STORAGE_KEY = 'notype-public-artists-v3';
-    var STORAGE_KEY_V2 = 'notype-public-artists-v2';
+    var STORAGE_KEY = 'tzjill-artists-v3';
+    var STORAGE_KEY_V2 = 'tzjill-public-artists-v3';
     var SUPABASE_URL = ${url};
     var SUPABASE_ANON_KEY = ${key};
     function readCache() {
@@ -65,7 +65,7 @@ export function publicBootPlugin(env: Record<string, string>): Plugin {
     }
     var cached = readCache();
     preloadRosterImages(cached);
-    window.__NOTYPE_BOOT__ = { cached: cached, promise: fetchArtists() };
+    window.__TZJILL_BOOT__ = { cached: cached, promise: fetchArtists() };
   })();`
 
   const preconnect = supabaseUrl

@@ -13,7 +13,7 @@ export function Treatments() {
 
   return (
     <section className="text-white">
-      <div className="mx-auto max-w-[1240px] px-8 section-y sm:px-12">
+      <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <p className="type-label inline-flex items-center justify-center gap-2 text-white/45">
             <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />

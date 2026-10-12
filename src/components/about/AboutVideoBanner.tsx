@@ -290,7 +290,7 @@ export function AboutVideoBanner({ url, title }: AboutVideoBannerProps) {
             muted
             loop
             playsInline
-            preload={compact ? 'metadata' : 'auto'}
+            preload="none"
             controls={false}
             disablePictureInPicture
             onPlaying={() => setPlaying(true)}

@@ -28,18 +28,18 @@ export function Footer() {
   const instagram = site.instagram.trim() || INSTAGRAM_URL
 
   return (
-    <footer className="mx-3 mb-3 mt-4 sm:mx-4 sm:mb-4 sm:mt-6">
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
-        <div className="flex flex-col justify-between rounded-[1.75rem] border border-white/10 bg-[#252421] px-8 py-8 text-white sm:rounded-[2rem] sm:px-10 sm:py-10">
+    <footer className="mt-4 pb-32 md:pb-10">
+      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-4 px-6 lg:grid-cols-[5fr_7fr] lg:gap-6 lg:px-8">
+        <div className="flex flex-col justify-between rounded-[1.75rem] border border-white/10 bg-[#252421] p-7 text-white lg:p-10">
           <div>
             <Logo tone="white" height={64} />
-            <p className="type-lead mt-8 max-w-xs text-white/55">
+            <p className="type-lead mt-8 max-w-xs text-white/60">
               A man’s world. Knippen, scheren, baard — Voorstreek, Leeuwarden.
             </p>
           </div>
 
           <div className="mt-12">
-            <h3 className="type-label text-white/40">Volg ons</h3>
+            <h3 className="type-label text-white/60">Volg ons</h3>
             <div className="mt-4 flex flex-wrap gap-2">
               <a
                 href={instagram}
@@ -58,20 +58,20 @@ export function Footer() {
                 Route
               </a>
             </div>
-            <p className="type-label mt-10 text-white/30">{copyright}</p>
+            <p className="type-label mt-10 text-white/60">{copyright}</p>
           </div>
         </div>
 
-        <div className="rounded-[1.75rem] bg-black px-8 py-8 text-white sm:rounded-[2rem] sm:px-10 sm:py-10">
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="rounded-[1.75rem] bg-black p-7 text-white lg:p-10">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,280px)]">
             <div>
-              <h3 className="type-label text-white/40">Pagina’s</h3>
+              <h3 className="type-label text-white/60">Pagina’s</h3>
               <nav className="mt-4 flex flex-col gap-2.5">
                 {navMain.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="type-ui text-white/55 hover:text-white"
+                    className="type-ui text-white/60 hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -80,13 +80,13 @@ export function Footer() {
             </div>
 
             <div>
-              <h3 className="type-label text-white/40">Studio</h3>
+              <h3 className="type-label text-white/60">Studio</h3>
               <nav className="mt-4 flex flex-col gap-2.5">
                 {navMore.map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
-                    className="type-ui text-white/55 hover:text-white"
+                    className="type-ui text-white/60 hover:text-white"
                   >
                     {link.label}
                   </Link>
@@ -94,13 +94,13 @@ export function Footer() {
               </nav>
             </div>
 
-            <div className="sm:col-span-2 lg:col-span-1">
-              <h3 className="type-label text-white/40">Get in touch</h3>
+            <div>
+              <h3 className="type-label text-white/60">Get in touch</h3>
               <div className="mt-4 space-y-4">
                 <p>
                   <a
                     href="mailto:info@tzjill.nl"
-                    className="type-ui text-white/55 hover:text-white"
+                    className="type-ui text-white/60 hover:text-white"
                   >
                     info@tzjill.nl
                   </a>
@@ -109,24 +109,24 @@ export function Footer() {
                   <p>
                     <a
                       href={`tel:${PHONE_TEL}`}
-                      className="type-ui text-white/55 hover:text-white"
+                      className="type-ui text-white/60 hover:text-white"
                     >
                       {phone}
                     </a>
                   </p>
                 ) : null}
-                <div className="type-ui space-y-1 text-white/55">
+                <div className="type-ui space-y-1 text-white/60">
                   {officeLines.map((line) => (
                     <p key={line}>{line}</p>
                   ))}
                 </div>
-                <ul className="space-y-2 pt-2">
+                <ul className="max-w-[280px] space-y-2 pt-2">
                   {hoursCompact.map((row) => (
                     <li
                       key={row.days}
-                      className="type-body flex justify-between gap-4 text-[0.9rem]"
+                      className="type-body flex justify-between gap-4 whitespace-nowrap"
                     >
-                      <span className="text-white/40">{row.days}</span>
+                      <span className="text-white/60">{row.days}</span>
                       <span className="text-white/70">{row.time}</span>
                     </li>
                   ))}
