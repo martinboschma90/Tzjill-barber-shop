@@ -1,3 +1,4 @@
+import { useCms } from '@/cms/CmsContext'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { BookButton } from '@/components/booking/BookButton'
@@ -26,6 +27,8 @@ function NavItem({
   label: string
   pathname: string
 }) {
+  const { content } = useCms()
+  if (to === '/team' && content.site.teamVisible === false) return null
   return (
     <Link
       to={to}

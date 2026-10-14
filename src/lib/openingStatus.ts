@@ -20,7 +20,7 @@ function amsterdamNow(now: Date) {
 }
 
 /** Client clock in Europe/Amsterdam, from the existing weekly hours. */
-export function openingStatus(now = new Date(), hours = openingHours): OpeningStatus {
+export function openingStatus(now = new Date(), hours: readonly { day: string; time: string }[] = openingHours): OpeningStatus {
   const { weekday, minutes } = amsterdamNow(now)
   const row = hours.find((item) => item.day.toLowerCase() === weekday)
   const match = row?.time.match(/(\d{1,2}):(\d{2})\s*[–-]\s*(\d{1,2}):(\d{2})/)

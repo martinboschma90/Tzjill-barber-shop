@@ -48,6 +48,7 @@ export function TeamEditor() {
           title={member.name || `Kapper ${index + 1}`}
           meta={member.role || 'Barber'}
           actions={
+            <div className="flex gap-1">
             <button
               type="button"
               className={listBtnClass}
@@ -55,6 +56,8 @@ export function TeamEditor() {
             >
               Verwijder
             </button>
+            {[-1, 1].map((offset) => <button key={offset} type="button" className={listBtnClass} aria-label={offset < 0 ? 'Omhoog' : 'Omlaag'} disabled={index + offset < 0 || index + offset >= team.length} onClick={() => setTeam((rows) => { const next = [...rows]; [next[index], next[index + offset]] = [next[index + offset], next[index]]; return next })}>{offset < 0 ? '↑' : '↓'}</button>)}
+            </div>
           }
         >
           <TextInput

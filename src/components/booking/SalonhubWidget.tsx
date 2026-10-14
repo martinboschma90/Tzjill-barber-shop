@@ -1,3 +1,4 @@
+import { useModalFocus } from '@/lib/useModalFocus'
 import { useEffect, useId } from 'react'
 import { BookingFlow } from '@/components/booking/BookingFlow'
 import { SALONHUB_OPEN_EVENT } from '@/lib/salonhub'
@@ -10,6 +11,7 @@ type SalonhubWidgetProps = {
 
 export function SalonhubWidget({ open, onOpenChange }: SalonhubWidgetProps) {
   const titleId = useId()
+  const modal = useModalFocus(open)
 
   useEffect(() => {
     const onOpen = () => onOpenChange(true)
@@ -55,6 +57,8 @@ export function SalonhubWidget({ open, onOpenChange }: SalonhubWidgetProps) {
         onClick={() => onOpenChange(false)}
       />
       <div
+        ref={modal}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}

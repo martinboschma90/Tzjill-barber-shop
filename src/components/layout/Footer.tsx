@@ -5,17 +5,13 @@ import {
   INSTAGRAM_URL,
   MAPS_DIRECTIONS_URL,
   PHONE_DISPLAY,
-  PHONE_TEL,
 } from '@/data/site'
 import { OpenStatus } from '@/components/layout/OpenStatus'
 import { buttonClass } from '@/components/ui/buttonStyles'
+import { ResolvedImg } from '@/components/ui/ResolvedMedia'
+import { phoneHref, safeLink } from '@/lib/contactLinks'
 import { useCms } from '@/cms/CmsContext'
 
-const hoursCompact = [
-  { days: 'Ma – wo', time: '10:00 – 18:00' },
-  { days: 'Do – za', time: '09:00 – 20:00' },
-  { days: 'Zondag', time: 'Gesloten' },
-]
 
 const navMain = publicNav.slice(0, 4)
 const navMore = publicNav.slice(4)
@@ -34,9 +30,9 @@ export function Footer() {
       <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-4 px-6 lg:grid-cols-[5fr_7fr] lg:gap-6 lg:px-8">
         <div className="flex flex-col justify-between rounded-[1.75rem] border border-white/10 bg-[#252421] p-7 text-white lg:p-10">
           <div>
-            <Logo tone="white" height={64} />
+            {site.logoUrl ? <ResolvedImg src={site.logoUrl} alt={brandName} size="team" className="h-16 w-auto max-w-full object-contain" /> : <Logo tone="white" height={64} />}
             <p className="type-lead mt-8 max-w-xs text-white/60">
-              A man’s world. Knippen, scheren, baard — Voorstreek, Leeuwarden.
+              {site.tagline}
             </p>
           </div>
 
@@ -84,7 +80,7 @@ export function Footer() {
             <div>
               <h3 className="type-label text-white/60">Studio</h3>
               <nav className="mt-4 flex flex-col gap-2.5">
-                {navMore.map((link) => (
+                {navMore.filter((link) => link.to !== '/team' || site.teamVisible !== false).map((link) => (
                   <Link
                     key={link.to}
                     to={link.to}
@@ -101,16 +97,16 @@ export function Footer() {
               <div className="mt-4 space-y-4">
                 <p>
                   <a
-                    href="mailto:info@tzjill.nl"
+                    href={`mailto:${site.contact[0]?.email || 'info@tzjill.nl'}`}
                     className="type-ui text-white/60 hover:text-white"
                   >
-                    info@tzjill.nl
+                    {site.contact[0]?.email || 'info@tzjill.nl'}
                   </a>
                 </p>
                 {phone ? (
                   <p>
                     <a
-                      href={`tel:${PHONE_TEL}`}
+                      href={phoneHref(phone)}
                       className="type-ui text-white/60 hover:text-white"
                     >
                       {phone}
@@ -124,12 +120,12 @@ export function Footer() {
                 </div>
                 <OpenStatus className="pt-2 text-white/70" />
                 <ul className="max-w-[280px] space-y-2 pt-3">
-                  {hoursCompact.map((row) => (
+                  {site.openingHours.map((row) => (
                     <li
-                      key={row.days}
-                      className="type-body nums flex justify-between gap-4 whitespace-nowrap"
+                      key={row.day}
+                      className="type-body nums flex justify-between gap-3"
                     >
-                      <span className="text-white/60">{row.days}</span>
+                      <span className="text-white/60">{row.day}</span>
                       <span className="text-white/70">{row.time}</span>
                     </li>
                   ))}
@@ -137,6 +133,14 @@ export function Footer() {
               </div>
             </div>
           </div>
+          <nav aria-label="Privacy en cookies" className="mt-8 flex flex-wrap gap-5 border-t border-white/15 pt-5">
+            {site.legalLinks.map((link) => {
+              const href = link.href === '#privacy' ? '/privacy' : link.href === '#cookies' ? '/cookies' : link.href === '#terms' ? null : safeLink(link.href)
+              return href ? <a key={href} href={href} className="type-ui text-white/70 underline underline-offset-4">{link.label}</a> : null
+            })}
+          </nav>
+          {site.legal.vat ? <p className="type-ui mt-4 text-white/70">{site.legal.vat}</p> : null}
+          {site.photoCredits ? <p className="type-ui mt-2 text-white/70">{site.photoCredits}</p> : null}
         </div>
       </div>
     </footer>

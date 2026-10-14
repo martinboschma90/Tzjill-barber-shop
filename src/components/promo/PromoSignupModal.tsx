@@ -1,4 +1,6 @@
-import { useEffect, useId, useState, type FormEvent } from 'react'
+import { useCms } from '@/cms/CmsContext'
+import { useModalFocus } from '@/lib/useModalFocus'
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import { Check, Spinner } from '@/components/ui/StatusIcon'
 import {
   isNlMobile,
@@ -16,7 +18,10 @@ const fieldClass =
 
 export function PromoSignupModal() {
   const titleId = useId()
+  const { content } = useCms()
+  const submitting = useRef(false)
   const [open, setOpen] = useState(false)
+  const modal = useModalFocus(open && content.site.promoSignupVisible !== false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -50,7 +55,7 @@ export function PromoSignupModal() {
   }, [])
 
   useEffect(() => {
-    if (!open) return
+    if (!open || content.site.promoSignupVisible === false) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     const onKey = (event: KeyboardEvent) => {
@@ -61,7 +66,7 @@ export function PromoSignupModal() {
       document.body.style.overflow = prev
       window.removeEventListener('keydown', onKey)
     }
-  }, [open])
+  }, [open, content.site.promoSignupVisible])
 
   function dismiss(state: 'dismissed' | 'submitted') {
     markPromoSeen(state)
@@ -70,6 +75,7 @@ export function PromoSignupModal() {
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
+    if (submitting.current) return
     const nextName = name.trim()
     const nextEmail = email.trim()
     const nextPhone = phone.trim()
@@ -86,12 +92,14 @@ export function PromoSignupModal() {
       return
     }
     setError('')
+    submitting.current = true
     setSending(true)
     const result = await submitPromoSignup({
       name: nextName,
       email: nextEmail,
       phone: nextPhone,
     })
+    submitting.current = false
     setSending(false)
     if (!result.ok) {
       setError(result.error)
@@ -101,7 +109,7 @@ export function PromoSignupModal() {
     markPromoSeen('submitted')
   }
 
-  if (!open) return null
+  if (!open || content.site.promoSignupVisible === false) return null
 
   return (
     <div className="fixed inset-0 z-[85] flex items-end justify-center sm:items-center sm:p-6">
@@ -112,6 +120,8 @@ export function PromoSignupModal() {
         onClick={() => dismiss('dismissed')}
       />
       <div
+        ref={modal}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
@@ -166,7 +176,7 @@ export function PromoSignupModal() {
           ) : (
             <form onSubmit={onSubmit} className="mt-5 flex flex-col gap-3 sm:mt-6 sm:gap-3.5">
               <label className="block">
-                <span className="type-label text-white/40">Naam</span>
+                <span className="type-label text-white/65">Naam</span>
                 <input
                   required
                   name="name"
@@ -177,7 +187,7 @@ export function PromoSignupModal() {
                 />
               </label>
               <label className="block">
-                <span className="type-label text-white/40">E-mail</span>
+                <span className="type-label text-white/65">E-mail</span>
                 <input
                   required
                   type="email"
@@ -189,7 +199,7 @@ export function PromoSignupModal() {
                 />
               </label>
               <label className="block">
-                <span className="type-label text-white/40">06</span>
+                <span className="type-label text-white/65">06</span>
                 <input
                   required
                   type="tel"

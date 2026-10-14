@@ -17,7 +17,7 @@ import { shopMenu } from '@/data/menu'
 import { lookbookImages as defaultLookbook } from '@/data/lookbook'
 import { products as defaultProducts } from '@/data/products'
 import { collabs as defaultCollabs } from '@/data/collabs'
-import { productsEnabled, site as defaultSite } from '@/data/site'
+import { openingHours, productsEnabled, site as defaultSite } from '@/data/site'
 import { DEFAULT_WHATSAPP_NUMBER } from '@/data/whatsapp'
 import type { Artist, TeamMember } from '@/types/artist'
 
@@ -181,6 +181,9 @@ export type SiteContent = {
   name: string
   fullName: string
   tagline: string
+  homeHeroTitle: string
+  homeHeroSubtitle: string
+  openingHours: { day: string; time: string }[]
   /** When false, the homepage hero is hidden while the roster remains visible. */
   homeHeroVisible: boolean
   /** Full-bleed homepage banner (image URL or media://). Empty uses the feed poster. */
@@ -189,6 +192,9 @@ export type SiteContent = {
   homeHeroVideoUrl: string
   instagram: string
   year: number
+  contactFormVisible: boolean
+  newsletterVisible: boolean
+  promoSignupVisible: boolean
   contactIntro: string
   contact: ContactItem[]
   legal: LegalInfo
@@ -279,11 +285,17 @@ export function createDefaultSiteContent(): SiteContent {
     name: defaultSite.name,
     fullName: defaultSite.fullName,
     tagline: defaultSite.tagline,
+    homeHeroTitle: "A man’s\nworld.",
+    homeHeroSubtitle: "Trendy haircuts. Hot towel straight razor. Elke coupe op maat.",
+    openingHours: openingHours.map((row) => ({ ...row })),
     homeHeroVisible: true,
     homeHeroImageUrl: HERO_POSTER,
     homeHeroVideoUrl: '/brand/hero.mp4',
     instagram: defaultSite.instagram,
     year: defaultSite.year,
+    contactFormVisible: true,
+    newsletterVisible: true,
+    promoSignupVisible: true,
     contactIntro:
       'Afspraak, vragen of collab. Voorstreek 18.',
     contact: defaultSite.contact.map((item) => ({ ...item })),

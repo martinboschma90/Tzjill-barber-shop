@@ -24,7 +24,7 @@ function ReviewCard({ item }: { item: (typeof reviews)[number] }) {
         />
         <div>
           <p className="type-ui">{item.name}</p>
-          <p className="type-label mt-0.5 text-[#2c241c]/45">{item.role}</p>
+          <p className="type-label mt-0.5 text-[#2c241c]/70">{item.role}</p>
         </div>
       </div>
     </>
@@ -44,7 +44,7 @@ export function Testimonials() {
     <section className="section-y text-white">
       <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-            <p className="type-label inline-flex items-center justify-center gap-2 text-white/45">
+            <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
               <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
               Reviews
             </p>

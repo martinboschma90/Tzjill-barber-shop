@@ -25,7 +25,7 @@ export function TeamSection({ members }: TeamSectionProps) {
               />
             </div>
             <p className="type-subhead mt-4 text-white">{member.name}</p>
-            <p className="type-label mt-1 text-white/40">{member.role}</p>
+            <p className="type-label mt-1 text-white/65">{member.role}</p>
           </article>
           </Reveal>
         ))}

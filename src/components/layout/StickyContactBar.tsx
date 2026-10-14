@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { openSalonhub } from '@/lib/salonhub'
+import { useCms } from '@/cms/CmsContext'
+import { phoneHref } from '@/lib/contactLinks'
 import { PHONE_TEL } from '@/data/site'
 
 type StickyContactBarProps = {
@@ -9,6 +11,7 @@ type StickyContactBarProps = {
 
 export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
   const { pathname } = useLocation()
+  const { content } = useCms()
   const [faqOpen, setFaqOpen] = useState(false)
   const [footerNear, setFooterNear] = useState(false)
   const [pastHero, setPastHero] = useState(() => {
@@ -84,7 +87,7 @@ export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
     }
   }, [pathname])
 
-  if (hidden || footerNear || !pastHero || pathname === '/booking' || pathname === '/faq' || faqOpen) {
+  if (content.site.bookingVisible === false || hidden || footerNear || !pastHero || pathname === '/booking' || pathname === '/faq' || faqOpen) {
     return null
   }
 
@@ -102,7 +105,7 @@ export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
         >
           Afspraak
         </button>
-        <a href={`tel:${PHONE_TEL}`} className="type-ui flex min-h-11 items-center justify-center text-[#f6f3ee]">
+        <a href={phoneHref(content.site.phoneNumber || PHONE_TEL)} className="type-ui flex min-h-11 items-center justify-center text-[#f6f3ee]">
           Bellen
         </a>
       </div>

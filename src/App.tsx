@@ -7,6 +7,8 @@ import { PromoSignupModal } from '@/components/promo/PromoSignupModal'
 import { PublicContentProvider } from '@/cms/PublicContentProvider'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { RouteFallback } from '@/components/ui/RouteFallback'
+import { NotFoundPage } from '@/pages/NotFoundPage'
+import { LegalPage } from '@/pages/LegalPage'
 import { HomePage } from '@/pages/HomePage'
 import { BookingPage } from '@/pages/BookingPage'
 import { reportNotFound, startPublicRum } from '@/lib/siteRum'
@@ -123,6 +125,8 @@ function PublicApp() {
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/booking" element={<BookingPage />} />
           <Route path="/faq" element={<FaqPage />} />
+          <Route path="/privacy" element={<LegalPage kind="privacy" />} />
+          <Route path="/cookies" element={<LegalPage kind="cookies" />} />
           <Route path="*" element={<UnknownPublicPath />} />
         </Routes>
       </Suspense>
@@ -135,7 +139,7 @@ function UnknownPublicPath() {
   useEffect(() => {
     reportNotFound(pathname)
   }, [pathname])
-  return <Navigate to="/" replace />
+  return <NotFoundPage />
 }
 
 export default function App() {

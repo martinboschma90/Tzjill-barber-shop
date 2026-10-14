@@ -52,7 +52,7 @@ export function HomeCollabs() {
       <div className="mx-auto max-w-[1240px] px-6 py-[72px] lg:px-8 lg:py-[120px]">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="type-label text-white/40">Collabs</p>
+            <p className="type-label text-white/65">Collabs</p>
             <Reveal className="mt-4">
               <h2 id="home-collabs-title" className="type-headline">
                 Gasten & merken

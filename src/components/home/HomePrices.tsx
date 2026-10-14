@@ -25,7 +25,7 @@ export function HomePrices() {
           intro={
             <Link
               to="/prijzen"
-              className="wf-link type-ui text-white/45 hover:text-white"
+              className="wf-link type-ui text-white/65 hover:text-white"
             >
               Volledig menu →
             </Link>
@@ -40,7 +40,7 @@ export function HomePrices() {
             >
               <span className="type-lead text-white/85">{item.name}</span>
               <span className="min-w-6 flex-1 border-b border-dotted border-white/20" aria-hidden />
-              <span className="type-ui nums shrink-0 text-white/40">{item.price}</span>
+              <span className="type-ui nums shrink-0 text-white/65">{item.price}</span>
             </li>
           ))}
         </ul>

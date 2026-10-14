@@ -1,3 +1,4 @@
+import { ResolvedImg } from '@/components/ui/ResolvedMedia'
 import { Link } from 'react-router-dom'
 import { Reveal } from '@/components/motion/Reveal'
 import { MediaReveal } from '@/components/motion/MediaReveal'
@@ -15,7 +16,7 @@ export function Treatments() {
     <section className="text-white">
       <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="type-label inline-flex items-center justify-center gap-2 text-white/45">
+          <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
             <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
             {content.site.treatmentsKicker || 'Behandelingen'}
           </p>
@@ -40,7 +41,7 @@ export function Treatments() {
                     className="relative overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]"
                   >
                     <div className="relative aspect-[3/4]">
-                      <img
+                      <ResolvedImg
                         src={item.image}
                         alt=""
                         className={`wf-media-zoom h-full w-full ${feedFrameClass}`}

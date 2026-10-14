@@ -172,6 +172,8 @@ export function MediaProvider({ children }: { children: ReactNode }) {
     for (const file of list) {
       setUploading({ fileName: file.name, stage: 'reading' })
       try {
+        if (file.size <= 0 || file.size > MAX_STORED_VIDEO_BYTES) throw new Error('Kies een bestand van maximaal 50 MB.')
+        if (!isImageFile(file) && !isVideoFile(file)) throw new Error('Kies een afbeelding of video.')
         if (isImageFile(file)) {
           setUploading({
             fileName: file.name,

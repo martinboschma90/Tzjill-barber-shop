@@ -21,7 +21,7 @@ export function HomeFaq() {
     <section id="faq" className="text-white">
       <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="type-label inline-flex items-center justify-center gap-2 text-white/45">
+          <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
             <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
             FAQ
           </p>
@@ -92,7 +92,7 @@ export function HomeFaq() {
                   <span
                     aria-hidden
                     className={`type-ui shrink-0 transition-transform duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
-                      isOpen ? 'rotate-45 text-[#2c241c]/45' : 'text-white/40 group-hover:text-[#2c241c]/45'
+                      isOpen ? 'rotate-45 text-[#2c241c]/70' : 'text-white/65 group-hover:text-[#2c241c]/70'
                     }`}
                   >
                     +

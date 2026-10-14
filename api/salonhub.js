@@ -1,5 +1,5 @@
 import { handleSalonhub } from './salonhub-adapter.mjs'
-import { json, rateLimit, setCors, allowedOrigin, isSiteHost } from './http-security.mjs'
+import { json, rateLimit, setCors, isAllowedRequest } from './http-security.mjs'
 
 const READS = new Set(['treatments', 'employees', 'dates', 'times'])
 
@@ -18,7 +18,7 @@ export default async function handler(req, res) {
     return
   }
 
-  if (!allowedOrigin(origin) && !isSiteHost(req.headers.host)) {
+  if (!isAllowedRequest(req)) {
     json(res, 403, { error: 'Forbidden' })
     return
   }
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
   const action = String(body.action || '')
   const read = READS.has(action)
   if (
-    !rateLimit(req, {
+    !await rateLimit(req, {
       limit: read ? 80 : 6,
       windowMs: 15 * 60 * 1000,
       bucket: read ? 'salonhub-read' : 'salonhub-book',

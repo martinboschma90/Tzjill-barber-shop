@@ -124,6 +124,7 @@ async function postForm(path, fields) {
   }
   const res = await fetch(`${API_BASE}/${path}`, {
     method: 'POST',
+    signal: AbortSignal.timeout(15000),
     headers: { 'Accept-Language': 'nl' },
     body,
   })
@@ -141,12 +142,13 @@ async function publicWidgetKey() {
   if (cachedKey.value && Date.now() - cachedKey.at < KEY_TTL_MS) return cachedKey.value
   const htmlRes = await fetch(`${WIDGET_ORIGIN}/${CLIENT}/${SALON}`, {
     headers: { Accept: 'text/html' },
+    signal: AbortSignal.timeout(10000),
   })
   if (!htmlRes.ok) throw new Error('widget_html')
   const html = await htmlRes.text()
   const src = html.match(/src="(\/assets\/index-[^"]+\.js)"/)
   if (!src) throw new Error('widget_bundle')
-  const jsRes = await fetch(`${WIDGET_ORIGIN}${src[1]}`)
+  const jsRes = await fetch(`${WIDGET_ORIGIN}${src[1]}`, { signal: AbortSignal.timeout(10000) })
   if (!jsRes.ok) throw new Error('widget_bundle')
   const key = extractBundleKey(await jsRes.text())
   if (!key) throw new Error('widget_key')
@@ -173,6 +175,7 @@ async function authorized(url, init) {
   for (const key of keys) {
     const res = await fetch(url, {
       ...init,
+      signal: AbortSignal.timeout(15000),
       headers: {
         Accept: 'application/json',
         'Accept-Language': 'nl',

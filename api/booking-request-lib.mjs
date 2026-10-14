@@ -1,4 +1,4 @@
-export const BOOKING_REQUEST_EMAIL = 'martin@notype-mgmt.com'
+export const BOOKING_REQUEST_EMAIL = 'info@tzjill.nl'
 
 export function formatBookingEmailBody(payload) {
   const lines = [
@@ -95,7 +95,7 @@ function publicEmailError(status, detail) {
   return 'Could not send your request. Please try again.'
 }
 
-export async function sendBookingEmail({ subject, text, replyTo, to }) {
+export async function sendBookingEmail({ subject, text, replyTo, to, idempotencyKey }) {
   const inbox = String(
     to || process.env.BOOKING_TO_EMAIL || BOOKING_REQUEST_EMAIL,
   ).trim()
@@ -107,7 +107,7 @@ export async function sendBookingEmail({ subject, text, replyTo, to }) {
   if (resendKey) {
     const from =
       process.env.BOOKING_FROM_EMAIL ||
-      'NOTYPE MGMT <bookings@notype-mgmt.com>'
+      'Tzjill <info@tzjill.nl>'
     const body = {
       from,
       to: [inbox],
@@ -120,6 +120,7 @@ export async function sendBookingEmail({ subject, text, replyTo, to }) {
     let response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
+        ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),
         Authorization: `Bearer ${resendKey}`,
         'Content-Type': 'application/json',
       },

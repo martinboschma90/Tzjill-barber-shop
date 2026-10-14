@@ -1,3 +1,4 @@
+import { Navigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
@@ -8,6 +9,8 @@ import { BookButton } from '@/components/booking/BookButton'
 export function TeamPage() {
   const { content } = useCms()
   const team = content.team.filter((member) => member.name.trim())
+
+  if (content.site.teamVisible === false) return <Navigate to="/" replace />
 
   return (
     <AppShell navVariant="wordmark">

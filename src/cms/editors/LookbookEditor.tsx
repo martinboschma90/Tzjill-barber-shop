@@ -15,7 +15,7 @@ export function LookbookEditor() {
     <div className="space-y-2">
       {images.map((image, index) => (
         <AdminListCard
-          key={`${image.src}-${index}`}
+          key={index}
           isOpen={openIndex === index}
           onToggle={() => setOpenIndex((current) => (current === index ? null : index))}
           thumbnail={
@@ -26,6 +26,7 @@ export function LookbookEditor() {
           title={image.alt || `Look ${index + 1}`}
           meta={image.tags.join(', ') || 'lookbook'}
           actions={
+            <div className="flex gap-1">
             <button
               type="button"
               className={listBtnClass}
@@ -38,6 +39,8 @@ export function LookbookEditor() {
             >
               Verwijder
             </button>
+            {[-1, 1].map((offset) => <button key={offset} type="button" className={listBtnClass} aria-label={offset < 0 ? 'Omhoog' : 'Omlaag'} disabled={index + offset < 0 || index + offset >= images.length} onClick={() => setSite((previous) => { const next = [...previous.lookbookImages]; [next[index], next[index + offset]] = [next[index + offset], next[index]]; return { ...previous, lookbookImages: next } })}>{offset < 0 ? '↑' : '↓'}</button>)}
+            </div>
           }
         >
           <MediaUrlField

@@ -21,15 +21,6 @@ const WIDTH: Record<ImageDeliverySize, number> = {
   full: 1440,
 }
 
-const QUALITY: Record<ImageDeliverySize, number> = {
-  thumb: 76,
-  card: 84,
-  team: 82,
-  hero: 86,
-  poster: 82,
-  full: 86,
-}
-
 const OBJECT_PUBLIC =
   /^(https?:\/\/[^/?#]+)\/storage\/v1\/object\/public\/(.+?)(?:\?.*)?$/i
 const RENDER_PUBLIC =
@@ -52,19 +43,6 @@ export function originalStorageUrl(url: string): string {
   return `${render[1]}/storage/v1/object/public/${render[2]}`
 }
 
-function supabaseRenderUrl(
-  origin: string,
-  path: string,
-  size: ImageDeliverySize,
-): string {
-  const width = WIDTH[size]
-  const quality = QUALITY[size]
-  // `resize=contain` scales the full frame — no server-side crop.
-  // CSS object-fit/object-position remain the only framing controls.
-  // WebP keeps bytes down without changing framing.
-  return `${origin}/storage/v1/render/image/public/${path}?width=${width}&quality=${quality}&resize=contain&format=webp`
-}
-
 /** Intrinsic pixel size for CLS hints (3:4 portrait delivery). */
 export function imageDeliveryDimensions(size: ImageDeliverySize): {
   width: number
@@ -83,16 +61,18 @@ export function optimizeImageUrl(
   url: string,
   size: ImageDeliverySize = 'card',
 ): string {
+  const localFeed = url.match(/^\/feed\/(DSC[0-9]+)\.jpg$/i)
+  if (localFeed) return `/feed/optimized/${localFeed[1]}-${WIDTH[size]}.webp`
   if (isPassthrough(url)) return url
 
   const object = url.match(OBJECT_PUBLIC)
   if (object) {
-    return supabaseRenderUrl(object[1], object[2], size)
+    return `/api/image?src=${encodeURIComponent(originalStorageUrl(url))}&width=${WIDTH[size]}`
   }
 
   const render = url.match(RENDER_PUBLIC)
   if (render) {
-    return supabaseRenderUrl(render[1], render[2], size)
+    return `/api/image?src=${encodeURIComponent(originalStorageUrl(url))}&width=${WIDTH[size]}`
   }
 
   if (/images\.unsplash\.com/i.test(url)) {
@@ -115,7 +95,7 @@ export function optimizedImageSrcSet(
   url: string,
   sizes: ImageDeliverySize[],
 ): string | undefined {
-  if (isPassthrough(url)) return undefined
+  if (isPassthrough(url) && !/^\/feed\/DSC[0-9]+\.jpg$/i.test(url)) return undefined
   // Unsplash srcSet with different widths would change fit=crop framing — skip.
   if (/images\.unsplash\.com/i.test(url)) return undefined
   const parts = sizes.map(

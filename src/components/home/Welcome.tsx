@@ -1,3 +1,4 @@
+import { ResolvedImg } from '@/components/ui/ResolvedMedia'
 import { Link } from 'react-router-dom'
 import { buttonClass } from '@/components/ui/buttonStyles'
 import { Reveal } from '@/components/motion/Reveal'
@@ -18,7 +19,7 @@ export function Welcome() {
     <section className="text-white">
       <div className="mx-auto grid max-w-[1240px] items-center gap-12 px-6 section-y lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16 lg:px-8">
         <div>
-          <p className="type-label text-white/40">{content.site.welcomeKicker || 'Studio'}</p>
+          <p className="type-label text-white/65">{content.site.welcomeKicker || 'Studio'}</p>
           <Reveal className="mt-4">
             <h2 className="type-headline max-w-2xl whitespace-pre-line">
               {content.site.welcomeTitle || 'Elke coupe\nis maatwerk.'}
@@ -46,7 +47,7 @@ export function Welcome() {
           >
             <MediaReveal>
               <div className="relative aspect-[3/4]">
-                <img
+                <ResolvedImg
                   src={posterSrc}
                   alt=""
                   className={`wf-media-zoom absolute inset-0 h-full w-full ${feedFrameClass}`}
@@ -60,7 +61,7 @@ export function Welcome() {
             className="group absolute bottom-0 left-0 z-10 w-[56%] overflow-hidden rounded-[1.75rem] bg-black shadow-[0_24px_50px_rgb(0_0_0/0.45)] sm:rounded-[2rem]"
           >
             <MediaReveal delay={0.1}>
-              <img
+              <ResolvedImg
                 src={content.site.welcomeImageUrl || feed.dsc00030}
                 alt=""
                 className={`wf-media-zoom aspect-[3/4] w-full ${feedFrameClass}`}

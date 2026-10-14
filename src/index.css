@@ -767,3 +767,9 @@ body::before {
   }
 }
 
+
+/* Visible keyboard focus survives transparent controls and color transitions. */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid #c4a574;
+  outline-offset: 4px;
+}

@@ -57,7 +57,7 @@ export function PricesEditor() {
               </div>
               {group.items.map((item, itemIndex) => (
                 <div
-                  key={`${item.name}-${itemIndex}`}
+                  key={`${category.id}-${groupIndex}-${itemIndex}`}
                   className="grid grid-cols-[1fr_5.5rem_3.5rem_auto] gap-2"
                 >
                   <CompactInput

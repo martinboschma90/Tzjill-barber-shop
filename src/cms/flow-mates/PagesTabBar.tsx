@@ -9,6 +9,8 @@ const PAGE_TAB_DEFS = [
   { to: '/cms/collabs', label: 'Collabs' },
   { to: '/cms/team', label: 'Team' },
   { to: '/cms/over-ons', label: 'Over ons' },
+  { to: '/cms/booking', label: 'Afspraak' },
+  { to: '/cms/forms', label: 'Formulieren' },
   { to: '/cms/contact', label: 'Contact' },
   { to: '/cms/footer', label: 'Footer' },
 ] as const

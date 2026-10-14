@@ -1,5 +1,5 @@
 import { sendPromoSignupEmail, isValidPromoPayload } from './promo-signup-lib.mjs'
-import { json, rateLimit, setCors, allowedOrigin, isSiteHost } from './http-security.mjs'
+import { json, rateLimit, setCors, isAllowedRequest } from './http-security.mjs'
 
 export default async function handler(req, res) {
   const origin = req.headers.origin
@@ -16,12 +16,12 @@ export default async function handler(req, res) {
     return
   }
 
-  if (!allowedOrigin(origin) && !isSiteHost(req.headers.host)) {
+  if (!isAllowedRequest(req)) {
     json(res, 403, { error: 'Forbidden' })
     return
   }
 
-  if (!rateLimit(req, { limit: 6, windowMs: 15 * 60 * 1000 })) {
+  if (!await rateLimit(req, { limit: 6, windowMs: 15 * 60 * 1000 })) {
     json(res, 429, { error: 'Te veel aanmeldingen. Probeer later opnieuw.' })
     return
   }

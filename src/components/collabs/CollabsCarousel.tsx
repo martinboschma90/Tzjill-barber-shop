@@ -18,7 +18,7 @@ export function CollabCaption({
 }) {
   return (
     <>
-      <p className="type-label text-white/40">{item.year}</p>
+      <p className="type-label text-white/65">{item.year}</p>
       <h2 className={`type-subhead ${compact ? 'mt-2' : 'mt-3'}`}>{item.name}</h2>
       <p
         className={`type-lead max-w-md text-white/55 ${compact ? 'mt-3' : 'mt-4'}`}
@@ -182,7 +182,7 @@ export function CollabsCarousel({ items }: CollabsCarouselProps) {
       {items.length > 1 ? (
         <div className="mt-6 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <p className="type-label text-white/40">
+            <p className="type-label text-white/65">
               {active + 1} / {items.length}
             </p>
             <div className="flex items-center gap-2">

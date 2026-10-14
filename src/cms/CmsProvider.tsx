@@ -1,770 +1,183 @@
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type Dispatch,
-  type ReactNode,
-  type SetStateAction,
-} from 'react'
-import type { Artist } from '@/types/artist'
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useAuth } from '@/cms/auth/AuthProvider'
-import {
-  loadStoredContent,
-  loadStoredContentUpdatedAt,
-  persistContent,
-  type CmsContent,
-} from '@/cms/content'
+import { loadStoredContent, loadStoredContentUpdatedAt, persistContent, type CmsContent } from '@/cms/content'
 import { createDefaultContent } from '@/cms/defaultCmsContent'
 import { createBlankArtist } from '@/cms/createArtist'
-import {
-  deleteArtistInSupabase,
-  insertArtistInSupabase,
-  updateArtistInSupabase,
-} from '@/cms/api/artists'
-import {
-  fetchArtistsFromSupabaseCached,
-  invalidateArtistsCache,
-} from '@/cms/api/artistsCache'
-import {
-  fetchSiteSettingsFromSupabase,
-  upsertSiteSettingsInSupabase,
-} from '@/cms/api/site'
-import {
-  deleteCmsArtist,
-  fetchCmsContentBlob,
-  pushCmsSnapshot,
-  upsertCmsArtist,
-} from '@/cms/api/cmsStore'
-import {
-  fetchTeamMembersFromSupabase,
-  replaceTeamMembersInSupabase,
-} from '@/cms/api/team'
+import { fetchCmsContentBlob, pushCmsSnapshot } from '@/cms/api/cmsStore'
+import { fetchArtistsFromSupabaseCached, invalidateArtistsCache } from '@/cms/api/artistsCache'
+import { fetchSiteSettingsFromSupabase } from '@/cms/api/site'
+import { fetchTeamMembersFromSupabase } from '@/cms/api/team'
 import { applyArtistStatus } from '@/cms/artistVisibility'
-import {
-  artistHasLocalMediaRefs,
-  LOCAL_MEDIA_PUBLISH_WARNING,
-} from '@/cms/artistLocalMedia'
-import { ART_DIRECTION_VERSION, withArtDirection } from '@/cms/imageFocus'
+import { artistHasLocalMediaRefs, LOCAL_MEDIA_PUBLISH_WARNING } from '@/cms/artistLocalMedia'
 import { isSupabaseConfigured } from '@/lib/supabaseEnv'
-import { storageSet } from '@/lib/safeStorage'
-import {
-  PUBLIC_SITE_STORAGE_KEY,
-  PUBLIC_TEAM_STORAGE_KEY,
-} from '@/cms/storageKeys'
-import { useLocation } from 'react-router-dom'
-import { mergeRemoteArtists } from '@/cms/dedupeArtists'
-import { stripLeftoverMusicArtists } from '@/cms/leftoverArtists'
-import { normalizeSiteContent } from '@/cms/mappers/site'
-import {
-  CmsContext,
-  type CmsContextValue,
-  type ContentSyncStatus,
-} from '@/cms/CmsContext'
+import { storageGet, storageSet, storageRemove } from '@/lib/safeStorage'
+import { PUBLIC_SITE_STORAGE_KEY, PUBLIC_TEAM_STORAGE_KEY } from '@/cms/storageKeys'
+import { validateCmsContent } from '@/cms/validateContent'
+import { downloadCmsBackup } from '@/cms/cmsBackup'
+import { createSnapshotQueue } from '@/cms/snapshotQueue'
+import { CmsContext, type CmsContextValue, type ContentSyncStatus } from '@/cms/CmsContext'
 
-function initialContent(): CmsContent {
-  const defaults = createDefaultContent()
-  const stored = loadStoredContent()
-  if (!stored) return defaults
-
-  const artists = stripLeftoverMusicArtists(
-    isSupabaseConfigured
-      ? []
-      : stored.artists.length > 0
-        ? stored.artists.map((artist) => withArtDirection(artist))
-        : defaults.artists,
-  )
-
-  return {
-    site: normalizeSiteContent(stored.site),
-    team: stored.team,
-    artists,
-  }
-}
-
-function cachePublicSite(content: CmsContent) {
+function cachePublic(content: CmsContent) {
   storageSet(PUBLIC_SITE_STORAGE_KEY, JSON.stringify(content.site))
-}
-
-function cachePublicTeam(content: CmsContent) {
   storageSet(PUBLIC_TEAM_STORAGE_KEY, JSON.stringify(content.team))
 }
 
-function markDirty(
-  set: Dispatch<SetStateAction<Set<string>>>,
-  id: string,
-) {
-  set((prev) => {
-    if (prev.has(id)) return prev
-    const next = new Set(prev)
-    next.add(id)
-    return next
-  })
-}
-
-function clearDirty(
-  set: Dispatch<SetStateAction<Set<string>>>,
-  id: string,
-) {
-  set((prev) => {
-    if (!prev.has(id)) return prev
-    const next = new Set(prev)
-    next.delete(id)
-    return next
-  })
-}
-
 export function CmsProvider({ children }: { children: ReactNode }) {
-  const { pathname } = useLocation()
-  const isCmsRoute = pathname.startsWith('/cms')
   const { ready: authReady, session, authRequired, canEdit } = useAuth()
-  const canWriteRemote = authReady && Boolean(session) && authRequired
-  const [content, setContent] = useState<CmsContent>(initialContent)
-  const [savedAt, setSavedAt] = useState<number | null>(() =>
-    loadStoredContent() ? Date.now() : null,
-  )
-  const [artistSyncError, setArtistSyncError] = useState<string | null>(null)
-  const [siteSyncError, setSiteSyncError] = useState<string | null>(null)
-  const [dirtyArtistIds, setDirtyArtistIds] = useState<Set<string>>(
-    () => new Set(),
-  )
-  const [artistSaving, setArtistSaving] = useState(false)
-  const [contentSyncStatus, setContentSyncStatus] =
-    useState<ContentSyncStatus>(
-      isSupabaseConfigured ? 'pending' : 'synced',
-    )
-
+  const userId = session?.user.id
+  const local = !isSupabaseConfigured
+  const [content, setContent] = useState<CmsContent>(() => loadStoredContent() ?? createDefaultContent())
   const contentRef = useRef(content)
-  contentRef.current = content
-  const dirtyArtistIdsRef = useRef(dirtyArtistIds)
-  dirtyArtistIdsRef.current = dirtyArtistIds
-  const artistsHydrated = useRef(false)
-  const siteHydrated = useRef(false)
-  const cmsStoreHydrated = useRef(false)
-  const skipSiteRemoteSync = useRef(false)
-  const skipCmsPush = useRef(false)
+  const [hydrated, setHydrated] = useState(local)
+  const [savedAt, setSavedAt] = useState<number | null>(() => loadStoredContentUpdatedAt() || null)
+  const [siteSyncError, setSiteSyncError] = useState<string | null>(null)
+  const [artistSyncError, setArtistSyncError] = useState<string | null>(null)
+  const [contentSyncStatus, setContentSyncStatus] = useState<ContentSyncStatus>(local ? 'synced' : 'pending')
+  const [dirtyArtistIds, setDirtyArtistIds] = useState<Set<string>>(new Set())
+  const [artistSaving, setArtistSaving] = useState(false)
+  const [editVersion, setEditVersion] = useState(0)
+  const [backup, setBackup] = useState(() => storageGet('tzjill-cms-unsaved-v1'))
+  const versionRef = useRef(0)
+  const writer = useRef<ReturnType<typeof createSnapshotQueue<CmsContent>> | null>(null)
 
-  const persistLocal = useCallback((next: CmsContent) => {
-    persistContent(next)
-    if (!isSupabaseConfigured) {
-      cachePublicSite(next)
-      cachePublicTeam(next)
-    }
-    setSavedAt(Date.now())
-  }, [])
-
-  const reportArtistError = useCallback((message: string) => {
-    console.error('[cms] artist sync:', message)
-    setArtistSyncError(message)
-  }, [])
-
-  const clearArtistError = useCallback(() => {
-    setArtistSyncError(null)
-  }, [])
-
-  const reportSiteError = useCallback((message: string) => {
-    console.error('[cms] site sync:', message)
-    setSiteSyncError(message)
-  }, [])
-
-  const clearSiteError = useCallback(() => {
-    setSiteSyncError(null)
-  }, [])
-
-  const adoptServerArtist = useCallback((server: Artist) => {
-    setContent((prev) => {
-      const idx = prev.artists.findIndex(
-        (a) => a.id === server.id || a.slug === server.slug,
-      )
-      if (idx === -1) return prev
-      const current = prev.artists[idx]
-      if (
-        current.id === server.id &&
-        current.slug === server.slug &&
-        current.status === server.status &&
-        current.publishedAt === server.publishedAt
-      ) {
-        return prev
-      }
-      const artists = prev.artists.map((a, i) =>
-        i === idx
-          ? {
-              ...a,
-              id: server.id,
-              slug: server.slug,
-              status: server.status,
-              publishedAt: server.publishedAt,
-              visible: server.visible,
-            }
-          : a,
-      )
-      return { ...prev, artists }
-    })
-  }, [])
-
-  const persistArtistNow = useCallback(
-    async (artist: Artist): Promise<{ error: string | null; artist: Artist | null }> => {
-      if (!isSupabaseConfigured) {
-        persistLocal(contentRef.current)
-        clearDirty(setDirtyArtistIds, artist.id)
-        return { error: null, artist }
-      }
-
-      const { artist: server, error } = await updateArtistInSupabase(artist)
-      if (error) {
-        reportArtistError(error)
-        return { error, artist: null }
-      }
-      const storeError = await upsertCmsArtist(server ?? artist)
-      if (storeError.error) {
-        reportArtistError(storeError.error)
-        setContentSyncStatus('pending')
-      }
-      invalidateArtistsCache()
-      clearArtistError()
-      setSavedAt(Date.now())
-      clearDirty(setDirtyArtistIds, artist.id)
-      if (server) adoptServerArtist(server)
-      return { error: null, artist: server }
-    },
-    [adoptServerArtist, clearArtistError, persistLocal, reportArtistError],
-  )
-
-  // Site + team (+ artists) → localStorage cache
+  // Opening the CMS only reads. The remote document wins even if this browser has an old cache.
   useEffect(() => {
-    persistLocal(content)
-  }, [content, persistLocal])
-
-  // JSON store: Supabase first, localStorage cache; newer remote wins
-  useEffect(() => {
-    if (!isSupabaseConfigured || cmsStoreHydrated.current) return
-    if (!canWriteRemote) return
+    if (local || !authReady || !userId || !authRequired) return
     let cancelled = false
-
+    setHydrated(false)
+    writer.current = null
     void (async () => {
-      const localTs = loadStoredContentUpdatedAt()
-      const [remoteBlob, remoteRoster] = await Promise.all([
-        fetchCmsContentBlob(),
-        fetchArtistsFromSupabaseCached(),
-      ])
-      if (cancelled) return
-
-      const remoteTs = remoteBlob?.updatedAt ?? 0
-      const hasRemote = Boolean(remoteBlob) || remoteRoster.fromSupabase
-
-      if (hasRemote && remoteTs >= localTs) {
-        const remoteList = remoteRoster.fromSupabase
-          ? remoteRoster.artists.map((artist) => withArtDirection(artist))
-          : []
-        const next: CmsContent = {
-          site: normalizeSiteContent(
-            remoteBlob?.content.site ?? contentRef.current.site,
-          ),
-          team: remoteBlob?.content.team?.length
-            ? remoteBlob.content.team
-            : contentRef.current.team,
-          artists: stripLeftoverMusicArtists(
-            mergeRemoteArtists(
-              contentRef.current.artists,
-              remoteList,
-              dirtyArtistIdsRef.current,
-            ),
-          ),
+      try {
+        const remote = await fetchCmsContentBlob()
+        let next = remote?.content
+        if (!next) {
+          const [site, team, roster] = await Promise.all([
+            fetchSiteSettingsFromSupabase(), fetchTeamMembersFromSupabase(), fetchArtistsFromSupabaseCached({ force: true }),
+          ])
+          const defaults = createDefaultContent()
+          next = { site: site.site ?? defaults.site, team: team.team, artists: roster.artists }
         }
-        skipCmsPush.current = true
-        skipSiteRemoteSync.current = true
-        artistsHydrated.current = remoteRoster.fromSupabase
-        siteHydrated.current = true
-        cmsStoreHydrated.current = true
+        if (cancelled) return
+        writer.current = createSnapshotQueue(pushCmsSnapshot, remote?.revision ?? null)
+        contentRef.current = next
         setContent(next)
-        persistContent(next, { updatedAt: remoteTs || Date.now() })
-        setSavedAt(remoteTs || Date.now())
-        setContentSyncStatus('synced')
-        return
-      }
-
-      cmsStoreHydrated.current = true
-      const { error, updatedAt } = await pushCmsSnapshot(contentRef.current)
-      if (cancelled) return
-      if (error) {
-        reportSiteError(error)
-        setContentSyncStatus('pending')
-        return
-      }
-      skipCmsPush.current = true
-      persistContent(contentRef.current, { updatedAt: updatedAt ?? Date.now() })
-      setContentSyncStatus('synced')
-      clearSiteError()
-    })()
-
-    return () => {
-      cancelled = true
-    }
-  }, [canWriteRemote, clearSiteError, reportSiteError])
-
-  useEffect(() => {
-    if (!isSupabaseConfigured || !cmsStoreHydrated.current || !canWriteRemote) {
-      return
-    }
-    if (skipCmsPush.current) {
-      skipCmsPush.current = false
-      return
-    }
-    setContentSyncStatus('pending')
-    const timer = window.setTimeout(() => {
-      void pushCmsSnapshot(contentRef.current).then(({ error, updatedAt }) => {
-        if (error) {
-          reportSiteError(error)
-          setContentSyncStatus('pending')
-          return
-        }
-        persistContent(contentRef.current, { updatedAt: updatedAt ?? Date.now() })
-        setContentSyncStatus('synced')
-        clearSiteError()
-        setSavedAt(Date.now())
-      })
-    }, 700)
-    return () => window.clearTimeout(timer)
-  }, [
-    canWriteRemote,
-    content,
-    clearSiteError,
-    reportSiteError,
-  ])
-
-  // Hydrate full artist catalog only in CMS — public pages use slim roster / by-slug.
-  useEffect(() => {
-    if (!isSupabaseConfigured || artistsHydrated.current || !isCmsRoute) return
-    if (!canWriteRemote) return
-    let cancelled = false
-
-    void fetchArtistsFromSupabaseCached()
-      .then(({ artists, fromSupabase }) => {
-        if (cancelled || !fromSupabase) return
-        artistsHydrated.current = true
-        setContent((prev) => ({
-          ...prev,
-          artists: stripLeftoverMusicArtists(
-            mergeRemoteArtists(
-              prev.artists,
-              artists.map((artist) => withArtDirection(artist)),
-              dirtyArtistIdsRef.current,
-            ),
-          ),
-        }))
-        setSavedAt(Date.now())
-      })
-      .catch((error) => {
-        console.warn('[cms] artist hydrate failed', error)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [canWriteRemote, isCmsRoute])
-
-  // Hydrate site + team from Supabase (source of truth when rows exist)
-  useEffect(() => {
-    if (!isSupabaseConfigured || siteHydrated.current) return
-    if (!canWriteRemote) return
-    let cancelled = false
-
-    void Promise.all([
-      fetchSiteSettingsFromSupabase(),
-      fetchTeamMembersFromSupabase(),
-    ]).then(([siteResult, teamResult]) => {
-      if (cancelled) return
-      siteHydrated.current = true
-
-      if (!siteResult.fromSupabase && !teamResult.fromSupabase) {
-        const current = contentRef.current
-        void upsertSiteSettingsInSupabase(current.site).then(({ error }) => {
-          if (error) reportSiteError(error)
-          else {
-            clearSiteError()
-            cachePublicSite(contentRef.current)
-          }
-        })
-        void replaceTeamMembersInSupabase(current.team).then(
-          ({ team, error }) => {
-            if (error) {
-              reportSiteError(error)
-              return
-            }
-            clearSiteError()
-            storageSet(PUBLIC_TEAM_STORAGE_KEY, JSON.stringify(team))
-            if (team.length) {
-              skipSiteRemoteSync.current = true
-              setContent((prev) => ({ ...prev, team }))
-            }
-          },
-        )
-        return
-      }
-
-      skipSiteRemoteSync.current = true
-      setContent((prev) => ({
-        ...prev,
-        site: siteResult.site ?? prev.site,
-        team: teamResult.fromSupabase ? teamResult.team : prev.team,
-      }))
-      if (siteResult.site) {
-        storageSet(PUBLIC_SITE_STORAGE_KEY, JSON.stringify(siteResult.site))
-      }
-      if (teamResult.fromSupabase) {
-        storageSet(PUBLIC_TEAM_STORAGE_KEY, JSON.stringify(teamResult.team))
-      }
-      setSavedAt(Date.now())
-
-      if (siteResult.fromSupabase && !teamResult.fromSupabase) {
-        void replaceTeamMembersInSupabase(contentRef.current.team).then(
-          ({ team, error }) => {
-            if (error) {
-              reportSiteError(error)
-              return
-            }
-            clearSiteError()
-            storageSet(PUBLIC_TEAM_STORAGE_KEY, JSON.stringify(team))
-            if (team.length) {
-              skipSiteRemoteSync.current = true
-              setContent((prev) => ({ ...prev, team }))
-            }
-          },
-        )
-      }
-
-      if (!siteResult.fromSupabase && teamResult.fromSupabase) {
-        void upsertSiteSettingsInSupabase(contentRef.current.site).then(
-          ({ error }) => {
-            if (error) reportSiteError(error)
-            else {
-              clearSiteError()
-              cachePublicSite(contentRef.current)
-            }
-          },
-        )
-      }
-    })
-      .catch((error) => {
-        console.warn('[cms] site/team hydrate failed', error)
-      })
-
-    return () => {
-      cancelled = true
-    }
-  }, [canWriteRemote, clearSiteError, reportSiteError])
-
-  // Debounced site + team → Supabase
-  useEffect(() => {
-    if (!isSupabaseConfigured || !siteHydrated.current || !canWriteRemote) return
-    if (skipSiteRemoteSync.current) {
-      skipSiteRemoteSync.current = false
-      return
-    }
-
-    const timer = window.setTimeout(() => {
-      const { site, team } = contentRef.current
-      void upsertSiteSettingsInSupabase(site).then(({ error }) => {
-        if (error) reportSiteError(error)
-        else {
-          clearSiteError()
-          cachePublicSite(contentRef.current)
-          setSavedAt(Date.now())
-        }
-      })
-      void replaceTeamMembersInSupabase(team).then(({ team: nextTeam, error }) => {
-        if (error) {
-          reportSiteError(error)
-          return
-        }
-        clearSiteError()
-        storageSet(PUBLIC_TEAM_STORAGE_KEY, JSON.stringify(nextTeam))
-        setSavedAt(Date.now())
-        const sameIds =
-          nextTeam.length === team.length &&
-          nextTeam.every((member, i) => member.id === team[i]?.id)
-        if (!sameIds) {
-          skipSiteRemoteSync.current = true
-          setContent((prev) => ({ ...prev, team: nextTeam }))
-        }
-      })
-    }, 700)
-
-    return () => window.clearTimeout(timer)
-  }, [canWriteRemote, content.site, content.team, clearSiteError, reportSiteError])
-
-  // Re-apply campaign seeds when art-direction version bumps
-  useEffect(() => {
-    setContent((prev) => {
-      const nextArtists = prev.artists.map((artist) => withArtDirection(artist))
-      const changed = nextArtists.some(
-        (artist, i) =>
-          artist.imageFocusX !== prev.artists[i]?.imageFocusX ||
-          artist.imageFocusY !== prev.artists[i]?.imageFocusY ||
-          artist.imageScale !== prev.artists[i]?.imageScale ||
-          artist.artDirectionVersion !== prev.artists[i]?.artDirectionVersion,
-      )
-      return changed ? { ...prev, artists: nextArtists } : prev
-    })
-  }, [ART_DIRECTION_VERSION])
-
-  const findBySlug = useCallback(
-    (slug: string) => contentRef.current.artists.find((a) => a.slug === slug),
-    [],
-  )
-
-  const saveArtist = useCallback(
-    async (slug: string) => {
-      const artist = findBySlug(slug)
-      if (!canEdit) return { error: 'Geen schrijfrechten.' }
-      if (!artist) return { error: 'Artist not found' }
-      setArtistSaving(true)
-      const result = await persistArtistNow(artist)
-      setArtistSaving(false)
-      return { error: result.error }
-    },
-    [canEdit, findBySlug, persistArtistNow],
-  )
-
-  const publishArtist = useCallback(
-    async (slug: string) => {
-      const current = findBySlug(slug)
-      if (!canEdit) return { error: 'Geen schrijfrechten.' }
-      if (!current) return { error: 'Artist not found' }
-
-      if (artistHasLocalMediaRefs(current)) {
-        reportArtistError(LOCAL_MEDIA_PUBLISH_WARNING)
-        return { error: LOCAL_MEDIA_PUBLISH_WARNING }
-      }
-
-      const published = applyArtistStatus(current, 'published', {
-        touchPublishedAt: true,
-      })
-
-      setContent((prev) => ({
-        ...prev,
-        artists: prev.artists.map((a) =>
-          a.slug === slug || a.id === current.id ? published : a,
-        ),
-      }))
-
-      setArtistSaving(true)
-      const result = await persistArtistNow(published)
-      setArtistSaving(false)
-      return { error: result.error }
-    },
-    [canEdit, findBySlug, persistArtistNow, reportArtistError],
-  )
-
-  const unpublishArtist = useCallback(
-    async (slug: string) => {
-      const current = findBySlug(slug)
-      if (!canEdit) return { error: 'Geen schrijfrechten.' }
-      if (!current) return { error: 'Artist not found' }
-
-      const draft = applyArtistStatus(current, 'draft')
-
-      setContent((prev) => ({
-        ...prev,
-        artists: prev.artists.map((a) =>
-          a.slug === slug || a.id === current.id ? draft : a,
-        ),
-      }))
-
-      setArtistSaving(true)
-      const result = await persistArtistNow(draft)
-      setArtistSaving(false)
-      return { error: result.error }
-    },
-    [canEdit, findBySlug, persistArtistNow],
-  )
-
-  const value = useMemo<CmsContextValue>(
-    () => ({
-      content,
-      savedAt,
-      contentSyncStatus,
-      artistSyncError,
-      siteSyncError,
-      dirtyArtistIds,
-      artistSaving,
-      setSite: (updater) => {
-        if (!canEdit) return
-        setContent((prev) => ({ ...prev, site: updater(prev.site) }))
-      },
-      setTeam: (updater) => {
-        if (!canEdit) return
-        setContent((prev) => ({ ...prev, team: updater(prev.team) }))
-      },
-      setArtists: (updater) => {
-        if (!canEdit) return
-        setContent((prev) => {
-          const nextArtists = updater(prev.artists)
-          const prevById = new Map(prev.artists.map((a) => [a.id, a]))
-          for (const artist of nextArtists) {
-            const before = prevById.get(artist.id)
-            if (!before || before !== artist) {
-              markDirty(setDirtyArtistIds, artist.id)
-            }
-          }
-          return { ...prev, artists: nextArtists }
-        })
-      },
-      updateArtist: (slug, updater) => {
-        if (!canEdit) return
-        setContent((prev) => {
-          let updatedId: string | null = null
-          const nextArtists = prev.artists.map((artist) => {
-            if (artist.slug !== slug) return artist
-            const next = updater(artist)
-            updatedId = next.id
-            return next
-          })
-          if (updatedId) {
-            markDirty(setDirtyArtistIds, updatedId)
-          }
-          return { ...prev, artists: nextArtists }
-        })
-      },
-      addArtist: (name) => {
-        if (!canEdit) {
-          return (
-            contentRef.current.artists[0] ??
-            createBlankArtist(name, contentRef.current.artists.map((a) => a.slug))
-          )
-        }
-        const created = createBlankArtist(
-          name,
-          contentRef.current.artists.map((a) => a.slug),
-        )
-        artistsHydrated.current = true
-        setContent((prev) => {
-          if (prev.artists.some((artist) => artist.slug === created.slug)) {
-            return prev
-          }
-          return {
-            ...prev,
-            artists: [...prev.artists, created],
-          }
-        })
-        markDirty(setDirtyArtistIds, created.id)
-        if (isSupabaseConfigured) {
-          void insertArtistInSupabase(created).then(({ artist, error }) => {
-            if (error) {
-              reportArtistError(error)
-              return
-            }
-            void upsertCmsArtist(artist ?? created)
-            invalidateArtistsCache()
-            clearArtistError()
-            setSavedAt(Date.now())
-            clearDirty(setDirtyArtistIds, created.id)
-            if (artist && artist.id !== created.id) {
-              adoptServerArtist(artist)
-            }
-          })
-        } else {
-          clearDirty(setDirtyArtistIds, created.id)
-        }
-        return created
-      },
-      removeArtist: (slug) => {
-        if (!canEdit) return
-        const existing = contentRef.current.artists.find((a) => a.slug === slug)
-        setContent((prev) => ({
-          ...prev,
-          artists: prev.artists.filter((artist) => artist.slug !== slug),
-        }))
-        if (existing) {
-          clearDirty(setDirtyArtistIds, existing.id)
-        }
-        if (existing && isSupabaseConfigured) {
-          void deleteArtistInSupabase(existing).then(({ error }) => {
-            if (error) {
-              reportArtistError(error)
-              return
-            }
-            void deleteCmsArtist(existing.slug)
-            invalidateArtistsCache()
-            clearArtistError()
-            setSavedAt(Date.now())
-          })
-        }
-      },
-      saveArtist,
-      publishArtist,
-      unpublishArtist,
-      resetContent: () => {
-        if (!canEdit) return
-        const next = createDefaultContent()
-        skipSiteRemoteSync.current = true
-        setContent(next)
-        persistLocal(next)
+        versionRef.current = 0
+        setEditVersion(0)
         setDirtyArtistIds(new Set())
-        setSavedAt(Date.now())
-        if (isSupabaseConfigured) {
-          for (const artist of next.artists) {
-            void updateArtistInSupabase(artist).then(({ error }) => {
-              if (error) reportArtistError(error)
-              else clearArtistError()
-            })
-          }
-          void upsertSiteSettingsInSupabase(next.site).then(({ error }) => {
-            if (error) reportSiteError(error)
-            else {
-              clearSiteError()
-              cachePublicSite(next)
-            }
-          })
-          void replaceTeamMembersInSupabase(next.team).then(
-            ({ team, error }) => {
-              if (error) {
-                reportSiteError(error)
-                return
-              }
-              clearSiteError()
-              storageSet(PUBLIC_TEAM_STORAGE_KEY, JSON.stringify(team))
-              skipSiteRemoteSync.current = true
-              setContent((prev) => ({ ...prev, team }))
-            },
-          )
-          void pushCmsSnapshot(next).then(({ error, updatedAt }) => {
-            if (error) {
-              reportSiteError(error)
-              setContentSyncStatus('pending')
-              return
-            }
-            persistContent(next, { updatedAt: updatedAt ?? Date.now() })
-            setContentSyncStatus('synced')
-          })
-        }
-      },
-      getArtistBySlug: (slug) => content.artists.find((a) => a.slug === slug),
-      isArtistDirty: (id) => dirtyArtistIds.has(id),
-    }),
-    [
-      content,
-      savedAt,
-      contentSyncStatus,
-      artistSyncError,
-      siteSyncError,
-      dirtyArtistIds,
-      artistSaving,
-      canEdit,
-      persistLocal,
-      reportArtistError,
-      clearArtistError,
-      reportSiteError,
-      clearSiteError,
-      adoptServerArtist,
-      saveArtist,
-      publishArtist,
-      unpublishArtist,
-    ],
-  )
+        persistContent(next, { updatedAt: remote?.updatedAt ?? 0 })
+        cachePublic(next)
+        setSavedAt(remote?.updatedAt ?? null)
+        setSiteSyncError(null)
+        setContentSyncStatus('synced')
+        setHydrated(true)
+      } catch (error) {
+        if (!cancelled) setSiteSyncError(error instanceof Error ? error.message : 'CMS ophalen mislukt. Herlaad om opnieuw te proberen.')
+      }
+    })()
+    return () => { cancelled = true }
+  }, [authReady, userId, authRequired, local])
 
-  return <CmsContext.Provider value={value}>{children}</CmsContext.Provider>
+  const edit = useCallback((updater: (previous: CmsContent) => CmsContent) => {
+    if (!canEdit || !hydrated) return
+    const next = updater(contentRef.current)
+    if (next === contentRef.current) return
+    contentRef.current = next
+    setContent(next)
+    versionRef.current += 1
+    setEditVersion(versionRef.current)
+    persistContent(next)
+    if (!local) { const draft = JSON.stringify(next); storageSet('tzjill-cms-unsaved-v1', draft); setBackup(draft) }
+    if (local) {
+      cachePublic(next)
+      setSavedAt(Date.now())
+    } else {
+      setContentSyncStatus('pending')
+    }
+  }, [canEdit, hydrated, local])
+
+  const save = useCallback(async () => {
+    if (!canEdit || !hydrated) return { error: 'CMS is nog niet geladen of je hebt geen schrijfrechten.' }
+    if (local) return { error: null }
+    if (!writer.current) return { error: 'CMS is nog niet geladen.' }
+    const snapshot = contentRef.current
+    const validationError = validateCmsContent(snapshot)
+    if (validationError) { setSiteSyncError(validationError); return { error: validationError } }
+    const version = versionRef.current
+    const result = await writer.current.save(snapshot)
+    if (result.error) {
+      setSiteSyncError(result.error)
+      setContentSyncStatus('pending')
+      return { error: result.error }
+    }
+    invalidateArtistsCache()
+    if (version === versionRef.current) {
+      persistContent(snapshot, { updatedAt: result.updatedAt ?? 0 })
+      cachePublic(snapshot)
+      setSavedAt(result.updatedAt)
+      setContentSyncStatus('synced')
+      setSiteSyncError(null)
+      setDirtyArtistIds(new Set())
+      storageRemove('tzjill-cms-unsaved-v1'); setBackup(null)
+    }
+    return { error: null }
+  }, [canEdit, hydrated, local])
+
+  useEffect(() => {
+    if (local || !hydrated || editVersion === 0 || !canEdit) return
+    const timer = window.setTimeout(() => { void save() }, 700)
+    return () => window.clearTimeout(timer)
+  }, [canEdit, editVersion, hydrated, local, save])
+
+  const saveArtist = useCallback(async (slug: string) => {
+    if (!contentRef.current.artists.some((artist) => artist.slug === slug)) return { error: 'Kapper niet gevonden.' }
+    setArtistSaving(true)
+    const result = await save()
+    setArtistSaving(false)
+    setArtistSyncError(result.error)
+    return result
+  }, [save])
+
+  const changeStatus = useCallback(async (slug: string, published: boolean) => {
+    const current = contentRef.current.artists.find((artist) => artist.slug === slug)
+    if (!current) return { error: 'Kapper niet gevonden.' }
+    if (published && artistHasLocalMediaRefs(current)) {
+      setArtistSyncError(LOCAL_MEDIA_PUBLISH_WARNING)
+      return { error: LOCAL_MEDIA_PUBLISH_WARNING }
+    }
+    edit((previous) => ({ ...previous, artists: previous.artists.map((artist) => artist.slug === slug
+      ? applyArtistStatus(artist, published ? 'published' : 'draft', { touchPublishedAt: published }) : artist) }))
+    return saveArtist(slug)
+  }, [edit, saveArtist])
+
+  const value = useMemo<CmsContextValue>(() => ({
+    content, savedAt, contentSyncStatus, siteSyncError, artistSyncError, dirtyArtistIds, artistSaving,
+    setSite: (updater) => edit((previous) => ({ ...previous, site: updater(previous.site) })),
+    setTeam: (updater) => edit((previous) => ({ ...previous, team: updater(previous.team) })),
+    setArtists: (updater) => edit((previous) => {
+      const artists = updater(previous.artists)
+      setDirtyArtistIds(new Set(artists.map((artist) => artist.id)))
+      return { ...previous, artists }
+    }),
+    updateArtist: (slug, updater) => edit((previous) => {
+      const artists = previous.artists.map((artist) => artist.slug === slug ? updater(artist) : artist)
+      setDirtyArtistIds((ids) => new Set([...ids, ...artists.filter((artist) => artist.slug === slug).map((artist) => artist.id)]))
+      return { ...previous, artists }
+    }),
+    addArtist: (name) => {
+      const created = createBlankArtist(name, contentRef.current.artists.map((artist) => artist.slug))
+      edit((previous) => ({ ...previous, artists: [...previous.artists, created] }))
+      return created
+    },
+    removeArtist: (slug) => edit((previous) => ({ ...previous, artists: previous.artists.filter((artist) => artist.slug !== slug) })),
+    saveArtist,
+    publishArtist: (slug) => changeStatus(slug, true),
+    unpublishArtist: (slug) => changeStatus(slug, false),
+    resetContent: () => edit(() => createDefaultContent()),
+    getArtistBySlug: (slug) => content.artists.find((artist) => artist.slug === slug),
+    isArtistDirty: (id) => dirtyArtistIds.has(id),
+  }), [content, savedAt, contentSyncStatus, siteSyncError, artistSyncError, dirtyArtistIds, artistSaving, edit, saveArtist, changeStatus])
+
+  return <CmsContext.Provider value={value}>{hydrated ? <>{backup ? <div data-cms className="border-b border-amber-200 bg-amber-50 p-3 text-sm text-neutral-900">Een lokale conceptkopie is bewaard. <button type="button" className="underline" onClick={() => { try { downloadCmsBackup(JSON.parse(backup)) } catch { /* invalid backup remains untouched */ } }}>Conceptkopie downloaden</button></div> : null}{children}</> : <div data-cms className="flex min-h-svh flex-col items-center justify-center gap-4 bg-neutral-50 p-6 text-neutral-900"><p role={siteSyncError ? 'alert' : 'status'}>{siteSyncError || 'CMS-inhoud veilig laden…'}</p>{siteSyncError ? <button type="button" onClick={() => window.location.reload()} className="rounded-lg border px-4 py-3">Opnieuw laden</button> : null}</div>}</CmsContext.Provider>
 }
 
-export { useCms, CmsContext } from '@/cms/CmsContext'
+export { useCms } from '@/cms/CmsContext'

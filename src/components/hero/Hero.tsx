@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { BookButton } from '@/components/booking/BookButton'
+import { OptimizedImg } from '@/components/ui/OptimizedImg'
 import { Reveal } from '@/components/motion/Reveal'
 import { useCms } from '@/cms/CmsContext'
 import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
@@ -74,12 +75,19 @@ export function Hero() {
               <source media={DESKTOP_MEDIA_QUERY} srcSet={HERO_POSTER_WEBP} type="image/webp" />
               <img
                 src={posterSrc}
+                loading="eager"
+                fetchPriority="high"
+                decoding="sync"
                 alt=""
                 className="h-full w-full object-cover object-[center_28%]"
               />
             </picture>
           ) : (
-            <img
+            <OptimizedImg
+              priority
+              size="full"
+              srcSetSizes={['card', 'hero', 'full']}
+              sizes="100vw"
               src={posterSrc}
               alt=""
               className={`absolute inset-0 h-full w-full ${
@@ -112,16 +120,12 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto flex min-h-svh max-w-[1600px] flex-col justify-end px-8 pb-10 pt-28 sm:px-12 sm:pb-14 lg:px-16">
         <div className="max-w-4xl">
-          <p className="type-label text-white/70">Tzjill Barber & Lounge · Leeuwarden</p>
+          <p className="type-label text-white/70">{content.site.fullName || 'Tzjill Barber & Lounge'} · Leeuwarden</p>
           <Reveal trigger="load">
-            <h1 className="type-display mt-5 text-white">
-              A man’s
-              <br />
-              world.
-            </h1>
+            <h1 className="type-display mt-5 whitespace-pre-line text-white">{content.site.homeHeroTitle || "A man’s\nworld."}</h1>
           </Reveal>
           <p className="type-lead mt-6 max-w-[16rem] text-white/70">
-            Trendy haircuts. Hot towel straight razor. Elke coupe op maat.
+            {content.site.homeHeroSubtitle || 'Trendy haircuts. Hot towel straight razor. Elke coupe op maat.'}
           </p>
           <div className="pointer-events-auto mt-8">
             <BookButton surface="dark">Afspraak</BookButton>

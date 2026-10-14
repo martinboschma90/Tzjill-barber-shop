@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/brand/tzjill-logo-black.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="apple-touch-icon" href="/brand/tzjill-logo-black.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
@@ -33,18 +34,7 @@
     </style>
     <link rel="preload" as="image" href="/brand/tzjill-logo-white.png" type="image/png" fetchpriority="high" />
     <title>Tzjill Barber Shop</title>
-    <script>
-      (function () {
-        document.documentElement.classList.add('js')
-        try {
-          var t = localStorage.getItem('tzjill-theme-v2')
-          if (t !== 'light' && t !== 'dark') t = 'dark'
-          document.documentElement.dataset.theme = t
-        } catch (e) {
-          document.documentElement.dataset.theme = 'dark'
-        }
-      })()
-    </script>
+    <script src="/site-init.js"></script>
     <!--public-boot-->
   </head>
   <body>

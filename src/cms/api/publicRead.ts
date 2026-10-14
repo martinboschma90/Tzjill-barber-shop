@@ -1,3 +1,4 @@
+import { fetchPublicSnapshot } from '@/cms/api/publicSnapshot'
 import { artistFromRow, artistFromRosterRow, type ArtistRosterRow } from '@/cms/mappers/artist'
 import { teamMemberFromRow } from '@/cms/mappers/team'
 import { normalizeSiteContent } from '@/cms/mappers/site'
@@ -6,7 +7,7 @@ import {
   PUBLIC_SITE_STORAGE_KEY,
   PUBLIC_TEAM_STORAGE_KEY,
 } from '@/cms/storageKeys'
-import { fetchPublicCmsArtistBySlug } from '@/cms/api/publicCmsRead'
+import { fetchPublicCmsArtistBySlug, fetchSnapshotArtists } from '@/cms/api/publicCmsRead'
 import { slimPublicArtistDetail } from '@/cms/api/publicArtistsFormat'
 import { restGet, publicStorageUrl } from '@/lib/publicRest'
 import { isSupabaseConfigured } from '@/lib/supabaseEnv'
@@ -26,6 +27,9 @@ export const ROSTER_COLUMNS =
 export async function fetchPublicRoster(): Promise<ArtistsReadResult> {
   if (!isSupabaseConfigured) return { artists: [], fromSupabase: false }
 
+  const snapshot = await fetchSnapshotArtists()
+  if (snapshot !== null) return { artists: snapshot, fromSupabase: true }
+
   const data = await restGet<ArtistRosterRow[]>(
     `artists?select=${ROSTER_COLUMNS}&order=name.asc`,
   )
@@ -44,6 +48,8 @@ export async function fetchPublicArtistBySlug(
   slug: string,
 ): Promise<Artist | null> {
   if (!isSupabaseConfigured || !slug) return null
+  const snapshot = await fetchSnapshotArtists()
+  if (snapshot !== null) return snapshot.find((artist) => artist.slug === slug) ?? null
   const fromStore = await fetchPublicCmsArtistBySlug(slug)
   if (fromStore) return slimPublicArtistDetail(fromStore)
   const data = await restGet<ArtistRow[]>(
@@ -55,6 +61,7 @@ export async function fetchPublicArtistBySlug(
 }
 
 async function fetchCmsContentData(key: string): Promise<unknown | null> {
+  if (key === CMS_STORAGE_KEY) return fetchPublicSnapshot()
   const rows = await restGet<{ data: unknown }[]>(
     `cms_content?key=eq.${encodeURIComponent(key)}&select=data&limit=1`,
   )
@@ -69,18 +76,20 @@ function siteFromCmsBlob(data: unknown): SiteContent | null {
 }
 
 function teamFromUnknown(data: unknown): TeamMember[] | null {
-  if (!Array.isArray(data) || data.length === 0) return null
+  if (!Array.isArray(data)) return null
   const team = data.filter(
     (item): item is TeamMember =>
       Boolean(item) &&
       typeof item === 'object' &&
       typeof (item as TeamMember).name === 'string',
   )
-  return team.length ? team : null
+  return team
 }
 
 export async function fetchPublicSite(): Promise<SiteContent | null> {
   if (!isSupabaseConfigured) return null
+  const blobSite = siteFromCmsBlob(await fetchCmsContentData(CMS_STORAGE_KEY))
+  if (blobSite) return blobSite
   const direct = await fetchCmsContentData(PUBLIC_SITE_STORAGE_KEY)
   if (direct && typeof direct === 'object') return normalizeSiteContent(direct)
   const fromBlob = siteFromCmsBlob(await fetchCmsContentData(CMS_STORAGE_KEY))
@@ -95,6 +104,11 @@ export async function fetchPublicSite(): Promise<SiteContent | null> {
 
 export async function fetchPublicTeam(): Promise<TeamMember[] | null> {
   if (!isSupabaseConfigured) return null
+  const blobTeam = await fetchCmsContentData(CMS_STORAGE_KEY)
+  if (blobTeam && typeof blobTeam === 'object' && 'team' in blobTeam) {
+    const team = teamFromUnknown((blobTeam as { team?: unknown }).team)
+    if (team !== null) return team
+  }
   const direct = teamFromUnknown(await fetchCmsContentData(PUBLIC_TEAM_STORAGE_KEY))
   if (direct) return direct
   const blob = await fetchCmsContentData(CMS_STORAGE_KEY)
@@ -120,4 +134,14 @@ export async function fetchPublicMediaUrl(
   const path = data?.[0]?.storage_path
   if (!path) return null
   return publicStorageUrl(path)
+}
+
+export async function fetchPublicContent(): Promise<{ site: SiteContent; team: TeamMember[] } | null> {
+  const blob = await fetchCmsContentData(CMS_STORAGE_KEY)
+  const site = siteFromCmsBlob(blob)
+  if (site && blob && typeof blob === 'object' && 'team' in blob) {
+    return { site, team: teamFromUnknown((blob as { team?: unknown }).team) ?? [] }
+  }
+  const [legacySite, legacyTeam] = await Promise.all([fetchPublicSite(), fetchPublicTeam()])
+  return legacySite ? { site: legacySite, team: legacyTeam ?? [] } : null
 }

@@ -81,7 +81,7 @@ export function DateAgenda({ dates, value, onSelect }: DateAgendaProps) {
         </button>
         <div className="min-w-0 text-center">
           <p className="type-lead capitalize text-[#f6f3ee]">{monthTitle(activeMonth)}</p>
-          <p className="type-label mt-1 text-white/40">
+          <p className="type-label mt-1 text-white/65">
             {openThisMonth} {openThisMonth === 1 ? 'dag vrij' : 'dagen vrij'}
           </p>
         </div>
@@ -98,7 +98,7 @@ export function DateAgenda({ dates, value, onSelect }: DateAgendaProps) {
 
       <div className="mt-5 grid grid-cols-7 gap-1" role="grid" aria-label="Agenda">
         {WEEKDAYS.map((label) => (
-          <span key={label} className="type-label pb-1 text-center text-white/35">
+          <span key={label} className="type-label pb-1 text-center text-white/65">
             {label}
           </span>
         ))}

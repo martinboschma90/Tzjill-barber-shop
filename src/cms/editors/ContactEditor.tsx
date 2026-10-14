@@ -44,6 +44,10 @@ export function ContactEditor() {
         placeholder="https://www.instagram.com/…"
         onChange={(instagram) => setSite((s) => ({ ...s, instagram }))}
       />
+      <div className="space-y-3">
+        <h3 className="text-sm font-semibold">Openingstijden</h3>
+        {site.openingHours.map((row, index) => <TextInput key={row.day} label={row.day} value={row.time} placeholder="09:00 – 18:00 of Gesloten" onChange={(time) => setSite((previous) => ({ ...previous, openingHours: previous.openingHours.map((hours, i) => i === index ? { ...hours, time } : hours) }))} />)}
+      </div>
     </EditorSection>
   )
 }

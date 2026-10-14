@@ -1,3 +1,4 @@
+import { useCms } from '@/cms/CmsContext'
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 import { buttonClass, type ButtonSurface, type ButtonVariant } from '@/components/ui/buttonStyles'
 import { openSalonhub } from '@/lib/salonhub'
@@ -21,6 +22,8 @@ export function BookButton({
   onClick,
   ...props
 }: BookButtonProps) {
+  const { content } = useCms()
+  if (openWidget && content.site.bookingVisible === false) return null
   return (
     <button
       type="button"

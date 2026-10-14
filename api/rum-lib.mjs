@@ -1,4 +1,4 @@
-import { rateLimit } from './http-security.mjs'
+import { rateLimit, isAllowedRequest } from './http-security.mjs'
 
 const KINDS = new Set(['vital', 'error', 'presence', 'notfound'])
 const VITAL_NAMES = new Set(['LCP', 'INP', 'CLS', 'TTFB', 'FCP'])
@@ -60,7 +60,8 @@ export async function handleRum(req, res) {
     return
   }
 
-  if (!rateLimit(req, { limit: 40, windowMs: 10 * 60 * 1000 })) {
+  if (!isAllowedRequest(req)) { res.statusCode = 403; res.end(); return }
+  if (!await rateLimit(req, { limit: 40, windowMs: 10 * 60 * 1000 })) {
     res.statusCode = 429
     res.setHeader('Content-Type', 'application/json')
     res.end(JSON.stringify({ ok: false }))

@@ -1,27 +1,32 @@
-import { useState, type FormEvent } from 'react'
+import { useCms } from '@/cms/CmsContext'
+import { useRef, useState, type FormEvent } from 'react'
 import { buttonClass } from '@/components/ui/buttonStyles'
 import { Check, Spinner } from '@/components/ui/StatusIcon'
-import { site } from '@/data/site'
+import { submitMessage } from '@/lib/messages'
 
-const STUDIO_EMAIL = site.contact[0]?.email ?? 'info@tzjill.nl'
+
 
 export function Newsletter() {
+  const { content } = useCms()
   const [email, setEmail] = useState('')
+  const sendingRef = useRef(false)
+  const requestId = useRef(crypto.randomUUID())
+  const [error, setError] = useState('')
+  const [consent, setConsent] = useState(false)
   const [phase, setPhase] = useState<'idle' | 'sending' | 'done'>('idle')
 
-  const onSubmit = (event: FormEvent) => {
+  const onSubmit = async (event: FormEvent) => {
     event.preventDefault()
-    if (phase !== 'idle') return
-    const address = email.trim()
+    if (sendingRef.current || phase === 'done') return
+    sendingRef.current = true
     setPhase('sending')
-    window.setTimeout(() => {
-      const href = `mailto:${STUDIO_EMAIL}?subject=${encodeURIComponent(
-        'Nieuwsbrief Tzjill',
-      )}&body=${encodeURIComponent(`Aanmelden nieuwsbrief\nE-mail: ${address}`)}`
-      window.location.href = href
-      setPhase('done')
-    }, 420)
+    setError('')
+    try { await submitMessage({ kind: 'newsletter', email, consent, requestId: requestId.current }); setPhase('done') }
+    catch (failure) { setError(failure instanceof Error ? failure.message : 'Aanmelden mislukt.'); setPhase('idle') }
+    finally { sendingRef.current = false }
   }
+
+  if (content.site.newsletterVisible === false) return null
 
   return (
     <section className="text-white">
@@ -38,7 +43,7 @@ export function Newsletter() {
 
           <form
               onSubmit={onSubmit}
-              className="mx-auto mt-8 flex w-full max-w-xl flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center"
+              className="mx-auto mt-8 grid w-full max-w-xl grid-cols-1 items-center gap-3 sm:grid-cols-[1fr_auto]"
             >
               <label className="sr-only" htmlFor="newsletter-email">
                 E-mail
@@ -52,8 +57,9 @@ export function Newsletter() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Je e-mail"
-                className="type-ui min-h-[3rem] flex-1 rounded-full border border-white/75 bg-white/5 px-6 py-3 text-center text-white outline-none placeholder:text-white/40 backdrop-blur-[2px] transition-colors focus:border-white sm:text-left"
+                className="type-ui min-h-[3rem] flex-1 rounded-full border border-white/75 bg-white/5 px-6 py-3 text-center text-white outline-none placeholder:text-white/65 backdrop-blur-[2px] transition-colors focus:border-white sm:text-left"
               />
+              <label className="type-body order-3 flex flex-wrap items-center gap-2 text-left text-white/75 sm:col-span-2"><input type="checkbox" required checked={consent} onChange={(event) => setConsent(event.target.checked)} />Ik wil de nieuwsbrief ontvangen. <a href="/privacy" className="underline">Privacy</a></label>
               <button
                 type="submit"
                 disabled={phase !== 'idle'}
@@ -68,9 +74,10 @@ export function Newsletter() {
                 ) : null}
               </button>
             </form>
+            {error ? <p role="alert" className="type-body mt-4 text-[#e8c4a8]">{error}</p> : null}
             {phase === 'done' ? (
               <p className="type-lead mx-auto mt-4 max-w-md text-white/70" role="status">
-                Je mailprogramma opent met je aanmelding. Verstuur het daar — we zetten je op de lijst.
+                Je aanmelding is verstuurd.
               </p>
             ) : null}
         </div>

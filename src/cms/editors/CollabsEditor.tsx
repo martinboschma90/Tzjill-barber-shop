@@ -15,7 +15,7 @@ export function CollabsEditor() {
     <div className="space-y-2">
       {collabs.map((item, index) => (
         <AdminListCard
-          key={`${item.name}-${index}`}
+          key={index}
           isOpen={openIndex === index}
           onToggle={() => setOpenIndex((current) => (current === index ? null : index))}
           thumbnail={
@@ -26,6 +26,7 @@ export function CollabsEditor() {
           title={item.name || `Collab ${index + 1}`}
           meta={item.year || 'collab'}
           actions={
+            <div className="flex gap-1">
             <button
               type="button"
               className={listBtnClass}
@@ -38,6 +39,8 @@ export function CollabsEditor() {
             >
               Verwijder
             </button>
+            {[-1, 1].map((offset) => <button key={offset} type="button" className={listBtnClass} aria-label={offset < 0 ? 'Omhoog' : 'Omlaag'} disabled={index + offset < 0 || index + offset >= collabs.length} onClick={() => setSite((previous) => { const next = [...previous.collabs]; [next[index], next[index + offset]] = [next[index + offset], next[index]]; return { ...previous, collabs: next } })}>{offset < 0 ? '↑' : '↓'}</button>)}
+            </div>
           }
         >
           <TextInput

@@ -18,7 +18,7 @@ export function PageIntro({
   if (introPlacement === 'below') {
     return (
       <header>
-        <p className="type-label text-white/40">{kicker}</p>
+        <p className="type-label text-white/65">{kicker}</p>
         <Reveal trigger="load" className="mt-4">
           <h1 className="type-headline text-white">{title}</h1>
         </Reveal>
@@ -30,7 +30,7 @@ export function PageIntro({
   return (
     <header className="grid items-end gap-8 lg:grid-cols-12">
       <div className="lg:col-span-8">
-        <p className="type-label text-white/40">{kicker}</p>
+        <p className="type-label text-white/65">{kicker}</p>
         <Reveal trigger="load" className="mt-4">
           <h1 className="type-headline text-white">{title}</h1>
         </Reveal>
