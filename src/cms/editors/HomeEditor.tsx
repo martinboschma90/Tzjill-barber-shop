@@ -32,7 +32,7 @@ export function HomeEditor() {
               <div className="space-y-7">
                 <SectionGroup
                   title="Hero-tekst"
-                  description="Shopnaam, korte naam en de tagline over de foto of video."
+                  description="Shopnaam, titel en intro over de foto of video."
                 >
                   <TextInput
                     label="Shopnaam"
@@ -42,21 +42,17 @@ export function HomeEditor() {
                       setSite((current) => ({ ...current, fullName }))
                     }
                   />
-                  <TextInput
-                    label="Korte naam"
-                    value={site.name}
-                    placeholder="Tzjill"
-                    onChange={(name) =>
-                      setSite((current) => ({ ...current, name }))
-                    }
+                  <TextArea
+                    label="Hero-titel"
+                    value={site.homeHeroTitle}
+                    rows={2}
+                    onChange={(homeHeroTitle) => setSite((current) => ({ ...current, homeHeroTitle }))}
                   />
                   <TextArea
-                    label="Tagline"
-                    value={site.tagline}
+                    label="Hero-intro"
+                    value={site.homeHeroSubtitle}
                     rows={2}
-                    onChange={(tagline) =>
-                      setSite((current) => ({ ...current, tagline }))
-                    }
+                    onChange={(homeHeroSubtitle) => setSite((current) => ({ ...current, homeHeroSubtitle }))}
                   />
                 </SectionGroup>
               </div>

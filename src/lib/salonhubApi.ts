@@ -24,6 +24,7 @@ async function postSalonhub<T>(body: Record<string, unknown>): Promise<T> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
     body: JSON.stringify(body),
+    signal: AbortSignal.timeout(25000),
   })
   const data = (await res.json().catch(() => null)) as (T & ApiError) | null
   if (!res.ok) {

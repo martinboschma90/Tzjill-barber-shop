@@ -10,6 +10,7 @@ import { RouteFallback } from '@/components/ui/RouteFallback'
 const CmsLoginPage = lazy(() =>
   import('@/pages/CmsLoginPage').then((m) => ({ default: m.CmsLoginPage })),
 )
+const CmsResetPasswordPage = lazy(() => import('@/pages/CmsResetPasswordPage').then((m) => ({ default: m.CmsResetPasswordPage })))
 const CmsShell = lazy(() =>
   import('@/cms/CmsShell').then((m) => ({ default: m.CmsShell })),
 )
@@ -39,6 +40,7 @@ export default function CmsApp() {
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="login" element={<CmsLoginPage />} />
+            <Route path="reset-password" element={<CmsResetPasswordPage />} />
             <Route
               path="*"
               element={

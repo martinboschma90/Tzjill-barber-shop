@@ -1,6 +1,7 @@
 import { AppShell } from '@/components/layout/AppShell'
 import { Hero } from '@/components/hero/Hero'
 import { Welcome } from '@/components/home/Welcome'
+import { HomeCollabs } from '@/components/home/HomeCollabs'
 import { Treatments } from '@/components/home/Treatments'
 import { HomePrices } from '@/components/home/HomePrices'
 import { InstagramFeed } from '@/components/home/InstagramFeed'
@@ -46,6 +47,7 @@ export function HomePage() {
       <Welcome />
       <Treatments />
       <HomePrices />
+      <HomeCollabs />
       <InstagramFeed />
       <Testimonials />
       <HomeFaq />

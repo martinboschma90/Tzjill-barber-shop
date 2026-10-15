@@ -1,3 +1,4 @@
+import { requestPasswordReset } from '@/lib/auth'
 import { useState, type FormEvent } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/cms/auth/AuthProvider'
@@ -22,6 +23,8 @@ export function CmsLoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [resetMode, setResetMode] = useState(false)
+  const [notice, setNotice] = useState('')
 
   if (isCmsLocalBypassAllowed()) {
     return <Navigate to="/cms/dashboard" replace />
@@ -39,6 +42,13 @@ export function CmsLoginPage() {
     e.preventDefault()
     setError(null)
     setLoading(true)
+    if (resetMode) {
+      const result = await requestPasswordReset(email)
+      setLoading(false)
+      if (result.error) setError('Link aanvragen lukt nu niet. Probeer later opnieuw.')
+      else setNotice('Als er een account bestaat, ontvang je een herstellink per e-mail.')
+      return
+    }
     const result = await signIn(email, password)
     setLoading(false)
     if (result.error) {
@@ -100,8 +110,8 @@ export function CmsLoginPage() {
                 disabled={loading}
               />
             </label>
-            <label className="block">
-              <span className="mb-1 block text-xs font-medium text-white/50">Wachtwoord</span>
+            {!resetMode ? <label className="block">
+              <span className="mb-1 block text-xs font-medium text-white/70">Wachtwoord</span>
               <input
                 type="password"
                 autoComplete="current-password"
@@ -111,7 +121,8 @@ export function CmsLoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
               />
-            </label>
+            </label> : null}
+            {notice ? <p role="status" className="text-sm text-white/80">{notice}</p> : null}
             {error ? (
               <p className="text-xs text-red-400" role="alert">
                 {error}
@@ -119,12 +130,13 @@ export function CmsLoginPage() {
             ) : null}
             <button
               type="submit"
-              disabled={loading || !email.trim() || !password}
+              disabled={loading || !email.trim() || (!resetMode && !password)}
               className="mt-1 w-full rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-neutral-950 hover:bg-white/90 disabled:opacity-40"
             >
-              {loading ? 'Bezig…' : 'Inloggen'}
+              {loading ? 'Bezig…' : resetMode ? 'Herstellink aanvragen' : 'Inloggen'}
             </button>
           </form>
+          <button type="button" disabled={loading} onClick={() => { setResetMode((value) => !value); setError(null); setNotice('') }} className="mt-4 min-h-11 text-sm text-white/80 underline">{resetMode ? 'Terug naar inloggen' : 'Wachtwoord vergeten?'}</button>
         </div>
 
         <a href="/" className="mt-6 block text-center text-xs text-white/35 hover:text-white/70">

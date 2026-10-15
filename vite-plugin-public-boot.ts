@@ -58,8 +58,9 @@ export function publicBootPlugin(env: Record<string, string>): Plugin {
     }
     function fetchArtists() {
       if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return Promise.resolve(readCache());
-      return load(STORAGE_KEY).then(function (current) {
-        return current || readCache();
+      return fetch('/api/content').then(function (res) { return res.ok ? res.json() : null; }).then(function (blob) {
+        if (blob && Array.isArray(blob.artists)) return blob.artists.filter(function (artist) { return artist.visible !== false && (artist.status || 'published') === 'published'; });
+        return load(STORAGE_KEY).then(function (current) { return current || readCache(); });
       }).catch(function () { return readCache(); });
     }
     var cached = readCache();
@@ -73,9 +74,11 @@ export function publicBootPlugin(env: Record<string, string>): Plugin {
 
   return {
     name: 'public-boot',
+    generateBundle() { this.emitFile({ type: 'asset', fileName: 'public-boot.js', source }) },
+    configureServer(server) { server.middlewares.use('/public-boot.js', (_req, res) => { res.setHeader('Content-Type', 'application/javascript'); res.end(source) }) },
     transformIndexHtml(html) {
       return html
-        .replace('<!--public-boot-->', `${preconnect}<script>${source}</script>`)
+        .replace('<!--public-boot-->', `${preconnect}<script src="/public-boot.js"></script>`)
     },
   }
 }

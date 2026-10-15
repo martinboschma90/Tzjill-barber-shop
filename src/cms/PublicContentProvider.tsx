@@ -5,7 +5,7 @@ import {
   type CmsContent,
   type SiteContent,
 } from '@/cms/content'
-import { fetchPublicSite, fetchPublicTeam } from '@/cms/api/publicRead'
+import { fetchPublicContent } from '@/cms/api/publicRead'
 import {
   CMS_STORAGE_KEY,
   PUBLIC_SITE_STORAGE_KEY,
@@ -67,33 +67,25 @@ export function PublicContentProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isSupabaseConfigured) return
     let cancelled = false
-    const timer = window.setTimeout(() => {
-      void fetchPublicSite()
-        .then((site) => {
-          if (cancelled) return
-          if (site) storageSet(PUBLIC_SITE_STORAGE_KEY, JSON.stringify(site))
-          setContent((prev) => ({
-            ...prev,
-            site: site ?? prev.site,
-          }))
-        })
-        .catch((error) => {
-          console.warn('[public] site hydrate failed', error)
-        })
-      void fetchPublicTeam()
-        .then((team) => {
-          if (cancelled || !team || team.length === 0) return
-          const nextTeam = publicTeam(team)
-          storageSet(PUBLIC_TEAM_STORAGE_KEY, JSON.stringify(nextTeam))
-          setContent((prev) => ({ ...prev, team: nextTeam }))
-        })
-        .catch((error) => {
-          console.warn('[public] team hydrate failed', error)
-        })
-    }, 200)
+    const refresh = () => {
+      if (document.visibilityState === 'hidden') return
+      void fetchPublicContent().then((remote) => {
+        if (cancelled || !remote) return
+        const team = publicTeam(remote.team)
+        storageSet(PUBLIC_SITE_STORAGE_KEY, JSON.stringify(remote.site))
+        storageSet(PUBLIC_TEAM_STORAGE_KEY, JSON.stringify(team))
+        setContent((previous) => ({ ...previous, site: remote.site, team }))
+      }).catch(() => undefined)
+    }
+    refresh()
+    const timer = window.setInterval(refresh, 30_000)
+    window.addEventListener('focus', refresh)
+    document.addEventListener('visibilitychange', refresh)
     return () => {
       cancelled = true
-      window.clearTimeout(timer)
+      window.clearInterval(timer)
+      window.removeEventListener('focus', refresh)
+      document.removeEventListener('visibilitychange', refresh)
     }
   }, [])
 

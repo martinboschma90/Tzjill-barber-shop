@@ -65,6 +65,7 @@ export function shouldNoIndexPublicSite(
   origin: string,
   searchIndexing?: boolean,
 ): boolean {
+  if (typeof window !== 'undefined' && isPreviewHost(window.location.origin)) return true
   if (searchIndexing === false) return true
   if (isPreviewHost(origin)) return true
   if (isNotypeHost(origin)) return true

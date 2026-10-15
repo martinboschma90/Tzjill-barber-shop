@@ -52,11 +52,13 @@ const CmsFooterPanel = lazy(() => import('@/cms/panels/footer'))
 const CmsArtistsIndexPanel = lazy(() => import('@/cms/panels/artistsIndex'))
 const CmsArtistDetailPanel = lazy(() => import('@/cms/panels/artistDetail'))
 const CmsMediaPanel = lazy(() => import('@/cms/panels/media'))
+const CmsFormsPanel = lazy(() => import('@/cms/panels/forms'))
 const CmsSettingsPanel = lazy(() => import('@/cms/panels/settings'))
 
 const NAV = [
   { to: '/cms/dashboard', label: 'Dashboard', icon: LayoutDashboard, match: 'dashboard' as const },
   { to: '/cms/home', label: "Pagina's", icon: FileText, match: 'pages' as const },
+  { to: '/cms/forms', label: 'Formulieren', icon: FileText, match: 'pages' as const },
   { to: '/cms/faq', label: 'FAQ', icon: HelpCircle, match: 'faq' as const },
   { to: '/cms/media', label: 'Media', icon: FolderOpen, match: 'media' as const },
   { to: '/cms/settings', label: 'Instellingen', icon: Settings, match: 'settings' as const },
@@ -142,6 +144,7 @@ function useCmsPanels(): {
   if (pathname.startsWith('/cms/team') || pathname.startsWith('/cms/roster')) {
     return { mode: 'pages', title: 'Team', subtitle: '/team', Page: CmsTeamPanel }
   }
+  if (pathname.startsWith('/cms/forms')) return { mode: 'pages', title: 'Formulieren', subtitle: 'Contact en aanmeldingen', Page: CmsFormsPanel }
   if (pathname.startsWith('/cms/contact')) {
     return { mode: 'pages', title: 'Contact', subtitle: '/contact', Page: CmsContactPanel }
   }

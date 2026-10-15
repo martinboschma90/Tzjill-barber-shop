@@ -1,7 +1,9 @@
+import { useCms } from '@/cms/CmsContext'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import { BookButton } from '@/components/booking/BookButton'
 import { Logo } from '@/components/ui/Logo'
-import { publicNav } from '@/data/nav'
+import { desktopNavLeft, desktopNavRight } from '@/data/nav'
 
 type NavbarProps = {
   menuOpen: boolean
@@ -25,10 +27,12 @@ function NavItem({
   label: string
   pathname: string
 }) {
+  const { content } = useCms()
+  if (to === '/team' && content.site.teamVisible === false) return null
   return (
     <Link
       to={to}
-      className={`wf-link type-ui ${
+      className={`wf-link type-ui inline-flex min-h-11 items-center ${
         navActive(pathname, to) ? 'opacity-100' : 'opacity-55 hover:opacity-100'
       }`}
     >
@@ -64,29 +68,39 @@ export function Navbar({
       }`}
     >
       <div
-        className={`relative mx-auto flex h-[5.25rem] max-w-[1600px] items-center justify-center px-5 sm:h-[5.5rem] sm:px-8 ${ink}`}
+        className={`relative mx-auto grid h-[5.25rem] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:h-[5.5rem] sm:px-8 ${ink}`}
       >
-        <div className="pointer-events-auto flex items-center gap-8 lg:gap-12 xl:gap-16">
-          <nav className="hidden items-center gap-7 lg:flex xl:gap-10" aria-label="Primary left">
-            {publicNav.slice(0, 4).map((link) => (
+        <nav
+          className="pointer-events-auto hidden items-center justify-end gap-5 pe-1 lg:flex xl:gap-8"
+          aria-label="Primary left"
+        >
+          {desktopNavLeft.map((link) => (
+            <NavItem key={link.to} to={link.to} label={link.label} pathname={pathname} />
+          ))}
+        </nav>
+
+        <Link
+          to="/"
+          aria-label="Tzjill Barber & Lounge — home"
+          className="pointer-events-auto shrink-0 justify-self-center px-5 xl:px-8"
+        >
+          <Logo tone="white" height={56} fetchPriority="high" />
+        </Link>
+
+        <div className="pointer-events-auto hidden items-center justify-between gap-5 ps-1 lg:flex xl:gap-8">
+          <nav className="flex items-center gap-5 xl:gap-8" aria-label="Primary right">
+            {desktopNavRight.map((link) => (
               <NavItem key={link.to} to={link.to} label={link.label} pathname={pathname} />
             ))}
           </nav>
-
-          <Link to="/" aria-label="Tzjill Barber & Lounge — home">
-            <Logo tone="white" height={64} fetchPriority="high" />
-          </Link>
-
-          <nav className="hidden items-center gap-7 lg:flex xl:gap-10" aria-label="Primary right">
-            {publicNav.slice(4).map((link) => (
-              <NavItem key={link.to} to={link.to} label={link.label} pathname={pathname} />
-            ))}
-          </nav>
+          <BookButton surface="dark" className="shrink-0 px-5 py-2.5">
+            Afspraak
+          </BookButton>
         </div>
 
         <button
           type="button"
-          className="pointer-events-auto absolute right-5 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center lg:hidden sm:right-8"
+          className="pointer-events-auto absolute right-5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center lg:hidden sm:right-8"
           onPointerEnter={onMenuIntent}
           onTouchStart={onMenuIntent}
           onClick={onMenuToggle}

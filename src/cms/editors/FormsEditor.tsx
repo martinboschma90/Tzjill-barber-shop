@@ -1,0 +1,7 @@
+import { useCms } from '@/cms/CmsProvider'
+import { EditorSection } from '@/cms/fields'
+export function FormsEditor() {
+  const { content, setSite } = useCms()
+  const forms = [{ key: 'contactFormVisible', title: 'Contactformulier', destination: '/contact' }, { key: 'newsletterVisible', title: 'Nieuwsbrief', destination: '/' }, { key: 'promoSignupVisible', title: 'Jubileumaanmelding', destination: '/' }] as const
+  return <EditorSection title="Formulieren" description="Zichtbaarheid en bestemming. Opslag gaat automatisch." defaultOpen><p className="text-sm text-neutral-600">Contact en nieuwsbrief worden afgeleverd op het primaire e-mailadres: {content.site.contact[0]?.email || 'info@tzjill.nl'}. Jubileumaanmeldingen gebruiken de ingestelde actie-inbox.</p>{forms.map((form) => <div key={form.key} className="flex items-center justify-between gap-4 rounded-lg border border-neutral-200 p-4"><div><h3 className="text-sm font-semibold">{form.title}</h3><a className="text-sm underline" href={form.destination} target="_blank" rel="noreferrer">Bekijk op de site</a></div><label className="flex gap-2 text-sm"><input type="checkbox" checked={content.site[form.key] !== false} onChange={(event) => setSite((site) => ({ ...site, [form.key]: event.target.checked }))} />Zichtbaar</label></div>)}<p className="text-sm text-neutral-600">Contact bevat naam, e-mail, telefoon en bericht. Nieuwsbrief vraagt expliciete toestemming. Mislukte verzendingen laten de ingevulde gegevens staan.</p></EditorSection>
+}

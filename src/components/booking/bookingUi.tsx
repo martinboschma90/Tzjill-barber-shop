@@ -242,7 +242,7 @@ export function BookingDatePicker({
             {WEEKDAYS.map((day) => (
               <span
                 key={day}
-                className="py-1 text-center text-[0.58rem] tracking-[0.08em] text-ink/35 uppercase"
+                className="py-1 text-center text-[0.58rem] tracking-[0.08em] text-ink/65 uppercase"
               >
                 {day}
               </span>

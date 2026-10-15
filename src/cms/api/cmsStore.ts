@@ -1,14 +1,9 @@
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import { publicArtistsToSlugMap } from '@/cms/api/publicArtistsFormat'
 import {
   CMS_STORAGE_KEY,
-  PUBLIC_ARTISTS_STORAGE_KEY,
-  PUBLIC_SITE_STORAGE_KEY,
-  PUBLIC_TEAM_STORAGE_KEY,
 } from '@/cms/storageKeys'
 import type { CmsContent } from '@/cms/content'
 import { normalizeSiteContent } from '@/cms/mappers/site'
-import { visibleArtists } from '@/cms/artistVisibility'
 import { withArtDirection } from '@/cms/imageFocus'
 import { coerceArtist } from '@/cms/mappers/artist'
 import type { Json } from '@/lib/database.types'
@@ -51,15 +46,17 @@ function parseArtist(data: unknown, fallbackSlug: string): Artist | null {
 
 export async function fetchCmsContentRow(
   key: string,
-): Promise<{ data: unknown; updatedAt: number } | null> {
+): Promise<{ data: unknown; updatedAt: number; revision: string } | null> {
   if (!isSupabaseConfigured || !supabase) return null
   const { data, error } = await supabase
     .from('cms_content')
     .select('key,data,updated_at')
     .eq('key', key)
     .maybeSingle()
-  if (error || !data) return null
+  if (error) throw new Error("CMS ophalen mislukt. Er is niets teruggeschreven.")
+  if (!data) return null
   return {
+    revision: data.updated_at,
     data: data.data,
     updatedAt: new Date(data.updated_at).getTime(),
   }
@@ -87,12 +84,13 @@ export async function upsertCmsContentRow(
 export async function fetchCmsContentBlob(): Promise<{
   content: CmsContent
   updatedAt: number
+  revision: string
 } | null> {
   const row = await fetchCmsContentRow(CMS_STORAGE_KEY)
   if (!row) return null
   const content = parseCmsBlob(row.data)
-  if (!content) return null
-  return { content, updatedAt: row.updatedAt }
+  if (!content) throw new Error("De opgeslagen CMS-inhoud is ongeldig. Er is niets teruggeschreven.")
+  return { content, updatedAt: row.updatedAt, revision: row.revision }
 }
 
 export async function fetchCmsArtists(): Promise<Artist[]> {
@@ -166,30 +164,25 @@ export async function replaceCmsArtists(
   return { error: null }
 }
 
-/** Write CMS blob + artist rows + public roster snapshot. */
+/** Publish the complete document as one atomic row. Exact server revision prevents lost updates. */
 export async function pushCmsSnapshot(
   content: CmsContent,
-): Promise<{ error: string | null; updatedAt: number | null }> {
-  const blob = await upsertCmsContentRow(CMS_STORAGE_KEY, content)
-  if (blob.error) return blob
-  const artistsResult = await replaceCmsArtists(content.artists)
-  if (artistsResult.error) {
-    return { error: artistsResult.error, updatedAt: blob.updatedAt }
+  expectedRevision: string | null,
+): Promise<{ error: string | null; updatedAt: number | null; revision: string | null }> {
+  if (!supabase) return { error: 'Supabase is not configured', updatedAt: null, revision: expectedRevision }
+  const payload = { key: CMS_STORAGE_KEY, data: asJson(content) }
+  const query = expectedRevision
+    ? supabase.from('cms_content').update({ data: payload.data }).eq('key', CMS_STORAGE_KEY).eq('updated_at', expectedRevision)
+    : supabase.from('cms_content').insert(payload)
+  const { data, error } = await query.select('updated_at').maybeSingle()
+  if (error || !data) {
+    return {
+      error: !data && !error || error?.code === '23505'
+        ? 'De inhoud is intussen elders gewijzigd. Je wijzigingen blijven lokaal bewaard. Herlaad en vergelijk vóór je opnieuw opslaat.'
+        : 'Opslaan mislukt. Je wijzigingen blijven lokaal bewaard. Herlaad om opnieuw te verbinden.',
+      updatedAt: null,
+      revision: expectedRevision,
+    }
   }
-  const publicRoster = await upsertCmsContentRow(
-    PUBLIC_ARTISTS_STORAGE_KEY,
-    publicArtistsToSlugMap(visibleArtists(content.artists)),
-  )
-  if (publicRoster.error) {
-    return { error: publicRoster.error, updatedAt: blob.updatedAt }
-  }
-  const publicSite = await upsertCmsContentRow(PUBLIC_SITE_STORAGE_KEY, content.site)
-  if (publicSite.error) {
-    return { error: publicSite.error, updatedAt: blob.updatedAt }
-  }
-  const publicTeam = await upsertCmsContentRow(PUBLIC_TEAM_STORAGE_KEY, content.team)
-  if (publicTeam.error) {
-    return { error: publicTeam.error, updatedAt: blob.updatedAt }
-  }
-  return blob
+  return { error: null, updatedAt: Date.parse(data.updated_at), revision: data.updated_at }
 }

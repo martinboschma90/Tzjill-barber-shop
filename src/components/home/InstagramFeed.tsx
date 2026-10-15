@@ -1,3 +1,4 @@
+import { ResolvedImg } from '@/components/ui/ResolvedMedia'
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { feedFrameClass } from '@/data/feed'
@@ -54,7 +55,7 @@ export function InstagramFeed() {
     <section className="section-y overflow-hidden text-white">
       <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="type-label inline-flex items-center justify-center gap-2 text-white/45">
+          <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
             <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
             Instagram
           </p>
@@ -111,7 +112,7 @@ export function InstagramFeed() {
                   event.preventDefault()
                   setActive(index)
                 }}
-                className="absolute left-1/2 top-1/2 block origin-center overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]"
+                className="group absolute left-1/2 top-1/2 block origin-center overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]"
                 style={{
                   width: 'min(78vw, 380px)',
                   aspectRatio: '3 / 4',
@@ -123,10 +124,10 @@ export function InstagramFeed() {
                     : 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s ease',
                 }}
               >
-                <img
+                <ResolvedImg
                   src={image.src}
                   alt={image.alt}
-                  className={`h-full w-full ${feedFrameClass}`}
+                  className={`wf-media-zoom h-full w-full ${feedFrameClass}`}
                   draggable={false}
                 />
                 {isCenter ? (

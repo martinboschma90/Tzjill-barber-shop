@@ -453,7 +453,7 @@ export function BookingForm() {
           </div>
 
           {draft.offers.length === 0 ? (
-            <p className="type-body py-3 text-sm text-ink/35">
+            <p className="type-body py-3 text-sm text-ink/65">
               No artists selected yet.
             </p>
           ) : (

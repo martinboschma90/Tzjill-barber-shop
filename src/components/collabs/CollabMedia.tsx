@@ -128,7 +128,7 @@ export function CollabMedia({
             videoRef.current = element
             if (element) bindMobilePlayback(element)
           }}
-          className="absolute inset-0 h-full w-full object-cover"
+          className="wf-media-zoom absolute inset-0 h-full w-full object-cover"
           poster={posterUrl || undefined}
           muted
           autoPlay={inView}

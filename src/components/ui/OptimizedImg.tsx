@@ -45,7 +45,8 @@ export function OptimizedImg({
 }: OptimizedImgProps) {
   const optimized = optimizeImageUrl(src, size)
   const fallback = originalStorageUrl(src)
-  const [failed, setFailed] = useState(false)
+  const [failedSource, setFailedSource] = useState<string | null>(null)
+  const failed = failedSource === src
   const deliverySrc = failed ? fallback : optimized
   const srcSet =
     !failed && srcSetSizes?.length
@@ -70,7 +71,7 @@ export function OptimizedImg({
       fetchPriority={isPriority ? 'high' : fetchPriority}
       onError={(e) => {
         if (!failed && deliverySrc !== fallback) {
-          setFailed(true)
+          setFailedSource(src)
           return
         }
         onError?.(e)

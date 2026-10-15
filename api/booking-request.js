@@ -5,7 +5,7 @@ import {
   sendBookingEmail,
 } from './booking-request-lib.mjs'
 import { recordBookingRequest } from './booking-stats-lib.mjs'
-import { json, rateLimit, setCors, allowedOrigin, isSiteHost } from './http-security.mjs'
+import { json, rateLimit, setCors, isAllowedRequest } from './http-security.mjs'
 
 export default async function handler(req, res) {
   const origin = req.headers.origin
@@ -22,12 +22,12 @@ export default async function handler(req, res) {
     return
   }
 
-  if (!allowedOrigin(origin) && !isSiteHost(req.headers.host)) {
+  if (!isAllowedRequest(req)) {
     json(res, 403, { error: 'Forbidden' })
     return
   }
 
-  if (!rateLimit(req)) {
+  if (!await rateLimit(req)) {
     json(res, 429, { error: 'Too many booking requests. Try again later.' })
     return
   }

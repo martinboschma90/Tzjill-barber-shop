@@ -1,3 +1,4 @@
+import { fetchPublicSnapshot } from '@/cms/api/publicSnapshot'
 import {
   parsePublicArtistsPayload,
 } from '@/cms/api/publicArtistsFormat'
@@ -5,6 +6,7 @@ import { PUBLIC_ARTISTS_STORAGE_KEY } from '@/cms/storageKeys'
 import { withArtDirection } from '@/cms/imageFocus'
 import { coerceArtist } from '@/cms/mappers/artist'
 import { restGet } from '@/lib/publicRest'
+import { visibleArtists } from '@/cms/artistVisibility'
 import type { Artist } from '@/types/artist'
 
 export type CmsContentRow = {
@@ -43,7 +45,8 @@ async function fetchPublicCmsArtistsByKey(
 
 /** Public roster snapshot — same key pushCmsSnapshot writes. REST only. */
 export async function fetchPublicCmsArtistsRow(): Promise<Artist[] | null> {
-  return fetchPublicCmsArtistsByKey(PUBLIC_ARTISTS_STORAGE_KEY)
+  const snapshot = await fetchSnapshotArtists()
+  return snapshot ?? fetchPublicCmsArtistsByKey(PUBLIC_ARTISTS_STORAGE_KEY)
 }
 
 /** Single published artist blob — REST only, no supabase-js. */
@@ -56,4 +59,12 @@ export async function fetchPublicCmsArtistBySlug(
   const row = data?.[0]
   if (!row) return null
   return parseArtist(row.data, row.slug)
+}
+
+/** A present empty array is authoritative: deleted or unpublished people must not reappear. */
+export async function fetchSnapshotArtists(): Promise<Artist[] | null> {
+  const blob = await fetchPublicSnapshot()
+  if (!blob || typeof blob !== 'object' || !('artists' in blob) || !Array.isArray(blob.artists)) return null
+  const artists = blob.artists.map((artist) => parseArtist(artist, (artist as Artist)?.slug || '')).filter((artist): artist is Artist => Boolean(artist))
+  return visibleArtists(artists)
 }

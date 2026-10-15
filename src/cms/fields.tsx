@@ -14,18 +14,19 @@ import { useEditorAccordion } from '@/cms/flow-mates/EditorAccordionScope'
 
 type FieldProps = {
   label: string
+  controlId?: string
   hint?: string
   children: ReactNode
 }
 
-export function Field({ label, hint, children }: FieldProps) {
+export function Field({ label, controlId, hint, children }: FieldProps) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-700">
+      <label htmlFor={controlId} className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-700">
         {label}
       </label>
       {children}
-      {hint ? <p className="text-[11px] leading-relaxed text-neutral-500">{hint}</p> : null}
+      {hint ? <p id={controlId ? `${controlId}-hint` : undefined} className="text-[11px] leading-relaxed text-neutral-500">{hint}</p> : null}
     </div>
   )
 }
@@ -64,9 +65,12 @@ type TextInputProps = {
 }
 
 export function TextInput({ label, value, onChange, hint, placeholder }: TextInputProps) {
+  const id = useId()
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label} controlId={id} hint={hint}>
       <input
+        id={id}
+        aria-describedby={hint ? `${id}-hint` : undefined}
         type="text"
         className={inputCls}
         value={value}
@@ -87,9 +91,12 @@ type TextAreaProps = {
 }
 
 export function TextArea({ label, value, onChange, hint, rows = 4, placeholder }: TextAreaProps) {
+  const id = useId()
   return (
-    <Field label={label} hint={hint}>
+    <Field label={label} controlId={id} hint={hint}>
       <textarea
+        id={id}
+        aria-describedby={hint ? `${id}-hint` : undefined}
         className={`${inputCls} min-h-[6rem] resize-y`}
         value={value}
         rows={rows}

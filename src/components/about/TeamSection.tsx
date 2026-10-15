@@ -1,4 +1,5 @@
 import type { TeamMember } from '@/types/artist'
+import { Reveal } from '@/components/motion/Reveal'
 import { ResolvedImg } from '@/components/ui/ResolvedMedia'
 
 type TeamSectionProps = {
@@ -9,8 +10,9 @@ export function TeamSection({ members }: TeamSectionProps) {
   return (
     <section aria-label="Team">
       <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-12">
-        {members.map((member) => (
-          <article key={member.id}>
+        {members.map((member, index) => (
+          <Reveal key={member.id} delay={Math.min(index, 5) * 0.08} className="h-full">
+          <article>
             <div className="group aspect-[3/4] overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]">
               <ResolvedImg
                 src={member.imageUrl}
@@ -23,8 +25,9 @@ export function TeamSection({ members }: TeamSectionProps) {
               />
             </div>
             <p className="type-subhead mt-4 text-white">{member.name}</p>
-            <p className="type-label mt-1 text-white/40">{member.role}</p>
+            <p className="type-label mt-1 text-white/65">{member.role}</p>
           </article>
+          </Reveal>
         ))}
       </div>
     </section>

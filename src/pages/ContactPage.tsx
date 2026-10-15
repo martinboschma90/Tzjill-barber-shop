@@ -1,3 +1,4 @@
+import { ResolvedImg } from '@/components/ui/ResolvedMedia'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
 import { MediaReveal } from '@/components/motion/MediaReveal'
@@ -5,19 +6,13 @@ import { ContactForm } from '@/components/contact/ContactForm'
 import { LocationMap } from '@/components/contact/LocationMap'
 import { BookButton } from '@/components/booking/BookButton'
 import { PillButton } from '@/components/ui/PillButton'
+import { phoneHref } from '@/lib/contactLinks'
 import { useCms } from '@/cms/CmsContext'
 import { feed, feedWideClass } from '@/data/feed'
 import {
-  INSTAGRAM_URL,
   PHONE_DISPLAY,
-  PHONE_TEL,
 } from '@/data/site'
 
-const hoursCompact = [
-  { days: 'Ma – wo', time: '10:00 – 18:00' },
-  { days: 'Do – za', time: '09:00 – 20:00' },
-  { days: 'Zondag', time: 'Gesloten' },
-]
 
 export function ContactPage() {
   const { content } = useCms()
@@ -40,12 +35,12 @@ export function ContactPage() {
             Voorstreek 18.
           </h1>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
-            Afspraak, vragen of collab. Boek via Salonhub of stuur een bericht.
+            {site.contactIntro || 'Afspraak, vragen of collab. Boek via Salonhub of stuur een bericht.'}
           </p>
         </header>
 
         <MediaReveal className="mt-10 overflow-hidden rounded-[1.75rem] bg-black sm:mt-12 sm:rounded-[2rem]">
-          <img
+          <ResolvedImg
             src={feed.dsc09971}
             alt="Tzjill Barber & Lounge, Voorstreek 18 Leeuwarden"
             className={`aspect-[16/9] w-full sm:aspect-[2.4/1] ${feedWideClass}`}
@@ -64,7 +59,7 @@ export function ContactPage() {
             <div className="type-body mt-3 space-y-0.5">
               {phone ? (
                 <p>
-                  <a href={`tel:${PHONE_TEL}`} className="hover:opacity-70">
+                  <a href={phoneHref(phone)} className="hover:opacity-70">
                     {phone}
                   </a>
                 </p>
@@ -77,13 +72,13 @@ export function ContactPage() {
             </div>
 
             <ul className="mt-6">
-              {hoursCompact.map((row) => (
+              {site.openingHours.map((row) => (
                 <li
-                  key={row.days}
+                  key={row.day}
                   className="flex items-baseline gap-3 border-b border-white/10 py-2 first:border-t first:border-white/10"
                 >
                   <span className="type-body text-[0.9rem] text-white/55">
-                    {row.days}
+                    {row.day}
                   </span>
                   <span
                     className="min-w-4 flex-1 border-b border-dotted border-white/20"
@@ -103,7 +98,7 @@ export function ContactPage() {
             <div className="mt-5 flex flex-wrap gap-2.5">
               <BookButton surface="dark">Afspraak maken</BookButton>
               <PillButton
-                href={INSTAGRAM_URL}
+                href={site.instagram}
                 target="_blank"
                 rel="noreferrer"
                 variant="ghost"

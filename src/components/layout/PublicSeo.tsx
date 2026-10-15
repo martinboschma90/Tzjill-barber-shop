@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import { pageSeo, salonSchema } from '@/lib/seo'
 import { useCms } from '@/cms/CmsContext'
 import {
   resolvePublicSiteUrl,
@@ -40,7 +41,8 @@ export function PublicSeo() {
       site.metaDescription?.trim() ||
       'Tzjill Barber & Lounge in Leeuwarden. Trendy haircuts and hot towel straight razor shaves. Tag #tzjill.'
     const titleBase = site.fullName?.trim() || site.name || 'Tzjill Barber Shop'
-    if (pathname === '/') document.title = titleBase
+    const page = pageSeo(pathname, origin, titleBase, description)
+    document.title = page.title
 
     upsertLink('canonical', canonical)
     upsertMeta('meta[name="description"]', {
@@ -59,13 +61,18 @@ export function PublicSeo() {
     })
     upsertMeta('meta[property="og:title"]', {
       property: 'og:title',
-      content: titleBase,
+      content: page.title,
     })
     upsertMeta('meta[property="og:description"]', {
       property: 'og:description',
       content: description,
     })
+    upsertMeta('meta[property="og:image"]', { property: 'og:image', content: page.image })
+    let schema = document.getElementById('salon-schema')
+    if (!schema) { schema = document.createElement('script'); schema.setAttribute('type', 'application/ld+json'); schema.id = 'salon-schema'; document.head.appendChild(schema) }
+    schema.textContent = JSON.stringify(salonSchema(origin, titleBase, site.phoneNumber, site.legal.addressLines, site.openingHours))
   }, [
+    site.phoneNumber, site.legal.addressLines, site.openingHours,
     pathname,
     site.fullName,
     site.metaDescription,

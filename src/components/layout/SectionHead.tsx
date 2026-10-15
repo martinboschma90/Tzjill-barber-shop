@@ -19,26 +19,20 @@ export function SectionHead({
   trigger = 'view',
 }: SectionHeadProps) {
   const Heading = as
-  const kickerColor = invert ? 'text-[#2c241c]/40' : 'text-white/40'
+  const kickerColor = invert ? 'text-[#2c241c]/40' : 'text-white/65'
   const introColor = invert ? 'text-[#2c241c]/55' : 'text-white/55'
 
   return (
     <div>
-      <Reveal variant="clip" trigger={trigger}>
-        <p className={`type-label ${kickerColor}`}>{kicker}</p>
-      </Reveal>
+      <p className={`type-label ${kickerColor}`}>{kicker}</p>
       <div className="relative mt-5 lg:pr-[22rem]">
-        <Reveal variant="clip" trigger={trigger} delay={0.08}>
+        <Reveal trigger={trigger}>
           <Heading className="type-headline">{title}</Heading>
         </Reveal>
         {intro ? (
-          <Reveal
-            trigger={trigger}
-            delay={0.14}
-            className="mt-6 max-w-xs lg:absolute lg:bottom-1 lg:right-0 lg:mt-0 lg:text-right"
-          >
-            <div className={`type-lead ${introColor}`}>{intro}</div>
-          </Reveal>
+          <div className={`type-lead mt-6 max-w-xs lg:absolute lg:bottom-1 lg:right-0 lg:mt-0 lg:text-right ${introColor}`}>
+            {intro}
+          </div>
         ) : null}
       </div>
     </div>

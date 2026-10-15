@@ -18,8 +18,15 @@ export const feed = {
   dsc09971: '/feed/DSC09971.jpg',
 } as const
 
-/** Still behind the homepage film, and the welcome back plate. */
+/** Still behind the homepage film, and the welcome back plate. 1280×1920 JPG. */
 export const HERO_POSTER = feed.dsc00064
+
+/**
+ * Desktop hero plate of that still, Lanczos-scaled to 1920×2880.
+ * A 1920-wide viewport can paint this 1:1. The JPG itself is only 1280 wide.
+ */
+export const HERO_POSTER_WEBP = '/brand/hero-poster.webp'
+export const HERO_POSTER_AVIF = '/brand/hero-poster.avif'
 
 /**
  * 2:3 still in a 3:4 or 4:5 frame.

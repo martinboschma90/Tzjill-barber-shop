@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react'
+import { Reveal } from '@/components/motion/Reveal'
+import { buttonClass } from '@/components/ui/buttonStyles'
 import { SHOP_FAQ_FILTERS, SHOP_FAQ_ITEMS } from '@/data/shopFaq'
 
 type FilterId = (typeof SHOP_FAQ_FILTERS)[number]['id']
@@ -19,15 +21,17 @@ export function HomeFaq() {
     <section id="faq" className="text-white">
       <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="type-label inline-flex items-center justify-center gap-2 text-white/45">
+          <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
             <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
             FAQ
           </p>
-          <h2 className="type-headline mt-5">
-            Voor je in
-            <br />
-            de stoel zit
-          </h2>
+          <Reveal>
+            <h2 className="type-headline mt-5">
+              Voor je in
+              <br />
+              de stoel zit
+            </h2>
+          </Reveal>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
             Boeken, te laat, kids — de rest regel je aan de balie.
           </p>
@@ -45,11 +49,11 @@ export function HomeFaq() {
                   setFilter(item.id)
                   setOpen(0)
                 }}
-                className={`type-ui rounded-full border px-5 py-2.5 transition-[color,background-color,border-color,transform] duration-300 hover:-translate-y-px ${
-                  active
-                    ? 'border-[#efeae3] bg-[#efeae3] text-[#2c241c]'
-                    : 'border-white/25 bg-transparent text-white/70 hover:border-white hover:text-white'
-                }`}
+                className={buttonClass({
+                  variant: active ? 'solid' : 'ghost',
+                  surface: 'dark',
+                  className: 'px-5 py-2.5',
+                })}
               >
                 {item.label}
               </button>
@@ -87,8 +91,8 @@ export function HomeFaq() {
                   </span>
                   <span
                     aria-hidden
-                    className={`type-ui shrink-0 transition-transform duration-300 ${
-                      isOpen ? 'rotate-45 text-[#2c241c]/45' : 'text-white/40 group-hover:text-[#2c241c]/45'
+                    className={`type-ui shrink-0 transition-transform duration-[320ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+                      isOpen ? 'rotate-45 text-[#2c241c]/70' : 'text-white/65 group-hover:text-[#2c241c]/70'
                     }`}
                   >
                     +

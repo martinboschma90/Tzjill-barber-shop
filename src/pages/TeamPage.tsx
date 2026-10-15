@@ -1,3 +1,4 @@
+import { Navigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
@@ -9,10 +10,13 @@ export function TeamPage() {
   const { content } = useCms()
   const team = content.team.filter((member) => member.name.trim())
 
+  if (content.site.teamVisible === false) return <Navigate to="/" replace />
+
   return (
     <AppShell navVariant="wordmark">
       <PageFrame>
         <PageIntro
+          introPlacement="below"
           kicker="Team"
           title={
             <>
@@ -21,7 +25,7 @@ export function TeamPage() {
               the team
             </>
           }
-          intro="De kappers achter de coupe. Kies wie je knipt via Salonhub."
+          intro="De kappers achter de coupe."
         />
         <div className="mt-16">
           {team.length ? (

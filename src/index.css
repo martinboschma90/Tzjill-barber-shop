@@ -136,7 +136,7 @@
   .font-display {
     font-family: var(--font-display);
     font-weight: 400;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.02em;
     line-height: 1.02;
   }
 
@@ -144,7 +144,7 @@
     font-family: var(--font-display);
     font-weight: 400;
     font-size: clamp(3.2rem, 10vw, 5.75rem);
-    letter-spacing: -0.05em;
+    letter-spacing: -0.02em;
     line-height: 0.88;
   }
 
@@ -152,7 +152,7 @@
     font-family: var(--font-display);
     font-weight: 400;
     font-size: clamp(2.6rem, 7vw, 4.5rem);
-    letter-spacing: -0.048em;
+    letter-spacing: -0.02em;
     line-height: 0.9;
   }
 
@@ -160,7 +160,7 @@
     font-family: var(--font-display);
     font-weight: 400;
     font-size: clamp(2rem, 4.6vw, 3.15rem);
-    letter-spacing: -0.045em;
+    letter-spacing: -0.02em;
     line-height: 0.92;
   }
 
@@ -168,7 +168,7 @@
     font-family: var(--font-display);
     font-weight: 400;
     font-size: clamp(1.35rem, 2.2vw, 1.85rem);
-    letter-spacing: -0.035em;
+    letter-spacing: -0.02em;
     line-height: 1.05;
   }
 
@@ -624,12 +624,85 @@
   animation-play-state: paused;
 }
 
+:root {
+  --motion-180: 180ms;
+  --motion-320: 320ms;
+  --motion-600: 600ms;
+  --motion-900: 900ms;
+  --motion-420: 420ms;
+  --ease-emphasis: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Visible without the js class. Motion only opts in after the head script. */
+html.js .motion-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+@media (min-width: 1024px) {
+  html.js .motion-reveal {
+    transform: translateY(24px);
+  }
+}
+
+html.js .motion-reveal.is-in {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--motion-600) var(--ease-emphasis),
+    transform var(--motion-600) var(--ease-emphasis);
+  transition-delay: calc(var(--motion-i, 0) * 80ms);
+}
+
+html.js .motion-load.is-in {
+  transition-duration: var(--motion-900);
+  transition-delay: 0ms;
+}
+
+.nums {
+  font-variant-numeric: tabular-nums;
+}
+
+body::before {
+  content: '';
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+}
+
+.photo-grade {
+  filter: sepia(0.08) saturate(1.06) contrast(1.03);
+}
+
+.full-bleed-hero img,
+.full-bleed-hero video {
+  filter: sepia(0.08) saturate(1.06) contrast(1.03);
+}
+
 .wf-media-zoom {
-  transition: transform 1.15s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform var(--motion-420) var(--ease-emphasis);
+  filter: sepia(0.08) saturate(1.06) contrast(1.03);
 }
 
 .group:hover .wf-media-zoom {
-  transform: scale(1.07);
+  transform: scale(1.03);
+}
+
+.group:active .wf-media-zoom {
+  transform: scale(0.98);
+  transition-duration: var(--motion-180);
+}
+
+.motion-arrow {
+  transition: transform var(--motion-320) var(--ease-emphasis);
+}
+
+.group:hover .motion-arrow {
+  transform: translateX(4px);
 }
 
 .wf-link {
@@ -673,8 +746,30 @@
     animation: none;
   }
 
-  .group:hover .wf-media-zoom {
+  .wf-media-zoom,
+  .group:hover .wf-media-zoom,
+  .group:active .wf-media-zoom,
+  .motion-arrow,
+  .group:hover .motion-arrow {
     transform: none;
+    transition: none;
+  }
+
+  html.js .motion-reveal,
+  html.js .motion-load {
+    transform: none;
+  }
+
+  html.js .motion-reveal.is-in,
+  html.js .motion-load.is-in {
+    transition: opacity 200ms linear;
+    transition-delay: 0ms;
   }
 }
 
+
+/* Visible keyboard focus survives transparent controls and color transitions. */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
+  outline: 2px solid #c4a574;
+  outline-offset: 4px;
+}

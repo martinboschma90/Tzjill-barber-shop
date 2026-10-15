@@ -1,4 +1,7 @@
-import { useEffect, useId, useState, type FormEvent } from 'react'
+import { useCms } from '@/cms/CmsContext'
+import { useModalFocus } from '@/lib/useModalFocus'
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
+import { Check, Spinner } from '@/components/ui/StatusIcon'
 import {
   isNlMobile,
   isValidPromoEmail,
@@ -7,7 +10,7 @@ import {
   submitPromoSignup,
 } from '@/lib/promoSignup'
 
-const OPEN_DELAY_MS = 1400
+const OPEN_DELAY_MS = 20_000
 const PROMO_IMAGE = '/promo/10-years-tzjill.jpg'
 
 const fieldClass =
@@ -15,7 +18,10 @@ const fieldClass =
 
 export function PromoSignupModal() {
   const titleId = useId()
+  const { content } = useCms()
+  const submitting = useRef(false)
   const [open, setOpen] = useState(false)
+  const modal = useModalFocus(open && content.site.promoSignupVisible !== false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
@@ -30,12 +36,26 @@ export function PromoSignupModal() {
 
   useEffect(() => {
     if (promoAlreadySeen()) return
-    const id = window.setTimeout(() => setOpen(true), OPEN_DELAY_MS)
-    return () => window.clearTimeout(id)
+    let opened = false
+    const open = () => {
+      if (opened || promoAlreadySeen()) return
+      opened = true
+      setOpen(true)
+    }
+    const id = window.setTimeout(open, OPEN_DELAY_MS)
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      if (max > 0 && window.scrollY / max >= 0.5) open()
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      window.clearTimeout(id)
+      window.removeEventListener('scroll', onScroll)
+    }
   }, [])
 
   useEffect(() => {
-    if (!open) return
+    if (!open || content.site.promoSignupVisible === false) return
     const prev = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     const onKey = (event: KeyboardEvent) => {
@@ -46,7 +66,7 @@ export function PromoSignupModal() {
       document.body.style.overflow = prev
       window.removeEventListener('keydown', onKey)
     }
-  }, [open])
+  }, [open, content.site.promoSignupVisible])
 
   function dismiss(state: 'dismissed' | 'submitted') {
     markPromoSeen(state)
@@ -55,6 +75,7 @@ export function PromoSignupModal() {
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
+    if (submitting.current) return
     const nextName = name.trim()
     const nextEmail = email.trim()
     const nextPhone = phone.trim()
@@ -71,12 +92,14 @@ export function PromoSignupModal() {
       return
     }
     setError('')
+    submitting.current = true
     setSending(true)
     const result = await submitPromoSignup({
       name: nextName,
       email: nextEmail,
       phone: nextPhone,
     })
+    submitting.current = false
     setSending(false)
     if (!result.ok) {
       setError(result.error)
@@ -86,10 +109,10 @@ export function PromoSignupModal() {
     markPromoSeen('submitted')
   }
 
-  if (!open) return null
+  if (!open || content.site.promoSignupVisible === false) return null
 
   return (
-    <div className="fixed inset-0 z-[85] flex items-end justify-center p-3 sm:items-center sm:p-6">
+    <div className="fixed inset-0 z-[85] flex items-end justify-center sm:items-center sm:p-6">
       <button
         type="button"
         aria-label="Sluiten"
@@ -97,10 +120,12 @@ export function PromoSignupModal() {
         onClick={() => dismiss('dismissed')}
       />
       <div
+        ref={modal}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="relative z-[1] flex max-h-[min(92svh,880px)] w-full max-w-[26rem] flex-col overflow-hidden rounded-[1.75rem] border border-white/12 bg-[#141210] text-white shadow-[0_24px_80px_rgba(0,0,0,0.45)] sm:max-w-[44rem] sm:flex-row sm:rounded-[2rem]"
+        className="relative z-[1] flex max-h-[min(92svh,880px)] w-full max-w-none flex-col overflow-hidden rounded-t-2xl border border-white/12 bg-[#141210] text-white shadow-[0_24px_80px_rgba(0,0,0,0.45)] max-sm:rounded-b-none sm:max-w-[44rem] sm:flex-row sm:rounded-[2rem]"
       >
         <div className="relative h-[min(26svh,13.5rem)] shrink-0 overflow-hidden bg-black sm:h-auto sm:w-[46%]">
           <img
@@ -144,13 +169,14 @@ export function PromoSignupModal() {
           </p>
 
           {sent ? (
-            <p className="type-lead mt-8 text-white/75">
+            <p className="type-lead mt-8 inline-flex items-center gap-2 text-white/75">
+              <Check />
               Staat. We mailen je als er iets te pakken valt.
             </p>
           ) : (
             <form onSubmit={onSubmit} className="mt-5 flex flex-col gap-3 sm:mt-6 sm:gap-3.5">
               <label className="block">
-                <span className="type-label text-white/40">Naam</span>
+                <span className="type-label text-white/65">Naam</span>
                 <input
                   required
                   name="name"
@@ -161,7 +187,7 @@ export function PromoSignupModal() {
                 />
               </label>
               <label className="block">
-                <span className="type-label text-white/40">E-mail</span>
+                <span className="type-label text-white/65">E-mail</span>
                 <input
                   required
                   type="email"
@@ -173,7 +199,7 @@ export function PromoSignupModal() {
                 />
               </label>
               <label className="block">
-                <span className="type-label text-white/40">06</span>
+                <span className="type-label text-white/65">06</span>
                 <input
                   required
                   type="tel"
@@ -196,9 +222,10 @@ export function PromoSignupModal() {
               <button
                 type="submit"
                 disabled={sending}
-                className="type-ui mt-1 inline-flex min-h-[3rem] items-center justify-center rounded-full border border-[#efeae3] bg-[#efeae3] px-6 py-3 text-[#2c241c] transition-[color,background-color,transform] duration-300 hover:-translate-y-px hover:border-white hover:bg-white disabled:pointer-events-none disabled:opacity-60"
+                className="type-ui mt-1 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#efeae3] bg-[#efeae3] px-6 py-3 text-[#2c241c] transition-[color,background-color] duration-[320ms] hover:border-white hover:bg-white disabled:pointer-events-none disabled:opacity-60"
               >
-                {sending ? 'Even geduld…' : 'Aanmelden'}
+                {sending ? <Spinner /> : null}
+                {sending ? 'Versturen' : 'Aanmelden'}
               </button>
             </form>
           )}

@@ -8,6 +8,7 @@ type ResolvedImgProps = {
   alt: string
   className?: string
   style?: CSSProperties
+  draggable?: boolean
   loading?: 'lazy' | 'eager'
   fetchPriority?: 'high' | 'low' | 'auto'
   size?: ImageDeliverySize
@@ -21,6 +22,7 @@ export function ResolvedImg({
   alt,
   className,
   style,
+  draggable,
   loading = 'lazy',
   fetchPriority,
   size = 'team',
@@ -34,6 +36,7 @@ export function ResolvedImg({
   return (
     <OptimizedImg
       src={url}
+      draggable={draggable}
       alt={alt}
       className={className}
       style={style}

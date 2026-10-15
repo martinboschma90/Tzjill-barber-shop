@@ -70,3 +70,8 @@ export function onAuthStateChange(
 }
 
 export { isSupabaseConfigured }
+
+export async function requestPasswordReset(email: string) {
+  if (!supabase) return { error: new Error('CMS is niet geconfigureerd.') }
+  return supabase.auth.resetPasswordForEmail(email.trim(), { redirectTo: `${window.location.origin}/cms/reset-password` })
+}

@@ -94,13 +94,14 @@ function ChoiceRow({
   onClick: () => void
 }) {
   const titleColor = active ? 'text-[#2c241c]' : 'text-[#f6f3ee] group-hover:text-[#2c241c]'
-  const metaColor = active ? 'text-[#2c241c]/55' : 'text-white/40 group-hover:text-[#2c241c]/55'
-  const asideColor = active ? 'text-[#2c241c]/75' : 'text-white/45 group-hover:text-[#2c241c]/75'
+  const metaColor = active ? 'text-[#2c241c]/55' : 'text-white/65 group-hover:text-[#2c241c]/55'
+  const asideColor = active ? 'text-[#2c241c]/75' : 'text-white/65 group-hover:text-[#2c241c]/75'
   const rule = active ? 'border-[#2c241c]/25' : 'border-white/20 group-hover:border-[#2c241c]/25'
   return (
     <button
       type="button"
       aria-pressed={active}
+      aria-label={[title, meta, aside].filter(Boolean).join(' ')}
       onClick={onClick}
       className={`group flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left sm:gap-4 sm:px-4 sm:py-3.5 ${
         active
@@ -223,6 +224,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
   const { content } = useCms()
   const reduceMotion = useReducedMotion()
   const sessionRef = useRef(crypto.randomUUID())
+  const submitting = useRef(false)
   const timesRequest = useRef(0)
   const flowRequest = useRef(0)
   const employeePrefetch = useRef<{ id: string; promise: Promise<LiveEmployee[]> } | null>(null)
@@ -232,7 +234,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [usingFallback, setUsingFallback] = useState(false)
-  const [treatments, setTreatments] = useState<LiveTreatment[]>([])
+  const [treatments, setTreatments] = useState<LiveTreatment[]>(FALLBACK_TREATMENTS)
   const [employees, setEmployees] = useState<LiveEmployee[]>([])
   const [dates, setDates] = useState<string[]>([])
   const [times, setTimes] = useState<string[]>([])
@@ -397,7 +399,8 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
   }
 
   async function confirm() {
-    if (!selected || !employee || !date || !time) return
+    if (submitting.current || !selected || !employee || !date || !time) return
+    submitting.current = true
     setBusy(true)
     setError('')
     try {
@@ -416,11 +419,14 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Afspraak bevestigen lukt nu niet.')
     } finally {
+      submitting.current = false
       setBusy(false)
     }
   }
 
   async function submitCode() {
+    if (submitting.current) return
+    submitting.current = true
     setBusy(true)
     setError('')
     try {
@@ -429,6 +435,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Code controleren lukt nu niet.')
     } finally {
+      submitting.current = false
       setBusy(false)
     }
   }
@@ -507,7 +514,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
               </button>
             ) : null}
             {step === 'success' || step === 'verify' ? (
-              <p className="type-label text-[#f6f3ee]/40">Tzjill · Leeuwarden</p>
+              <p className="type-label text-[#f6f3ee]/65">Tzjill · Leeuwarden</p>
             ) : (
               <ol
                 aria-label="Stappen"
@@ -525,7 +532,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
                           ? 'text-[#f6f3ee]'
                           : state === 'done'
                             ? 'text-[#f6f3ee]/55'
-                            : 'text-[#f6f3ee]/28'
+                            : 'text-[#f6f3ee]/65'
                       }`}
                     >
                       <span className="tabular-nums">{String(index + 1).padStart(2, '0')}</span>
@@ -624,10 +631,10 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
               </div>
             ) : null}
             <div className="mt-7 space-y-8">
-              {loading ? <ListSkeleton count={5} label="Behandelingen laden" /> : null}
-              {!loading && audience?.sections.map((section) => (
+              {loading ? <p className="sr-only" role="status">Actuele behandelingen laden</p> : null}
+              {audience?.sections.map((section) => (
                 <section key={section.label}>
-                  <h2 className="type-label text-white/40">{section.label}</h2>
+                  <h2 className="type-label text-white/65">{section.label}</h2>
                   <BookingWell list className="mt-3">
                     <ul className="flex flex-col gap-2">
                       {section.items.map((item) => (
@@ -656,7 +663,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
                 </section>
               ))}
             </div>
-            <p className="mt-6 text-[12.5px] leading-relaxed text-[#f6f3ee]/40">
+            <p className="mt-6 text-[12.5px] leading-relaxed text-[#f6f3ee]/65">
               <span className="font-medium uppercase tracking-[0.12em] text-[#f6f3ee]/70">
                 No-show €20.
               </span>{' '}
@@ -666,7 +673,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
               <BookButton
                 openWidget={false}
                 surface="dark"
-                disabled={!selected || busy}
+                disabled={loading || !selected || busy}
                 onClick={() => void continueFromTreatment()}
                 className="mt-6 w-full sm:w-auto"
               >
@@ -733,7 +740,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
               <div className="mt-7 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_13.5rem]">
                 <DateAgenda dates={dates} value={date} onSelect={(iso) => void pickDate(iso)} />
                 <div className="min-w-0">
-                  <p className="type-label text-white/40">Tijd</p>
+                  <p className="type-label text-white/65">Tijd</p>
                   {!date ? (
                     <p className="mt-3 text-[13px] leading-relaxed text-white/55">
                       Kies eerst een dag in de agenda.
@@ -799,7 +806,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
                 <br />
                 {barberName(employee)} · {formatDay(date)} · {formatTime(time)}
               </p>
-              <p className="pb-3 text-[12.5px] leading-relaxed text-white/40">
+              <p className="pb-3 text-[12.5px] leading-relaxed text-white/65">
                 No-show €20 als je niet komt of binnen 2 uur afzegt.
               </p>
             </BookingWell>
@@ -893,7 +900,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
             <BookButton
               openWidget={false}
               surface="dark"
-              disabled={!selected || busy}
+              disabled={loading || !selected || busy}
               onClick={() => void continueFromTreatment()}
               className="w-full sm:w-auto"
             >
@@ -1108,7 +1115,7 @@ function Field({
 }) {
   return (
     <label className={`block ${className}`}>
-      <span className="type-label text-white/40">{label}</span>
+      <span className="type-label text-white/65">{label}</span>
       <input
         type={type}
         value={value}

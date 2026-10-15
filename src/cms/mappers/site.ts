@@ -471,11 +471,20 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
       defaults.fullName,
     ),
     tagline: asString(row.tagline, defaults.tagline),
+    homeHeroTitle: asString(row.homeHeroTitle, defaults.homeHeroTitle),
+    homeHeroSubtitle: asString(row.homeHeroSubtitle, defaults.homeHeroSubtitle),
+    openingHours: defaults.openingHours.map((fallback) => {
+      const entry = Array.isArray(row.openingHours) ? row.openingHours.find((item) => item && typeof item === 'object' && item.day === fallback.day) : null
+      return { day: fallback.day, time: entry && typeof entry.time === 'string' ? entry.time : fallback.time }
+    }),
     homeHeroVisible: asBoolean(row.homeHeroVisible, defaults.homeHeroVisible),
     homeHeroImageUrl: asString(row.homeHeroImageUrl, defaults.homeHeroImageUrl),
     homeHeroVideoUrl: asString(row.homeHeroVideoUrl, defaults.homeHeroVideoUrl),
     instagram: asString(row.instagram, defaults.instagram).trim() || defaults.instagram,
     year: asNumber(row.year, defaults.year),
+    contactFormVisible: asBoolean(row.contactFormVisible, true),
+    newsletterVisible: asBoolean(row.newsletterVisible, true),
+    promoSignupVisible: asBoolean(row.promoSignupVisible, true),
     contactIntro: asString(row.contactIntro, defaults.contactIntro),
     contact,
     legal: asLegal(row.legal, defaults.legal),

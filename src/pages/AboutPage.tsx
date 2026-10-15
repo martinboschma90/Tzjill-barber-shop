@@ -7,6 +7,11 @@ import { Testimonials } from '@/components/home/Testimonials'
 import { PillButton } from '@/components/ui/PillButton'
 import { BookButton } from '@/components/booking/BookButton'
 import { useCms } from '@/cms/CmsContext'
+import { Parallax } from '@/components/motion/Parallax'
+import { Reveal } from '@/components/motion/Reveal'
+import { ResolvedImg } from '@/components/ui/ResolvedMedia'
+import { useReducedMotion } from 'framer-motion'
+import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
 import { feed, feedFrameClass, HERO_POSTER } from '@/data/feed'
 import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
 
@@ -47,21 +52,25 @@ function SectionKicker({ children }: { children: string }) {
 
 function AboutHeroVideo() {
   const videoRef = useRef<HTMLVideoElement>(null)
+  const { content } = useCms()
+  const reduced = useReducedMotion()
+  const video = useResolvedMediaUrl(content.site.aboutHeroVideoUrl, '/brand/hero.mp4')
+  const poster = useResolvedMediaUrl(content.site.aboutImages[0], HERO_POSTER)
 
   useEffect(() => {
     const el = videoRef.current
-    if (!el) return
+    if (!el || reduced) return
     el.muted = true
     void el.play().catch(() => {})
-  }, [])
+  }, [reduced, video])
 
   return (
     <div className="relative mt-12 overflow-hidden rounded-[1.75rem] bg-black sm:mt-14 sm:rounded-[2rem]">
-      <video
+      {reduced || !/\.(mp4|webm|mov)(?:[?#]|$)/i.test(video) ? <ResolvedImg src={poster} alt="" size="full" className="aspect-[16/10] w-full object-cover sm:aspect-[2/1]" /> : <video
         ref={videoRef}
         className="aspect-[16/10] w-full object-cover sm:aspect-[2/1]"
-        src="/brand/hero.mp4"
-        poster={HERO_POSTER}
+        src={video}
+        poster={poster}
         autoPlay
         muted
         loop
@@ -69,7 +78,7 @@ function AboutHeroVideo() {
         preload="none"
         controls={false}
         disablePictureInPicture
-      />
+      />}
     </div>
   )
 }
@@ -78,7 +87,7 @@ export function AboutPage() {
   const { content } = useCms()
   const { site } = content
   const [open, setOpen] = useState(0)
-  const team = content.team.filter((member) => member.name.trim())
+  const team = site.teamVisible === false ? [] : content.team.filter((member) => member.name.trim())
 
   return (
     <AppShell navVariant="wordmark">
@@ -86,9 +95,7 @@ export function AboutPage() {
         <div className="mx-auto max-w-3xl text-center">
           <SectionKicker>Over ons</SectionKicker>
           <h1 className="type-headline mt-6">
-            A man’s world.
-            <br />
-            In de stoel.
+            {site.aboutTitle || 'Over ons'}
           </h1>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
             {site.about[0] ||
@@ -99,13 +106,14 @@ export function AboutPage() {
         <AboutHeroVideo />
 
         <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-          {stats.map((item) => (
-            <li
-              key={item.label}
-              className="rounded-[1.5rem] bg-[#efeae3] px-5 py-6 text-[#2c241c] sm:rounded-[1.75rem] sm:px-6 sm:py-8"
-            >
-              <p className="type-headline leading-none">{item.n}</p>
-              <p className="type-label mt-3 text-[#2c241c]/50">{item.label}</p>
+          {stats.map((item, index) => (
+            <li key={item.label}>
+              <Reveal delay={index * 0.06}>
+                <div className="rounded-[1.5rem] bg-[#efeae3] px-5 py-6 text-[#2c241c] sm:rounded-[1.75rem] sm:px-6 sm:py-8">
+                  <p className="type-headline leading-none">{item.n}</p>
+                  <p className="type-label mt-3 text-[#2c241c]/50">{item.label}</p>
+                </div>
+              </Reveal>
             </li>
           ))}
         </ul>
@@ -114,8 +122,7 @@ export function AboutPage() {
           <SectionKicker>Missie</SectionKicker>
           <h2 className="type-headline mt-6">Onze missie</h2>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
-            Elke coupe maatwerk — knippen, scheren, baard. Traditioneel barbierwerk,
-            met de technieken van nu.
+            {site.about.slice(1).join('\n') || 'Elke coupe maatwerk — knippen, scheren, baard. Traditioneel barbierwerk, met de technieken van nu.'}
           </p>
         </div>
 
@@ -184,15 +191,18 @@ export function AboutPage() {
             </ul>
           </div>
 
-          <div className="overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem] lg:col-span-6">
-            <img
-              src={feed.dsc09968}
-              alt=""
-              className={`aspect-[4/5] w-full lg:aspect-auto lg:h-full lg:min-h-[36rem] ${feedFrameClass}`}
-            />
+          <div className="group overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem] lg:col-span-6">
+            <Parallax distance={18} className="h-full">
+              <ResolvedImg
+                src={site.aboutImages[1] || feed.dsc09968}
+                alt=""
+                className={`wf-media-zoom aspect-[4/5] h-[112%] w-full object-cover lg:aspect-auto lg:h-[112%] lg:min-h-[36rem] ${feedFrameClass}`}
+              />
+            </Parallax>
           </div>
         </div>
 
+        {site.teamVisible !== false ? <>
         <div className="mx-auto mt-20 max-w-3xl text-center sm:mt-24">
           <SectionKicker>Team</SectionKicker>
           <h2 className="type-headline mt-6">
@@ -219,11 +229,10 @@ export function AboutPage() {
           </>
         ) : (
           <div className="mt-10 text-center">
-            <Link to="/booking" className="type-ui text-white/50 hover:text-white">
-              Afspraak maken →
-            </Link>
+            <BookButton surface="dark">Afspraak maken</BookButton>
           </div>
         )}
+        </> : null}
       </PageFrame>
 
       <Testimonials />
