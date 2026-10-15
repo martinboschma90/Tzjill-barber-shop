@@ -147,7 +147,7 @@ export async function sendBookingEmail({ subject, text, replyTo, to, idempotency
             from,
             to: copy,
             subject: `Copy: ${subject}`,
-            text: `This is a copy of the booking request sent to NOTYPE MGMT.\n\n${text}`,
+            text: `Dit is een kopie van het bericht aan Tzjill Barber & Lounge.\n\n${text}`,
           }),
         }).catch(() => null)
       }
@@ -169,7 +169,7 @@ export async function sendBookingEmail({ subject, text, replyTo, to, idempotency
     _captcha: 'false',
     _replyto: cc || inbox,
     message: text,
-    from_name: 'NOTYPE booking form',
+    from_name: 'Tzjill Barber & Lounge',
   }
   if (copy.length) form._cc = copy[0]
 
