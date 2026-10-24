@@ -9,6 +9,7 @@ import {
   type MigrateLocalMediaResult,
 } from '@/cms/media/migrateLocalMedia'
 import { parseMediaRef } from '@/cms/media/refs'
+import { isSupabaseConfigured } from '@/lib/supabaseEnv'
 import type { Artist } from '@/types/artist'
 
 function rewriteArtistMedia(
@@ -142,18 +143,24 @@ export function MediaArtistRepair() {
             Media-opslag
           </p>
           <p className="mt-1 text-[11px] leading-relaxed text-neutral-500">
-            {orphanCount > 0
+            {!isSupabaseConfigured
+              ? 'Supabase is nog niet gekoppeld; uploads blijven alleen lokaal beschikbaar.'
+              : orphanCount > 0
               ? `${orphanCount} ${orphanCount === 1 ? 'bestand heeft' : 'bestanden hebben'} nog een permanente opslaglink nodig.`
               : 'Alle mediabestanden zijn online beschikbaar.'}
           </p>
         </div>
         <button
           type="button"
-          disabled={running || syncingRemote || !ready}
+          disabled={running || syncingRemote || !ready || !isSupabaseConfigured}
           onClick={() => void runMigration()}
           className="cms-primary-action shrink-0 rounded-lg bg-neutral-900 px-3.5 py-2 text-xs font-semibold text-white hover:bg-neutral-800 disabled:opacity-40"
         >
-          {running ? 'Synchroniseren…' : 'Ontbrekende media synchroniseren'}
+          {running
+            ? 'Synchroniseren…'
+            : isSupabaseConfigured
+              ? 'Ontbrekende media synchroniseren'
+              : 'Supabase koppelen nodig'}
         </button>
       </div>
 

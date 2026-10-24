@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion'
 import { Reveal } from '@/components/motion/Reveal'
 import { useCms } from '@/cms/CmsContext'
@@ -12,11 +12,18 @@ function isDirectVideo(url: string) {
   return /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(url) || url.startsWith('blob:')
 }
 
+function videoMimeType(url: string) {
+  if (/\.webm(\?|#|$)/i.test(url)) return 'video/webm'
+  if (/\.(mov|m4v)(\?|#|$)/i.test(url)) return 'video/quicktime'
+  return 'video/mp4'
+}
+
 export function Hero() {
   const { content } = useCms()
   const reduce = useReducedMotion()
   const sectionRef = useRef<HTMLElement>(null)
   const videoRef = useRef<HTMLVideoElement>(null)
+  const [videoReady, setVideoReady] = useState(false)
   const poster = useResolvedMediaUrl(
     content.site.homeHeroImageUrl,
     FALLBACK_POSTER,
@@ -28,6 +35,25 @@ export function Hero() {
   const posterSrc = poster || FALLBACK_POSTER
   const videoSrc = video || FALLBACK_VIDEO
   const playVideo = isDirectVideo(videoSrc)
+  const videoType = videoMimeType(videoSrc)
+
+  const setVideoRef = useCallback((element: HTMLVideoElement | null) => {
+    videoRef.current = element
+    if (!element) {
+      setVideoReady(false)
+      return
+    }
+
+    // Safari evaluates autoplay as soon as a source is attached. Set both the
+    // property and attributes before rendering the <source> child below.
+    element.muted = true
+    element.defaultMuted = true
+    element.volume = 0
+    element.setAttribute('muted', '')
+    element.setAttribute('playsinline', '')
+    element.setAttribute('webkit-playsinline', '')
+    setVideoReady(true)
+  }, [])
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -38,8 +64,39 @@ export function Hero() {
   useEffect(() => {
     const el = videoRef.current
     if (!el) return
-    el.muted = true
-    void el.play().catch(() => {})
+
+    const play = () => {
+      el.muted = true
+      el.defaultMuted = true
+      el.volume = 0
+      // Safari checks these attributes before it grants muted inline autoplay.
+      el.setAttribute('muted', '')
+      el.setAttribute('playsinline', '')
+      el.setAttribute('webkit-playsinline', '')
+      void el.play().catch(() => {
+        // Safari can defer its autoplay decision until media metadata has loaded.
+        // Retrying on media events keeps the hero silent and inline.
+      })
+    }
+
+    const onVisibilityChange = () => {
+      if (!document.hidden) play()
+    }
+
+    play()
+    const retryId = window.setTimeout(play, 250)
+    el.addEventListener('loadedmetadata', play)
+    el.addEventListener('loadeddata', play)
+    el.addEventListener('canplay', play)
+    document.addEventListener('visibilitychange', onVisibilityChange)
+
+    return () => {
+      window.clearTimeout(retryId)
+      el.removeEventListener('loadedmetadata', play)
+      el.removeEventListener('loadeddata', play)
+      el.removeEventListener('canplay', play)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+    }
   }, [videoSrc, playVideo])
 
   return (
@@ -57,18 +114,19 @@ export function Hero() {
         >
           {playVideo ? (
             <video
-              ref={videoRef}
+              ref={setVideoRef}
               className="absolute inset-0 h-full w-full min-h-full min-w-full object-cover"
-              src={videoSrc}
               poster={posterSrc}
               autoPlay
               muted
               loop
               playsInline
-              preload="metadata"
+              preload="auto"
               controls={false}
               disablePictureInPicture
-            />
+            >
+              {videoReady && <source src={videoSrc} type={videoType} />}
+            </video>
           ) : (
             <img
               src={posterSrc}
