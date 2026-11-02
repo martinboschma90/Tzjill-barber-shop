@@ -22,8 +22,8 @@ import { parseGenreList, serializeGenres } from '@/cms/artistGenres'
 import { getArtistStatus } from '@/cms/artistVisibility'
 import { withArtDirection } from '@/cms/imageFocus'
 
-type ArtistInsert = Database['public']['Tables']['artists']['Insert']
-type ArtistUpdate = Database['public']['Tables']['artists']['Update']
+type ArtistInsert = Database['tzjill']['Tables']['artists']['Insert']
+type ArtistUpdate = Database['tzjill']['Tables']['artists']['Update']
 
 function asArray<T>(value: unknown): T[] {
   return Array.isArray(value) ? (value as T[]) : []

@@ -1,7 +1,7 @@
 import type { TeamMember } from '@/types/artist'
 import type { Database, TeamMemberRow } from '@/lib/database.types'
 
-type TeamInsert = Database['public']['Tables']['team_members']['Insert']
+type TeamInsert = Database['tzjill']['Tables']['team_members']['Insert']
 
 const UUID_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i

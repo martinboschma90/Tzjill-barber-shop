@@ -1,4 +1,5 @@
 import sharp from 'sharp'
+import { SUPABASE_MEDIA_BUCKET } from './supabase-schema.mjs'
 const WIDTHS = new Set([96, 400, 640, 720, 1100, 1440])
 export default async function handler(req, res) {
   if (req.method !== 'GET') { res.statusCode = 405; res.end(); return }
@@ -8,7 +9,7 @@ export default async function handler(req, res) {
   let allowedHost = ''
   try { allowedHost = new URL(project).hostname } catch { /* fail closed */ }
   const width = Number(req.query?.width)
-  if (!allowedHost || url.hostname !== allowedHost || url.protocol !== 'https:' || url.username || url.password || !url.pathname.startsWith('/storage/v1/object/public/media/') || !WIDTHS.has(width)) { res.statusCode = 400; res.end(); return }
+  if (!allowedHost || url.hostname !== allowedHost || url.protocol !== 'https:' || url.username || url.password || !url.pathname.startsWith(`/storage/v1/object/public/${SUPABASE_MEDIA_BUCKET}/`) || !WIDTHS.has(width)) { res.statusCode = 400; res.end(); return }
   try {
     const original = await fetch(url, { redirect: 'error', signal: AbortSignal.timeout(10_000) })
     if (!original.ok || !/^image\/(webp|png|jpeg|avif|gif)/i.test(original.headers.get('content-type') || '') || Number(original.headers.get('content-length') || 0) > 12000000) throw new Error('invalid image')

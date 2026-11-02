@@ -1,6 +1,8 @@
 import {
   isSupabaseConfigured,
   SUPABASE_ANON_KEY,
+  SUPABASE_DB_SCHEMA,
+  SUPABASE_MEDIA_BUCKET,
   SUPABASE_URL,
 } from '@/lib/supabaseEnv'
 
@@ -8,6 +10,7 @@ const headers = {
   apikey: SUPABASE_ANON_KEY,
   Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
   Accept: 'application/json',
+  'Accept-Profile': SUPABASE_DB_SCHEMA,
 }
 
 export async function restGet<T>(pathAndQuery: string): Promise<T | null> {
@@ -27,5 +30,5 @@ export function publicStorageUrl(storagePath: string): string {
     .split('/')
     .map((part) => encodeURIComponent(part))
     .join('/')
-  return `${SUPABASE_URL}/storage/v1/object/public/media/${encoded}`
+  return `${SUPABASE_URL}/storage/v1/object/public/${SUPABASE_MEDIA_BUCKET}/${encoded}`
 }

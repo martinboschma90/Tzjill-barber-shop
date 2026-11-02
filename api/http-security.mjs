@@ -1,4 +1,5 @@
 import { createHmac } from 'node:crypto'
+import { schemaHeaders } from './supabase-schema.mjs'
 
 const ALLOWED_ORIGIN_PATTERN = /^https:\/\/((www\.)?tzjill\.nl|tzjill-barber-shop[\w.-]*\.vercel\.app)$/i
 const LOCAL_ORIGIN_PATTERN = /^http:\/\/(localhost|127\.0\.0\.1):(5173|5174|4173)$/i
@@ -43,7 +44,7 @@ export async function rateLimit(req, { limit = 8, windowMs = 15 * 60 * 1000, buc
   const ipHash = createHmac('sha256', serviceKey).update(clientIp(req)).digest('hex').slice(0, 32)
   const key = `tzjill-rate-limit:${bucket}:${Math.floor(now / windowMs)}:${ipHash}`
   const root = `${url}/rest/v1/cms_content`
-  const headers = { apikey: serviceKey, Authorization: `Bearer ${serviceKey}`, 'Content-Type': 'application/json', Prefer: 'return=representation' }
+  const headers = { ...schemaHeaders(), apikey: serviceKey, Authorization: `Bearer ${serviceKey}`, 'Content-Type': 'application/json', Prefer: 'return=representation' }
   try {
     for (let attempt = 0; attempt < 5; attempt += 1) {
       const read = await fetch(`${root}?key=eq.${encodeURIComponent(key)}&select=data,updated_at`, { headers, signal: AbortSignal.timeout(5000) })

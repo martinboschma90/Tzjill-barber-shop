@@ -12,3 +12,7 @@ export const isSupabaseConfigured = Boolean(
     supabaseUrl !== 'your-project-url' &&
     supabaseAnonKey !== 'your-anon-key',
 )
+
+/** Tzjill lives in the shared Flow Mates - Websites project, schema `tzjill`. */
+export const SUPABASE_DB_SCHEMA = 'tzjill' as const
+export const SUPABASE_MEDIA_BUCKET = 'tzjill-media'

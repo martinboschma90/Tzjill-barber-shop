@@ -15,7 +15,7 @@ it('resizes an allowed public image and serves WebP', async () => {
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response(source, { headers: { 'Content-Type': 'image/png' } })))
   let result: Buffer | undefined
   const res = { statusCode: 200, end: vi.fn((data) => { result = data }), setHeader: vi.fn() }
-  await handler({ method: 'GET', query: { src: 'https://salon.supabase.co/storage/v1/object/public/media/test.png', width: '400' } }, res)
+  await handler({ method: 'GET', query: { src: 'https://salon.supabase.co/storage/v1/object/public/tzjill-media/test.png', width: '400' } }, res)
   expect(res.statusCode).toBe(200); expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'image/webp')
   expect((await sharp(result).metadata()).width).toBe(400)
 })

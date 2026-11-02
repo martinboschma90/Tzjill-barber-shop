@@ -1,4 +1,5 @@
 import { rateLimit, isAllowedRequest } from './http-security.mjs'
+import { schemaHeaders } from './supabase-schema.mjs'
 
 const KINDS = new Set(['vital', 'error', 'presence', 'notfound'])
 const VITAL_NAMES = new Set(['LCP', 'INP', 'CLS', 'TTFB', 'FCP'])
@@ -126,6 +127,7 @@ export async function handleRum(req, res) {
   await fetch(`${url}/rest/v1/site_rum`, {
     method: 'POST',
     headers: {
+      ...schemaHeaders(),
       apikey: key,
       Authorization: `Bearer ${key}`,
       'Content-Type': 'application/json',
@@ -143,6 +145,7 @@ export async function loadRumSince(sinceIso, { accessToken } = {}) {
   if (!url || !key) return []
 
   const headers = {
+    ...schemaHeaders(),
     apikey: anonKey || key,
     Authorization: `Bearer ${serviceKey || accessToken || key}`,
   }
@@ -165,6 +168,7 @@ export async function readHealthCache(cacheKey, { accessToken } = {}) {
   const { url, anonKey, serviceKey, key } = supabaseEnv()
   if (!url || !key) return null
   const headers = {
+    ...schemaHeaders(),
     apikey: anonKey || key,
     Authorization: `Bearer ${serviceKey || accessToken || key}`,
   }
@@ -183,6 +187,7 @@ export async function writeHealthCache(cacheKey, payload) {
   await fetch(`${url}/rest/v1/site_health_cache?on_conflict=cache_key`, {
     method: 'POST',
     headers: {
+      ...schemaHeaders(),
       apikey: key,
       Authorization: `Bearer ${key}`,
       'Content-Type': 'application/json',
@@ -202,6 +207,7 @@ function speedHeaders(accessToken) {
     url,
     key,
     headers: {
+      ...schemaHeaders(),
       apikey: anonKey || key,
       Authorization: `Bearer ${serviceKey || accessToken || key}`,
     },

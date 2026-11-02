@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { BookingFlow } from '@/components/booking/BookingFlow'
 import { PublicContentProvider } from '@/cms/PublicContentProvider'
 const api = vi.hoisted(() => ({ treatments: vi.fn(), employees: vi.fn(), dates: vi.fn(), times: vi.fn(), book: vi.fn(), verify: vi.fn() }))
-vi.mock('@/lib/supabaseEnv', () => ({ isSupabaseConfigured: false, SUPABASE_URL: '', SUPABASE_ANON_KEY: '' }))
+vi.mock('@/lib/supabaseEnv', () => ({ isSupabaseConfigured: false, SUPABASE_URL: '', SUPABASE_ANON_KEY: '', SUPABASE_DB_SCHEMA: 'tzjill', SUPABASE_MEDIA_BUCKET: 'tzjill-media' }))
 vi.mock('@/lib/salonhubApi', () => ({ loadTreatments: api.treatments, loadEmployees: api.employees, loadDates: api.dates, loadTimes: api.times, bookAppointment: api.book, verifyAppointment: api.verify }))
 afterEach(() => vi.clearAllMocks())
 async function toConfirmation() {

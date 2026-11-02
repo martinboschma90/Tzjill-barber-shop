@@ -1,3 +1,4 @@
+import { schemaHeaders } from './supabase-schema.mjs'
 const COUNTRY_ISO = {
   Netherlands: 'NL',
   Belgium: 'BE',
@@ -42,6 +43,7 @@ export async function recordBookingRequest(payload) {
   if (!url || !key) return false
 
   const headers = {
+    ...schemaHeaders(),
     apikey: key,
     Authorization: `Bearer ${key}`,
     'Content-Type': 'application/json',
@@ -77,6 +79,7 @@ export async function loadBookingStats({ days, accessToken }) {
   since.setUTCDate(since.getUTCDate() - (days || 30))
 
   const headers = {
+    ...schemaHeaders(),
     apikey: anonKey || key,
     Authorization: `Bearer ${serviceKey || accessToken || key}`,
   }

@@ -4,17 +4,19 @@ import { storageGet, storageRemove, storageSet } from '@/lib/safeStorage'
 import {
   isSupabaseConfigured,
   SUPABASE_ANON_KEY,
+  SUPABASE_DB_SCHEMA,
   SUPABASE_URL,
 } from '@/lib/supabaseEnv'
 
 export { isSupabaseConfigured, SUPABASE_ANON_KEY, SUPABASE_URL } from '@/lib/supabaseEnv'
 
-function createSupabaseClient(): SupabaseClient<Database> | null {
+function createSupabaseClient(): SupabaseClient<Database, typeof SUPABASE_DB_SCHEMA> | null {
   if (!isSupabaseConfigured) {
     return null
   }
 
-  return createClient<Database>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  return createClient<Database, typeof SUPABASE_DB_SCHEMA>(SUPABASE_URL, SUPABASE_ANON_KEY, {
+    db: { schema: SUPABASE_DB_SCHEMA },
     auth: {
       persistSession: true,
       autoRefreshToken: true,

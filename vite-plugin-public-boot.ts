@@ -51,6 +51,7 @@ export function publicBootPlugin(env: Record<string, string>): Plugin {
         headers: {
           apikey: SUPABASE_ANON_KEY,
           Authorization: 'Bearer ' + SUPABASE_ANON_KEY,
+          'Accept-Profile': 'tzjill',
           Accept: 'application/json'
         }
       }).then(function (res) { return res.ok ? res.json() : null; })

@@ -1,4 +1,5 @@
 import { json, verifyCmsUser } from './cms-session.mjs'
+import { schemaHeaders } from './supabase-schema.mjs'
 
 const ROLES = new Set(['admin', 'editor', 'viewer'])
 const OWNER_EMAIL = 'martin@viraal.media'
@@ -18,6 +19,7 @@ function restHeaders() {
   const { anonKey, serviceKey } = supabaseEnv()
   const key = serviceKey || anonKey
   return {
+    ...schemaHeaders(),
     apikey: key,
     Authorization: `Bearer ${key}`,
     'Content-Type': 'application/json',
