@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto'
 import { json, isAllowedRequest, rateLimit, setCors } from './http-security.mjs'
 import { sendBookingEmail } from './booking-request-lib.mjs'
+import { schemaHeaders } from './supabase-schema.mjs'
 
 export function validateMessage(body) {
   if (!body || typeof body !== 'object' || !['contact', 'newsletter'].includes(body.kind)) return 'Onbekend formulier.'
@@ -13,7 +14,7 @@ async function inboxAddress() {
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY
   if (url && key) {
-    const response = await fetch(`${url}/rest/v1/cms_content?key=eq.tzjill-cms-content-v1&select=data&limit=1`, { headers: { apikey: key, Authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(5000) })
+    const response = await fetch(`${url}/rest/v1/cms_content?key=eq.tzjill-cms-content-v1&select=data&limit=1`, { headers: { ...schemaHeaders(), apikey: key, Authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(5000) })
     if (!response.ok) throw new Error('inbox unavailable')
     const [row] = await response.json()
     const email = row?.data?.site?.contact?.[0]?.email?.trim()

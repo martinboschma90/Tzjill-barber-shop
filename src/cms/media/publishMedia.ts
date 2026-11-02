@@ -1,3 +1,4 @@
+import { SUPABASE_MEDIA_BUCKET } from '@/lib/supabaseEnv'
 import { isSupabaseConfigured, supabase } from '@/lib/supabase'
 
 function safeStorageName(name: string) {
@@ -27,7 +28,7 @@ export async function publishMediaAssetToSupabase(input: {
   const storagePath = `library/${input.id}/${safeStorageName(input.name)}`
 
   const { error: uploadError } = await supabase.storage
-    .from('media')
+    .from(SUPABASE_MEDIA_BUCKET)
     .upload(storagePath, input.blob, {
       upsert: true,
       contentType: input.mimeType,
@@ -58,6 +59,6 @@ export async function publishMediaAssetToSupabase(input: {
     console.warn('[media] media_assets upsert:', rowError.message)
   }
 
-  const { data: pub } = supabase.storage.from('media').getPublicUrl(storagePath)
+  const { data: pub } = supabase.storage.from(SUPABASE_MEDIA_BUCKET).getPublicUrl(storagePath)
   return pub.publicUrl || null
 }
