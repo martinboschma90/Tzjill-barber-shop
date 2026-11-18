@@ -4,6 +4,7 @@ import { BookButton } from '@/components/booking/BookButton'
 import { OptimizedImg } from '@/components/ui/OptimizedImg'
 import { Reveal } from '@/components/motion/Reveal'
 import { useCms } from '@/cms/CmsContext'
+import { useCmsPreviewWindow } from '@/cms/previews/PreviewMode'
 import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
 import { feedFrameClass, HERO_POSTER, HERO_POSTER_AVIF, HERO_POSTER_WEBP } from '@/data/feed'
 
@@ -26,6 +27,8 @@ function isBundledHeroFilm(url: string) {
 
 export function Hero() {
   const { content } = useCms()
+  const previewWindow = useCmsPreviewWindow()
+  const mediaWindow = previewWindow ?? (typeof window !== 'undefined' ? window : null)
   const reduce = useReducedMotion()
   const videoRef = useRef<HTMLVideoElement>(null)
   const poster = useResolvedMediaUrl(
@@ -41,16 +44,17 @@ export function Hero() {
   const playVideo = isDirectVideo(videoSrc)
   const stockPoster = isStockPoster(posterSrc)
   const [desktop, setDesktop] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia(DESKTOP_MEDIA_QUERY).matches,
+    mediaWindow?.matchMedia(DESKTOP_MEDIA_QUERY).matches ?? false,
   )
 
   useEffect(() => {
-    const media = window.matchMedia(DESKTOP_MEDIA_QUERY)
+    if (!mediaWindow) return
+    const media = mediaWindow.matchMedia(DESKTOP_MEDIA_QUERY)
     const sync = () => setDesktop(media.matches)
     sync()
     media.addEventListener('change', sync)
     return () => media.removeEventListener('change', sync)
-  }, [])
+  }, [mediaWindow])
 
   // The bundled portrait film cannot fill a desktop hero without upscaling.
   // Phones are close to its native size, so the film stays there.
