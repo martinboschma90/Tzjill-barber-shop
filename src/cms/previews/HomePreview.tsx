@@ -2,6 +2,7 @@ import { Hero } from '@/components/hero/Hero'
 import { Welcome } from '@/components/home/Welcome'
 import { Treatments } from '@/components/home/Treatments'
 import { HomePrices } from '@/components/home/HomePrices'
+import { HomeCollabs } from '@/components/home/HomeCollabs'
 import { InstagramFeed } from '@/components/home/InstagramFeed'
 import { Testimonials } from '@/components/home/Testimonials'
 import { HomeFaq } from '@/components/home/HomeFaq'
@@ -20,6 +21,7 @@ export function HomePreview() {
         <Welcome />
         <Treatments />
         <HomePrices />
+        <HomeCollabs />
         <InstagramFeed />
         <Testimonials />
         <HomeFaq />

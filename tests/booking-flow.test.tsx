@@ -2,17 +2,18 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { BookingFlow } from '@/components/booking/BookingFlow'
 import { PublicContentProvider } from '@/cms/PublicContentProvider'
+import { CmsPreviewModeProvider } from '@/cms/previews/PreviewMode'
 const api = vi.hoisted(() => ({ treatments: vi.fn(), employees: vi.fn(), dates: vi.fn(), times: vi.fn(), book: vi.fn(), verify: vi.fn() }))
 vi.mock('@/lib/supabaseEnv', () => ({ isSupabaseConfigured: false, SUPABASE_URL: '', SUPABASE_ANON_KEY: '', SUPABASE_DB_SCHEMA: 'tzjill', SUPABASE_MEDIA_BUCKET: 'tzjill-media' }))
 vi.mock('@/lib/salonhubApi', () => ({ loadTreatments: api.treatments, loadEmployees: api.employees, loadDates: api.dates, loadTimes: api.times, bookAppointment: api.book, verifyAppointment: api.verify }))
 afterEach(() => vi.clearAllMocks())
-async function toConfirmation() {
+async function toConfirmation(preview = false) {
   const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1)
   const day = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`
   api.treatments.mockResolvedValue({ treatments: [{ id: '66', name: 'Haircut', groupId: 'male', group: 'Heren', section: 'Haircut', minutes: 30, priceLabel: '€30', priceCents: 3000 }] })
   api.employees.mockResolvedValue({ employees: [{ id: '0', name: 'Geen voorkeur', any: true, photo: '' }] })
   api.dates.mockResolvedValue({ dates: [day] }); api.times.mockResolvedValue({ times: ['12:00:00'] })
-  render(<PublicContentProvider><BookingFlow /></PublicContentProvider>)
+  render(<PublicContentProvider>{preview ? <CmsPreviewModeProvider><BookingFlow /></CmsPreviewModeProvider> : <BookingFlow />}</PublicContentProvider>)
   await waitFor(() => expect(screen.getByRole('button', { name: /Haircut 30 min/ })).toBeTruthy())
   fireEvent.click(screen.getByRole('button', { name: /Haircut 30 min/ }))
   await waitFor(() => expect((screen.getByRole('button', { name: 'Kies een kapper' }) as HTMLButtonElement).disabled).toBe(false))
@@ -27,6 +28,13 @@ async function toConfirmation() {
   fireEvent.change(screen.getByLabelText('Telefoon'), { target: { value: '0612345678' } })
 }
 describe('booking confirmation with isolated Salonhub responses', () => {
+  it('blocks an appointment submission from the CMS preview', async () => {
+    await toConfirmation(true)
+    const button = screen.getByRole('button', { name: 'Afspraak bevestigen' })
+    fireEvent.submit(document.getElementById(button.getAttribute('form')!)!)
+    expect(api.book).not.toHaveBeenCalled()
+    expect(screen.getByRole('heading', { name: 'Bevestig je afspraak' })).toBeTruthy()
+  })
   it('renders confirmed state and ignores duplicate submission before the request completes', async () => {
     let finish!: (value: unknown) => void
     api.book.mockImplementation(() => new Promise((resolve) => { finish = resolve }))

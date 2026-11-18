@@ -1,14 +1,16 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { BookButton } from '@/components/booking/BookButton'
 import { OptimizedImg } from '@/components/ui/OptimizedImg'
 import { Reveal } from '@/components/motion/Reveal'
 import { useCms } from '@/cms/CmsContext'
+import { useCmsPreviewWindow } from '@/cms/previews/PreviewMode'
 import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
 import { feedFrameClass, HERO_POSTER, HERO_POSTER_AVIF, HERO_POSTER_WEBP } from '@/data/feed'
 
 const FALLBACK_POSTER = HERO_POSTER
 const FALLBACK_VIDEO = '/brand/hero.mp4'
+/** Bundled film is 720×1280 at ~615 kb/s. Full-bleed cover on a desktop hero upscales it about 2.7×. */
 const DESKTOP_MEDIA_QUERY = '(min-width: 768px)'
 
 function isDirectVideo(url: string) {
@@ -19,8 +21,14 @@ function isStockPoster(url: string) {
   return url === HERO_POSTER || url.endsWith('/feed/DSC00064.jpg')
 }
 
+function isBundledHeroFilm(url: string) {
+  return url === FALLBACK_VIDEO || url.endsWith('/brand/hero.mp4')
+}
+
 export function Hero() {
   const { content } = useCms()
+  const previewWindow = useCmsPreviewWindow()
+  const mediaWindow = previewWindow ?? (typeof window !== 'undefined' ? window : null)
   const reduce = useReducedMotion()
   const videoRef = useRef<HTMLVideoElement>(null)
   const poster = useResolvedMediaUrl(
@@ -35,7 +43,24 @@ export function Hero() {
   const videoSrc = video || FALLBACK_VIDEO
   const playVideo = isDirectVideo(videoSrc)
   const stockPoster = isStockPoster(posterSrc)
-  const showFilm = playVideo && !reduce
+  const [desktop, setDesktop] = useState(() =>
+    mediaWindow?.matchMedia(DESKTOP_MEDIA_QUERY).matches ?? false,
+  )
+
+  useEffect(() => {
+    if (!mediaWindow) return
+    const media = mediaWindow.matchMedia(DESKTOP_MEDIA_QUERY)
+    const sync = () => setDesktop(media.matches)
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [mediaWindow])
+
+  // The bundled portrait film cannot fill a desktop hero without upscaling.
+  // Phones are close to its native size, so the film stays there.
+  const showBundledFilm = playVideo && isBundledHeroFilm(videoSrc) && !desktop
+  const showCustomFilm = playVideo && !isBundledHeroFilm(videoSrc)
+  const showFilm = (showBundledFilm || showCustomFilm) && !reduce
 
   useEffect(() => {
     const el = videoRef.current
