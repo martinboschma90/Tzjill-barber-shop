@@ -1,11 +1,21 @@
 import { afterEach, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { ContactForm } from '@/components/contact/ContactForm'
+import { Newsletter } from '@/components/home/Newsletter'
+import { CmsPreviewModeProvider } from '@/cms/previews/PreviewMode'
 import { createDefaultContent } from '@/cms/defaultCmsContent'
 const send = vi.hoisted(() => vi.fn())
 vi.mock('@/lib/messages', () => ({ submitMessage: send }))
 vi.mock('@/cms/CmsContext', () => ({ useCms: () => ({ content: createDefaultContent() }) }))
 afterEach(() => vi.clearAllMocks())
+it.each([ContactForm, Newsletter])('blocks CMS preview form delivery (%s)', (Form) => {
+  const blocked = vi.fn()
+  const { container } = render(<CmsPreviewModeProvider onBlockedSubmit={blocked}><Form /></CmsPreviewModeProvider>)
+  fireEvent.submit(container.querySelector('form')!)
+  expect(send).not.toHaveBeenCalled()
+  expect(blocked).toHaveBeenCalledTimes(1)
+  expect(screen.queryByText(/Je bericht is verstuurd|Je aanmelding is verstuurd/)).toBeNull()
+})
 function fill() {
   render(<ContactForm />)
   fireEvent.change(screen.getByLabelText('Naam'), { target: { value: 'Test' } })

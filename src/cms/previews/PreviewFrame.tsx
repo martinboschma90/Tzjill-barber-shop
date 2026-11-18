@@ -32,6 +32,7 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
   const [device, setDevice] = useState<PreviewDevice>('desktop')
   const [nonce, setNonce] = useState(0)
   const [maximized, setMaximized] = useState(false)
+  const [submissionBlocked, setSubmissionBlocked] = useState(false)
   const [mountNode, setMountNode] = useState<HTMLElement | null>(null)
   const [stageSize, setStageSize] = useState({ width: 0, height: 0 })
   const stageRef = useRef<HTMLDivElement>(null)
@@ -137,6 +138,7 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
                 type="button"
                 title={title}
                 onClick={() => {
+                  if (id === device) return
                   setMountNode(null)
                   setDevice(id)
                 }}
@@ -182,6 +184,9 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
         </div>
       </div>
 
+      <p role="status" className="border-b border-neutral-200 bg-neutral-50 px-3 py-2 text-[11px] text-neutral-600">
+        {submissionBlocked ? 'Dit is een voorbeeld. Er is niets verstuurd of geboekt.' : 'Voorbeeldmodus: formulieren versturen niets en maken geen afspraken.'}
+      </p>
       <div className="relative min-h-0 flex-1 overflow-hidden bg-[#ece8e1] p-4">
         <div ref={stageRef} className="flex h-full min-h-0 justify-center overflow-hidden">
           <div
@@ -207,7 +212,7 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
             />
             {mountNode &&
               createPortal(
-                <CmsPreviewModeProvider>
+                <CmsPreviewModeProvider ownerWindow={mountNode.ownerDocument.defaultView} onBlockedSubmit={() => setSubmissionBlocked(true)}>
                 <div
                   data-cms-preview
                   data-theme={theme}
