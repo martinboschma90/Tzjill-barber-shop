@@ -67,17 +67,24 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
 
   useEffect(() => {
     if(!mountNode)return
+    let highlighted: HTMLElement | null = null
+    let lastKey = ''
     const focusSection=(event:Event)=>{
       const id=(event as CustomEvent<string>).detail
       const alias:Record<string,string>={'texts-Testimonials':'reviews','texts-Welcome':'welcome'}
       const key=alias[id]||id
       const target=Array.from(mountNode.querySelectorAll('[data-cms-section]')).find(node=>node.getAttribute('data-cms-section')===key)
-      if(!target)return
+      if(!target || key === lastKey)return
+      lastKey = key
+      if(highlighted){highlighted.style.outline = ''; highlighted.style.outlineOffset = ''}
+      highlighted = target as HTMLElement
+      highlighted.style.outline = '3px solid #22c55e'
+      highlighted.style.outlineOffset = '-4px'
       const top=target.getBoundingClientRect().top-mountNode.getBoundingClientRect().top+mountNode.scrollTop
       mountNode.scrollTo({top:Math.max(0,top-16),behavior:'smooth'})
     }
     window.addEventListener('cms-preview-section',focusSection)
-    return ()=>window.removeEventListener('cms-preview-section',focusSection)
+    return ()=>{window.removeEventListener('cms-preview-section',focusSection);if(highlighted){highlighted.style.outline='';highlighted.style.outlineOffset=''}}
   },[mountNode])
 
   useEffect(() => {

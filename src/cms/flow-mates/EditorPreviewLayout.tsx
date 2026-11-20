@@ -27,7 +27,7 @@ export function EditorPreviewLayout({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    const query = window.matchMedia('(min-width: 1280px)')
+    const query = window.matchMedia('(min-width: 1024px)')
     const sync = () => {
       setIsXl(query.matches)
       if (query.matches) setMobilePreviewOpen(false)
@@ -35,6 +35,12 @@ export function EditorPreviewLayout({ children }: { children: ReactNode }) {
     sync()
     query.addEventListener('change', sync)
     return () => query.removeEventListener('change', sync)
+  }, [])
+
+  useEffect(() => {
+    const reveal = () => setPreviewCollapsed(false)
+    window.addEventListener('cms-preview-section', reveal)
+    return () => window.removeEventListener('cms-preview-section', reveal)
   }, [])
 
   const startResize = (event: ReactPointerEvent<HTMLButtonElement>) => {
@@ -63,7 +69,7 @@ export function EditorPreviewLayout({ children }: { children: ReactNode }) {
   return (
     <div ref={rootRef} className="relative flex min-w-0 gap-0">
       <div
-        className={previewCollapsed ? 'min-w-0 flex-1' : 'min-w-0 flex-1 xl:flex-none'}
+        className={previewCollapsed ? 'min-w-0 flex-1' : 'min-w-0 flex-1 lg:flex-none'}
         style={!isXl || previewCollapsed ? undefined : { width: `${editorWidth}%` }}
       >
         {editor}
@@ -74,14 +80,14 @@ export function EditorPreviewLayout({ children }: { children: ReactNode }) {
           <button
             type="button"
             onPointerDown={startResize}
-            className="group/resize hidden w-6 shrink-0 cursor-col-resize touch-none items-center justify-center xl:flex"
+            className="group/resize hidden w-6 shrink-0 cursor-col-resize touch-none items-center justify-center lg:flex"
             aria-label="Breedte van editor aanpassen"
           >
             <span className="flex h-20 w-2 items-center justify-center rounded-full bg-neutral-200 text-neutral-400 group-hover/resize:bg-neutral-300 group-hover/resize:text-neutral-700">
               <GripVertical className="h-4 w-4" />
             </span>
           </button>
-          <div className="relative hidden min-w-0 flex-1 self-start xl:sticky xl:top-[var(--cms-editor-sticky-top,0px)] xl:z-20 xl:block xl:h-[calc(100dvh-var(--cms-editor-sticky-top,0px)-1rem)]">
+          <div className="relative hidden min-w-0 flex-1 self-start lg:sticky lg:top-[var(--cms-editor-sticky-top,0px)] lg:z-20 lg:block lg:h-[calc(100dvh-var(--cms-editor-sticky-top,0px)-1rem)]">
             <button
               type="button"
               onClick={() => setPreviewCollapsed(true)}
@@ -101,7 +107,7 @@ export function EditorPreviewLayout({ children }: { children: ReactNode }) {
         <button
           type="button"
           onClick={() => setPreviewCollapsed(false)}
-          className="sticky top-3 ml-3 hidden h-9 shrink-0 items-center gap-1 rounded-lg border border-neutral-200 bg-white px-3 text-xs font-medium text-neutral-600 shadow-sm hover:bg-neutral-50 xl:inline-flex"
+          className="sticky top-3 ml-3 hidden h-9 shrink-0 items-center gap-1 rounded-lg border border-neutral-200 bg-white px-3 text-xs font-medium text-neutral-600 shadow-sm hover:bg-neutral-50 lg:inline-flex"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
           Preview tonen
@@ -113,13 +119,13 @@ export function EditorPreviewLayout({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={() => setMobilePreviewOpen(true)}
-            className="fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-3 text-sm font-semibold text-white shadow-xl hover:bg-neutral-800 xl:hidden"
+            className="fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 rounded-full bg-neutral-900 px-4 py-3 text-sm font-semibold text-white shadow-xl hover:bg-neutral-800 lg:hidden"
           >
             <Monitor className="h-4 w-4" />
             Live preview
           </button>
           {mobilePreviewOpen ? (
-            <div className="fixed inset-0 z-40 flex flex-col bg-white xl:hidden">
+            <div className="fixed inset-0 z-40 flex flex-col bg-white lg:hidden">
               <div className="flex items-center justify-between border-b border-neutral-200 px-4 py-3">
                 <p className="text-sm font-medium text-neutral-900">Live preview</p>
                 <button
