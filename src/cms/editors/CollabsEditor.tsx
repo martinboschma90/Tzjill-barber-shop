@@ -14,115 +14,150 @@ export function CollabsEditor() {
 
   return (
     <div className="space-y-2">
-      {collabs.map((item, index) => (
-        <AdminListCard
-          key={index}
-          isOpen={openIndex === index}
-          onToggle={() => setOpenIndex((current) => (current === index ? null : index))}
-          thumbnail={
-            item.image ? (
-              <img src={item.image} alt="" className="h-full w-full object-cover" />
-            ) : null
-          }
-          title={item.name || `Collab ${index + 1}`}
-          meta={item.year || 'collab'}
-          actions={
-            <div className="flex gap-1">
-            <button
-              type="button"
-              className={listBtnClass}
-              onClick={() =>
-                setSite((s) => ({
-                  ...s,
-                  collabs: s.collabs.filter((_, i) => i !== index),
-                }))
-              }
-            >
-              Verwijder
-            </button>
-            {[-1, 1].map((offset) => <button key={offset} type="button" className={listBtnClass} aria-label={offset < 0 ? 'Omhoog' : 'Omlaag'} disabled={index + offset < 0 || index + offset >= collabs.length} onClick={() => setSite((previous) => { const next = [...previous.collabs]; [next[index], next[index + offset]] = [next[index + offset], next[index]]; return { ...previous, collabs: next } })}>{offset < 0 ? '↑' : '↓'}</button>)}
-            </div>
-          }
-        >
-          <TextInput
-            label="Naam"
-            value={item.name}
-            onChange={(name) =>
-              setSite((s) => ({
-                ...s,
-                collabs: s.collabs.map((row, i) =>
-                  i === index ? { ...row, name } : row,
-                ),
-              }))
+      {collabs.map((item, index) => {
+        const hasVideo = Boolean(item.video?.trim())
+
+        return (
+          <AdminListCard
+            key={index}
+            isOpen={openIndex === index}
+            onToggle={() => setOpenIndex((current) => (current === index ? null : index))}
+            thumbnail={
+              item.image ? (
+                <img src={item.image} alt="" className="h-full w-full object-cover" />
+              ) : null
             }
-          />
-          <TextInput
-            label="Jaar"
-            value={item.year}
-            onChange={(year) =>
-              setSite((s) => ({
-                ...s,
-                collabs: s.collabs.map((row, i) =>
-                  i === index ? { ...row, year } : row,
-                ),
-              }))
+            title={item.name || `Collab ${index + 1}`}
+            meta={item.year || 'collab'}
+            actions={
+              <div className="flex gap-1">
+                <button
+                  type="button"
+                  className={listBtnClass}
+                  onClick={() =>
+                    setSite((s) => ({
+                      ...s,
+                      collabs: s.collabs.filter((_, i) => i !== index),
+                    }))
+                  }
+                >
+                  Verwijder
+                </button>
+                {[-1, 1].map((offset) => (
+                  <button
+                    key={offset}
+                    type="button"
+                    className={listBtnClass}
+                    aria-label={offset < 0 ? 'Omhoog' : 'Omlaag'}
+                    disabled={index + offset < 0 || index + offset >= collabs.length}
+                    onClick={() =>
+                      setSite((previous) => {
+                        const next = [...previous.collabs]
+                        ;[next[index], next[index + offset]] = [
+                          next[index + offset],
+                          next[index],
+                        ]
+                        return { ...previous, collabs: next }
+                      })
+                    }
+                  >
+                    {offset < 0 ? '↑' : '↓'}
+                  </button>
+                ))}
+              </div>
             }
-          />
-          <TextArea
-            label="Tekst"
-            value={item.text}
-            rows={3}
-            onChange={(text) =>
-              setSite((s) => ({
-                ...s,
-                collabs: s.collabs.map((row, i) =>
-                  i === index ? { ...row, text } : row,
-                ),
-              }))
-            }
-          />
-          <MediaUrlField
-            label="Foto"
-            kind="image"
-            value={item.image}
-            onChange={(image) =>
-              setSite((s) => ({
-                ...s,
-                collabs: s.collabs.map((row, i) =>
-                  i === index ? { ...row, image } : row,
-                ),
-              }))
-            }
-          />
-          <MediaUrlField
-            label="Video"
-            kind="video"
-            value={item.video ?? ''}
-            hint="Eigen clip van deze collab. Leeg = alleen de foto — geen gedeelde film."
-            onChange={(video) =>
-              setSite((s) => ({
-                ...s,
-                collabs: s.collabs.map((row, i) =>
-                  i === index ? { ...row, video } : row,
-                ),
-              }))
-            }
-          />
-          {item.video?.trim() ? (
-            <VideoFramePicker
-              videoUrl={item.video}
-              onThumbnail={(image) =>
+          >
+            <TextInput
+              label="Naam"
+              value={item.name}
+              onChange={(name) =>
                 setSite((s) => ({
                   ...s,
                   collabs: s.collabs.map((row, i) =>
-                    i === index ? { ...row, image } : row,
+                    i === index ? { ...row, name } : row,
                   ),
                 }))
               }
             />
-          ) : null}
-        </AdminListCard>
-      ))}
+            <TextInput
+              label="Jaar"
+              value={item.year}
+              onChange={(year) =>
+                setSite((s) => ({
+                  ...s,
+                  collabs: s.collabs.map((row, i) =>
+                    i === index ? { ...row, year } : row,
+                  ),
+                }))
+              }
+            />
+            <TextArea
+              label="Tekst"
+              value={item.text}
+              rows={3}
+              onChange={(text) =>
+                setSite((s) => ({
+                  ...s,
+                  collabs: s.collabs.map((row, i) =>
+                    i === index ? { ...row, text } : row,
+                  ),
+                }))
+              }
+            />
+            <MediaUrlField
+              label="Video"
+              kind="video"
+              hidePreview={hasVideo}
+              value={item.video ?? ''}
+              hint="Eigen clip van deze collab. Leeg = alleen de foto — geen gedeelde film."
+              onChange={(video) =>
+                setSite((s) => ({
+                  ...s,
+                  collabs: s.collabs.map((row, i) =>
+                    i === index ? { ...row, video } : row,
+                  ),
+                }))
+              }
+            />
+            {hasVideo ? (
+              <VideoFramePicker
+                videoUrl={item.video!}
+                currentImage={item.image}
+                onClearImage={() =>
+                  setSite((s) => ({
+                    ...s,
+                    collabs: s.collabs.map((row, i) =>
+                      i === index ? { ...row, image: '' } : row,
+                    ),
+                  }))
+                }
+                onThumbnail={(image) =>
+                  setSite((s) => ({
+                    ...s,
+                    collabs: s.collabs.map((row, i) =>
+                      i === index ? { ...row, image } : row,
+                    ),
+                  }))
+                }
+              />
+            ) : (
+              <MediaUrlField
+                label="Foto"
+                kind="image"
+                value={item.image}
+                onChange={(image) =>
+                  setSite((s) => ({
+                    ...s,
+                    collabs: s.collabs.map((row, i) =>
+                      i === index ? { ...row, image } : row,
+                    ),
+                  }))
+                }
+              />
+            )}
+          </AdminListCard>
+        )
+      })}
       <button
         type="button"
         className={listBtnClass}
