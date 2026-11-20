@@ -180,7 +180,15 @@ export type FaqCategory = {
 
 export type SiteContent = {
   texts: Record<string, string>
-  reviews: {name: string; role: string; quote: string; image: string; video: string}[]
+  reviews: {
+    name: string
+    role: string
+    quote: string
+    image: string
+    video: string
+    stars: number
+    source: string
+  }[]
   reviewsTitle: string
   reviewsIntro: string
   reviewsVisible: boolean

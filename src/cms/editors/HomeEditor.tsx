@@ -1,3 +1,5 @@
+import { HomeCollabsSectionEditor } from './HomeCollabsSectionEditor'
+import { HomeFotoreeksEditor } from './HomeFotoreeksEditor'
 import { ReviewsEditor } from './ReviewsEditor'
 import { useCms } from '@/cms/CmsProvider'
 import { EditorSection, TextArea, TextInput } from '@/cms/fields'
@@ -278,6 +280,9 @@ export function HomeEditor() {
           },
         ]}
       />
+
+      <HomeCollabsSectionEditor />
+      <HomeFotoreeksEditor />
     </div>
   )
 }

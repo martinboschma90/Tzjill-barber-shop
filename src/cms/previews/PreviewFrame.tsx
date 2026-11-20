@@ -71,7 +71,10 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
     let lastKey = ''
     const focusSection=(event:Event)=>{
       const id=(event as CustomEvent<string>).detail
-      const alias:Record<string,string>={'texts-Testimonials':'reviews','texts-Welcome':'welcome'}
+      const alias: Record<string, string> = {
+        'texts-Testimonials': 'reviews',
+        'texts-Welcome': 'welcome',
+      }
       const key=alias[id]||id
       const target=Array.from(mountNode.querySelectorAll('[data-cms-section]')).find(node=>node.getAttribute('data-cms-section')===key)
       if(!target || key === lastKey)return
