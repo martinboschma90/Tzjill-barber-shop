@@ -39,15 +39,18 @@ export function Card({
   className = "",
   hover = false,
   id,
+  onFocusCapture,
 }: {
   children: React.ReactNode;
   className?: string;
   hover?: boolean;
   id?: string;
+  onFocusCapture?: React.FocusEventHandler<HTMLDivElement>;
 }) {
   return (
     <div
       id={id}
+      onFocusCapture={onFocusCapture}
       className={`rounded-2xl border border-neutral-200/80 bg-white shadow-[0_1px_2px_rgba(15,15,15,0.04)] transition-all duration-300 ${
         hover ? "hover:border-neutral-300 hover:shadow-[0_8px_24px_-12px_rgba(15,15,15,0.12)]" : ""
       } ${className}`}
