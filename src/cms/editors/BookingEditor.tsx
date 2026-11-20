@@ -58,8 +58,8 @@ export function BookingEditor() {
   return (
     <>
       <EditorSection
-        title="Visibility"
-        description="Show or hide the public Booking page. Content is kept when hidden."
+        title="Zichtbaarheid"
+        description="Toon of verberg het afspraakvenster. De inhoud blijft bewaard."
         defaultOpen
         badge="Settings"
       >
@@ -70,7 +70,7 @@ export function BookingEditor() {
             </p>
             <p className="type-body mt-1 text-xs text-ink/45">
               {visible
-                ? 'Visible at /booking'
+                ? 'Zichtbaar op /booking'
                 : 'Hidden — visitors are redirected home'}
             </p>
           </div>
@@ -85,12 +85,12 @@ export function BookingEditor() {
 
       <EditorSection
         title="Intro"
-        description="Headline and supporting copy above the booking flow."
+        description="Titel en uitleg boven het afspraakvenster."
         defaultOpen
         badge="Content"
       >
         <TextInput
-          label="Title"
+          label="Titel"
           value={site.bookingTitle}
           onChange={(bookingTitle) => setSite((s) => ({ ...s, bookingTitle }))}
         />

@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
@@ -19,20 +20,14 @@ export function CollabsPage() {
     <AppShell navVariant="wordmark">
       <PageFrame>
         <PageIntro
-          kicker="Studio"
+          kicker={<SiteText textKey="CollabsPage.kicker" />}
           title={
-            <>
-              Gasten
-              <br />
-              & merken
-            </>
+            <><SiteText textKey="CollabsPage.1" /><br /><SiteText textKey="CollabsPage.2" /></>
           }
-          intro="Gasten en merken. Mail als het past."
+          intro={<SiteText textKey="CollabsPage.intro" />}
         />
         <div className="mt-6 sm:mt-10">
-          <PillButton href="mailto:info@tzjill.nl" surface="dark">
-            Collab aanvragen
-          </PillButton>
+          <PillButton href="mailto:info@tzjill.nl" surface="dark"><SiteText textKey="CollabsPage.3" /></PillButton>
         </div>
 
         <CollabsCarousel items={collabs} />

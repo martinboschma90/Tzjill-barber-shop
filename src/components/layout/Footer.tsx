@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { Link } from 'react-router-dom'
 import { Logo } from '@/components/ui/Logo'
 import { publicNav } from '@/data/nav'
@@ -37,24 +38,20 @@ export function Footer() {
           </div>
 
           <div className="mt-12">
-            <h3 className="type-label text-white/60">Volg ons</h3>
+            <h3 className="type-label text-white/60"><SiteText textKey="Footer.1" /></h3>
             <div className="mt-4 flex flex-wrap gap-2">
               <a
                 href={instagram}
                 target="_blank"
                 rel="noreferrer"
                 className={buttonClass({ variant: 'solid', surface: 'dark', className: 'px-4 py-2.5' })}
-              >
-                Instagram
-              </a>
+              ><SiteText textKey="Footer.2" /></a>
               <a
                 href={MAPS_DIRECTIONS_URL}
                 target="_blank"
                 rel="noreferrer"
                 className={buttonClass({ variant: 'ghost', surface: 'dark', className: 'px-4 py-2.5' })}
-              >
-                Route
-              </a>
+              ><SiteText textKey="Footer.3" /></a>
             </div>
             <p className="type-label mt-10 text-white/60">{copyright}</p>
           </div>
@@ -63,7 +60,7 @@ export function Footer() {
         <div className="rounded-[1.75rem] bg-black p-7 text-white lg:p-10">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,280px)]">
             <div>
-              <h3 className="type-label text-white/60">Pagina’s</h3>
+              <h3 className="type-label text-white/60"><SiteText textKey="Footer.4" /></h3>
               <nav className="mt-4 flex flex-col gap-2.5">
                 {navMain.map((link) => (
                   <Link
@@ -78,7 +75,7 @@ export function Footer() {
             </div>
 
             <div>
-              <h3 className="type-label text-white/60">Studio</h3>
+              <h3 className="type-label text-white/60"><SiteText textKey="Footer.5" /></h3>
               <nav className="mt-4 flex flex-col gap-2.5">
                 {navMore.filter((link) => link.to !== '/team' || site.teamVisible !== false).map((link) => (
                   <Link
@@ -93,7 +90,7 @@ export function Footer() {
             </div>
 
             <div>
-              <h3 className="type-label text-white/60">Get in touch</h3>
+              <h3 className="type-label text-white/60"><SiteText textKey="Footer.6" /></h3>
               <div className="mt-4 space-y-4">
                 <p>
                   <a

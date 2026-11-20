@@ -7,10 +7,8 @@ import {
   LayoutDashboard,
   LogOut,
   Menu as MenuIcon,
-  Moon,
   Search,
   Settings,
-  Sun,
   UserPlus,
   X,
 } from 'lucide-react'
@@ -31,8 +29,7 @@ import { EditorPreviewLayout } from '@/cms/flow-mates/EditorPreviewLayout'
 import { EditorTopBar } from '@/cms/flow-mates/EditorTopBar'
 import { DashboardHome } from '@/cms/flow-mates/Dashboard'
 import { EditorAccordionScope } from '@/cms/flow-mates/EditorAccordionScope'
-import { useCmsTheme } from '@/cms/flow-mates/CmsTheme'
-import { isPagesWorkspacePath, PagesTabBar } from '@/cms/flow-mates/PagesTabBar'
+import { isPagesWorkspacePath, isFormsWorkspacePath, PagesTabBar } from '@/cms/flow-mates/PagesTabBar'
 import type { CmsPanelProps } from '@/cms/panels/types'
 import { UsersAdmin } from '@/cms/editors/UsersAdmin'
 import { RouteFallback } from '@/components/ui/RouteFallback'
@@ -52,13 +49,16 @@ const CmsFooterPanel = lazy(() => import('@/cms/panels/footer'))
 const CmsArtistsIndexPanel = lazy(() => import('@/cms/panels/artistsIndex'))
 const CmsArtistDetailPanel = lazy(() => import('@/cms/panels/artistDetail'))
 const CmsMediaPanel = lazy(() => import('@/cms/panels/media'))
+const CmsBookingPanel = lazy(() => import('@/cms/panels/booking'))
+const CmsLegalPanel = lazy(() => import('@/cms/panels/legal'))
+const CmsPopupPanel = lazy(() => import('@/cms/panels/popup'))
 const CmsFormsPanel = lazy(() => import('@/cms/panels/forms'))
 const CmsSettingsPanel = lazy(() => import('@/cms/panels/settings'))
 
 const NAV = [
   { to: '/cms/dashboard', label: 'Dashboard', icon: LayoutDashboard, match: 'dashboard' as const },
   { to: '/cms/home', label: "Pagina's", icon: FileText, match: 'pages' as const },
-  { to: '/cms/forms', label: 'Formulieren', icon: FileText, match: 'pages' as const },
+  { to: '/cms/forms', label: 'Formulieren & pop-ups', icon: FileText, match: 'forms' as const },
   { to: '/cms/faq', label: 'FAQ', icon: HelpCircle, match: 'faq' as const },
   { to: '/cms/media', label: 'Media', icon: FolderOpen, match: 'media' as const },
   { to: '/cms/settings', label: 'Instellingen', icon: Settings, match: 'settings' as const },
@@ -144,7 +144,10 @@ function useCmsPanels(): {
   if (pathname.startsWith('/cms/team') || pathname.startsWith('/cms/roster')) {
     return { mode: 'pages', title: 'Team', subtitle: '/team', Page: CmsTeamPanel }
   }
-  if (pathname.startsWith('/cms/forms')) return { mode: 'pages', title: 'Formulieren', subtitle: 'Contact en aanmeldingen', Page: CmsFormsPanel }
+  if (pathname.startsWith('/cms/booking')) return { mode: 'pages', title: 'Afspraak', subtitle: 'Afspraakvenster', Page: CmsBookingPanel }
+  if (pathname.startsWith('/cms/legal')) return { mode: 'pages', title: 'Privacy en cookies', subtitle: 'Teksten op de juridische pagina’s', Page: CmsLegalPanel }
+  if (pathname.startsWith('/cms/popup')) return { mode: 'pages', title: 'Mailingpop-up', subtitle: 'Teksten, afbeelding en zichtbaarheid', Page: CmsPopupPanel }
+  if (pathname.startsWith('/cms/forms')) return { mode: 'pages', title: pathname.endsWith('/newsletter') ? 'Nieuwsbrief' : pathname.endsWith('/contact') ? 'Contactformulier' : 'Formulieren', subtitle: 'Zichtbaarheid en instellingen', Page: CmsFormsPanel }
   if (pathname.startsWith('/cms/contact')) {
     return { mode: 'pages', title: 'Contact', subtitle: '/contact', Page: CmsContactPanel }
   }
@@ -209,7 +212,6 @@ export function CmsLayout() {
   const { savedAt, artistSyncError, siteSyncError, artistSaving, contentSyncStatus } = useCms()
   const { user, authRequired, signOut, role, displayName, canEdit, canManageUsers } =
     useAuth()
-  const { theme, toggleTheme } = useCmsTheme()
   const panels = useCmsPanels()
   const artistSlug = artistSlugFromPath(pathname)
   const pagesWorkspace = isPagesWorkspacePath(pathname)
@@ -227,12 +229,10 @@ export function CmsLayout() {
     pathname.includes('/cms/settings/users') ||
     pathname.includes('/cms/instellingen/gebruikers')
 
-  if (pathname.startsWith('/cms/booking')) {
-    return <Navigate to="/cms/contact" replace />
-  }
   if (!productsEnabled && pathname.startsWith('/cms/products')) {
     return <Navigate to="/cms/home" replace />
   }
+  if (pathname.startsWith('/cms/texts')) return <Navigate to="/cms/home" replace />
   if (pathname === '/cms' || pathname === '/cms/') {
     return <Navigate to="/cms/dashboard" replace />
   }
@@ -260,7 +260,7 @@ export function CmsLayout() {
     <nav className="flex-1 overflow-y-auto px-3 py-5">
       <p
         className={`mb-2 whitespace-nowrap px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400 ${
-          collapsible ? 'hidden group-hover/sidebar:block' : ''
+          collapsible ? 'hidden' : ''
         }`}
       >
         Werkomgeving
@@ -268,8 +268,10 @@ export function CmsLayout() {
       <ul className="space-y-0.5">
         {navItems.map((n) => {
           const active =
-            n.match === 'pages'
-              ? pagesWorkspace
+            n.match === 'forms'
+              ? isFormsWorkspacePath(pathname)
+              : n.match === 'pages'
+              ? pagesWorkspace && !isFormsWorkspacePath(pathname)
               : n.match === 'faq'
                 ? pathname.startsWith('/cms/faq')
                 : n.match === 'dashboard'
@@ -284,6 +286,8 @@ export function CmsLayout() {
             <li key={n.to}>
               <NavLink
                 to={n.to}
+                title={n.label}
+                aria-label={n.label}
                 className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all ${
                   active
                     ? 'bg-neutral-900 text-white shadow-sm'
@@ -293,7 +297,7 @@ export function CmsLayout() {
                 <Icon className="h-4 w-4 shrink-0" />
                 <span
                   className={`whitespace-nowrap font-medium ${
-                    collapsible ? 'hidden group-hover/sidebar:inline' : ''
+                    collapsible ? 'hidden' : ''
                   }`}
                 >
                   {n.label}
@@ -311,25 +315,25 @@ export function CmsLayout() {
     return (
       <div
         className={`flex shrink-0 items-center justify-between border-b border-neutral-200 ${
-          collapsible ? 'h-[77px] px-3 group-hover/sidebar:px-5' : 'px-5 py-5'
+          collapsible ? 'h-[77px] px-3' : 'px-5 py-5'
         }`}
       >
         <Link
           to="/cms/dashboard"
           className={`flex flex-col leading-tight ${
-            collapsible ? 'min-w-10 items-center group-hover/sidebar:items-start' : ''
+            collapsible ? 'min-w-10 items-center' : ''
           }`}
         >
           <span
             className={`font-semibold tracking-tight text-neutral-900 ${
-              collapsible ? 'text-[11px] group-hover/sidebar:text-[15px]' : 'text-[15px]'
+              collapsible ? 'text-[11px]' : 'text-[15px]'
             }`}
           >
             Flow Mates
           </span>
           <span
             className={`mt-1 whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.18em] text-neutral-500 ${
-              collapsible ? 'hidden group-hover/sidebar:block' : ''
+              collapsible ? 'hidden' : ''
             }`}
           >
             CMS
@@ -358,11 +362,11 @@ export function CmsLayout() {
           setSearchOpen(true)
         }}
         className={`flex items-center gap-2.5 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-left text-sm text-neutral-500 hover:border-neutral-300 hover:bg-white ${
-          collapsible ? 'w-10 group-hover/sidebar:w-full' : 'w-full'
+          collapsible ? 'w-10' : 'w-full'
         }`}
       >
         <Search className="h-4 w-4 shrink-0 text-neutral-400" />
-        <span className={`flex-1 truncate ${collapsible ? 'hidden group-hover/sidebar:block' : ''}`}>
+        <span className={`flex-1 truncate ${collapsible ? 'hidden' : ''}`}>
           Zoek pagina's, media…
         </span>
       </button>
@@ -372,12 +376,12 @@ export function CmsLayout() {
   const footer = (collapsible: boolean) => (
     <div
       className={`border-t border-neutral-200 py-4 ${
-        collapsible ? 'px-3 group-hover/sidebar:px-5' : 'px-5'
+        collapsible ? 'px-3' : 'px-5'
       }`}
     >
       <p
         className={`truncate text-xs font-medium text-neutral-700 ${
-          collapsible ? 'hidden group-hover/sidebar:block' : ''
+          collapsible ? 'hidden' : ''
         }`}
       >
         {user?.email ??
@@ -388,41 +392,24 @@ export function CmsLayout() {
         target="_blank"
         rel="noopener noreferrer"
         className={`mt-3 flex items-center justify-center gap-1.5 overflow-hidden rounded-md border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100 ${
-          collapsible ? 'w-10 group-hover/sidebar:w-full' : 'w-full'
+          collapsible ? 'w-10' : 'w-full'
         }`}
       >
         <LayoutDashboard className="h-3.5 w-3.5 shrink-0" />
-        <span className={collapsible ? 'hidden whitespace-nowrap group-hover/sidebar:inline' : ''}>
+        <span className={collapsible ? 'hidden whitespace-nowrap' : ''}>
           Site bekijken
         </span>
       </a>
-      <button
-        type="button"
-        onClick={toggleTheme}
-        className={`mt-2 flex items-center justify-center gap-1.5 overflow-hidden rounded-md border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100 ${
-          collapsible ? 'w-10 group-hover/sidebar:w-full' : 'w-full'
-        }`}
-        aria-label={theme === 'dark' ? 'Lichte modus' : 'Donkere modus'}
-      >
-        {theme === 'dark' ? (
-          <Sun className="h-3.5 w-3.5 shrink-0" />
-        ) : (
-          <Moon className="h-3.5 w-3.5 shrink-0" />
-        )}
-        <span className={collapsible ? 'hidden whitespace-nowrap group-hover/sidebar:inline' : ''}>
-          {theme === 'dark' ? 'Lichte modus' : 'Donkere modus'}
-        </span>
-      </button>
       {authRequired ? (
         <button
           type="button"
           onClick={() => void handleLogout()}
           className={`mt-2 flex items-center justify-center gap-1.5 overflow-hidden rounded-md border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100 ${
-            collapsible ? 'w-10 group-hover/sidebar:w-full' : 'w-full'
+            collapsible ? 'w-10' : 'w-full'
           }`}
         >
           <LogOut className="h-3.5 w-3.5 shrink-0" />
-          <span className={collapsible ? 'hidden whitespace-nowrap group-hover/sidebar:inline' : ''}>
+          <span className={collapsible ? 'hidden whitespace-nowrap' : ''}>
             Uitloggen
           </span>
         </button>
@@ -457,7 +444,7 @@ export function CmsLayout() {
       </div>
       <FlowMatesCommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
 
-      <aside className="group/sidebar peer/sidebar fixed inset-y-0 left-0 z-30 hidden w-16 flex-col overflow-hidden border-r border-neutral-200/80 bg-white shadow-sm transition-[width,box-shadow] duration-300 ease-out hover:w-64 hover:shadow-xl lg:flex">
+      <aside className="group/sidebar peer/sidebar fixed inset-y-0 left-0 z-30 hidden w-16 flex-col overflow-hidden border-r border-neutral-200/80 bg-white shadow-sm lg:flex">
         {brand()}
         {searchBtn(true)}
         {navLinks(true)}
@@ -507,9 +494,9 @@ export function CmsLayout() {
       </header>
 
       <main
-        className={`transition-[padding-left] duration-300 ease-out lg:pl-16 lg:peer-hover/sidebar:pl-64 ${
+        className={`transition-[padding-left] duration-300 ease-out ${pagesWorkspace ? 'lg:pl-60' : 'lg:pl-16'} ${
           pagesWorkspace
-            ? '[--cms-editor-sticky-top:6.25rem] lg:[--cms-editor-sticky-top:3rem]'
+            ? '[--cms-editor-sticky-top:6.25rem] lg:[--cms-editor-sticky-top:1.5rem]'
             : panels.mode === 'artists' && artistSlug
               ? '[--cms-editor-sticky-top:3.5rem] lg:[--cms-editor-sticky-top:1.5rem]'
               : '[--cms-editor-sticky-top:3.5rem] lg:[--cms-editor-sticky-top:1.5rem]'
@@ -574,19 +561,15 @@ export function CmsLayout() {
             ) : (
               <EditorPreviewLayout>
               <div className="cms-editor-pane sticky top-[var(--cms-editor-sticky-top,0px)] flex h-[calc(100dvh-var(--cms-editor-sticky-top,0px)-1.5rem)] min-h-0 min-w-0 flex-col self-start pr-1">
-                <div className="shrink-0 border-b border-neutral-200/70 pb-4">
+                <div className="shrink-0 border-b border-neutral-200/70 pb-3">
                   <h1
-                    className="text-2xl font-medium tracking-tight text-neutral-900 sm:text-[1.75rem]"
+                    className="text-2xl font-medium tracking-tight text-neutral-900 sm:text-2xl"
                     style={{ letterSpacing: '-0.01em' }}
                   >
                     {panels.title}
                   </h1>
                   <p className="mt-1.5 text-sm leading-relaxed text-neutral-500">{panels.subtitle}</p>
-                  <p className="mt-2 text-[11px] uppercase tracking-wide text-neutral-400">
-                    {formatSavedAt(savedAt)}
-                    {artistSyncError ? ` · Artist: ${artistSyncError}` : ''}
-                    {siteSyncError ? ` · Site: ${siteSyncError}` : ''}
-                  </p>
+
                 </div>
                 {panels.mode === 'artists' && artistSlug ? (
                   <div className="cms-artist-tabs shrink-0 bg-[#fafaf8] py-3">
@@ -633,13 +616,14 @@ export function CmsLayout() {
                     </div>
                   </div>
                 ) : null}
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pt-3">
+                <div className="shrink-0 pt-3">
                 {panels.mode === 'artists' && artistSlug ? null : (
                   <EditorTopBar
                     mode="auto-save"
                     saving={artistSaving || contentSyncStatus === 'pending'}
                     lastSavedAt={savedAt ? new Date(savedAt) : null}
-                    hint="Wijzigingen worden automatisch opgeslagen"
+                    error={siteSyncError || artistSyncError}
+                    hint={siteSyncError || artistSyncError ? 'Opslaan mislukt — je wijzigingen zijn nog niet online.' : authRequired ? 'Wijzigingen worden automatisch online opgeslagen' : 'Alleen lokaal opgeslagen — de live site verandert niet'}
                     extraInfo={
                       artistSyncError || siteSyncError ? (
                         <span className="text-rose-600">
@@ -650,6 +634,8 @@ export function CmsLayout() {
                     }
                   />
                 )}
+                </div>
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 <EditorAccordionScope key={`${pathname}${search}`}>
                   <ErrorBoundary compact label="cms-editor" resetKey={`${pathname}${search}`}>
                   <Suspense fallback={<RouteFallback compact />}>

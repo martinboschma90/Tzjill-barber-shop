@@ -12,7 +12,7 @@ export function isLiveClipAsset(asset: MediaAsset) {
 
 /** Raw upload used in CMS to cut a clip — not loaded on the public site. */
 export function isSourceVideoAsset(asset: MediaAsset) {
-  return asset.kind === 'video' && !isLiveClipAsset(asset)
+  return asset.kind === 'video' && asset.source !== 'website' && !isLiveClipAsset(asset)
 }
 
 export function isLiveImageAsset(asset: MediaAsset) {
@@ -21,10 +21,11 @@ export function isLiveImageAsset(asset: MediaAsset) {
 
 /** What the public site may load: portraits, posters, short clips. */
 export function isLiveSiteAsset(asset: MediaAsset) {
-  return isLiveImageAsset(asset) || isLiveClipAsset(asset)
+  return asset.source === 'website' || isLiveImageAsset(asset) || isLiveClipAsset(asset)
 }
 
 export function liveAssetLabel(asset: MediaAsset) {
+  if (asset.source === 'website') return 'Website'
   if (isLiveClipAsset(asset)) return 'Live clip'
   if (isLiveImageAsset(asset) && /-poster(\.|$)/i.test(asset.name)) return 'Poster'
   if (isLiveImageAsset(asset)) return 'Live'

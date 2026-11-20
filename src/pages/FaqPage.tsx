@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { Navigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
@@ -17,7 +18,7 @@ export function FaqPage() {
     <AppShell navVariant="wordmark">
       <PageFrame>
         <PageIntro
-          kicker="FAQ"
+          kicker={<SiteText textKey="FaqPage.kicker" />}
           title={site.faqTitle.trim() || 'Vragen'}
           intro={site.faqIntro}
         />

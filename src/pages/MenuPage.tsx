@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
@@ -61,15 +62,11 @@ export function MenuPage() {
       <PageFrame>
         <PageIntro
           introPlacement="below"
-          kicker="Behandelingen"
+          kicker={<SiteText textKey="MenuPage.kicker" />}
           title={
-            <>
-              Vaste
-              <br />
-              tarieven
-            </>
+            <><SiteText textKey="MenuPage.1" /><br /><SiteText textKey="MenuPage.2" /></>
           }
-          intro="Knippen, scheren, baard en kids. Wat hier staat, betaal je aan de stoel."
+          intro={<SiteText textKey="MenuPage.intro" />}
         />
         <div className="mt-16 grid items-start gap-x-20 gap-y-14 lg:grid-cols-2">
           {columns.map((block) => (
@@ -87,7 +84,7 @@ export function MenuPage() {
           </section>
         ))}
         <div className="mt-12">
-          <BookButton surface="dark">Afspraak maken</BookButton>
+          <BookButton surface="dark"><SiteText textKey="MenuPage.3" /></BookButton>
         </div>
       </PageFrame>
     </AppShell>

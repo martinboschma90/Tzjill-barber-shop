@@ -22,11 +22,11 @@ type FieldProps = {
 export function Field({ label, controlId, hint, children }: FieldProps) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={controlId} className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-700">
+      <label htmlFor={controlId} className="block text-xs font-semibold tracking-[0.02em] text-neutral-700">
         {label}
       </label>
       {children}
-      {hint ? <p id={controlId ? `${controlId}-hint` : undefined} className="text-[11px] leading-relaxed text-neutral-500">{hint}</p> : null}
+      {hint ? <p id={controlId ? `${controlId}-hint` : undefined} className="text-xs leading-relaxed text-neutral-500">{hint}</p> : null}
     </div>
   )
 }
@@ -224,18 +224,18 @@ export function EditorSection({
                 {title}
               </h3>
               {badge ? (
-                <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+                <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold tracking-[0.02em] text-neutral-500">
                   {badge}
                 </span>
               ) : null}
               {!visible ? (
-                <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+                <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold tracking-[0.02em] text-neutral-500">
                   Verborgen
                 </span>
               ) : null}
             </div>
             {description ? (
-              <p className="mt-0.5 truncate text-[11px] leading-relaxed text-neutral-500">
+              <p className="mt-0.5 truncate text-xs leading-relaxed text-neutral-500">
                 {description}
               </p>
             ) : null}
@@ -250,7 +250,7 @@ export function EditorSection({
           <button
             type="button"
             onClick={() => setOpen(!open)}
-            className={`mr-2 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-[11px] font-semibold ${
+            className={`mr-2 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold ${
               open
                 ? 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50'
                 : 'border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-800'
@@ -267,7 +267,7 @@ export function EditorSection({
                 onVisibleChange(!visible)
               }}
               title={visible ? 'Sectie verbergen' : 'Sectie tonen'}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] font-semibold ${
+              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
                 visible
                   ? 'border-emerald-200/70 bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
                   : 'border-neutral-200 bg-white text-neutral-500 hover:bg-neutral-50'

@@ -316,7 +316,7 @@ function asLookbook(
   value: unknown,
   fallback: LookbookImage[],
 ): LookbookImage[] {
-  if (!Array.isArray(value) || value.length === 0) return cloneLookbook(fallback)
+  if (!Array.isArray(value)) return cloneLookbook(fallback)
   const mapped = value
     .map((item) => {
       if (!item || typeof item !== 'object') return null
@@ -329,14 +329,14 @@ function asLookbook(
       return { src, alt: asString(row.alt), tags }
     })
     .filter((item): item is LookbookImage => Boolean(item))
-  return mapped.length ? mapped : cloneLookbook(fallback)
+  return mapped
 }
 
 function asProducts(
   value: unknown,
   fallback: ShopProduct[],
 ): ShopProduct[] {
-  if (!Array.isArray(value) || value.length === 0) return cloneProducts(fallback)
+  if (!Array.isArray(value)) return cloneProducts(fallback)
   const mapped = value
     .map((item) => {
       if (!item || typeof item !== 'object') return null
@@ -350,14 +350,14 @@ function asProducts(
       }
     })
     .filter((item): item is ShopProduct => Boolean(item))
-  return mapped.length ? mapped : cloneProducts(fallback)
+  return mapped
 }
 
 function asCollabs(
   value: unknown,
   fallback: ShopCollab[],
 ): ShopCollab[] {
-  if (!Array.isArray(value) || value.length === 0) return cloneCollabs(fallback)
+  if (!Array.isArray(value)) return cloneCollabs(fallback)
   const mapped = value
     .map((item, index) => {
       if (!item || typeof item !== 'object') return null
@@ -382,7 +382,7 @@ function asCollabs(
     })
     .filter((item): item is ShopCollab => Boolean(item))
     .filter((item) => !isLeftoverEventsPlaceholder(item))
-  return mapped.length ? mapped : cloneCollabs(fallback)
+  return mapped
 }
 
 /** Drop the old third seed row so the public carousel stays at the two shop collabs. */
@@ -403,7 +403,7 @@ function asTreatments(
   value: unknown,
   fallback: HomeTreatment[],
 ): HomeTreatment[] {
-  if (!Array.isArray(value) || value.length === 0) return cloneTreatments(fallback)
+  if (!Array.isArray(value)) return cloneTreatments(fallback)
   const mapped = value
     .map((item) => {
       if (!item || typeof item !== 'object') return null
@@ -417,7 +417,7 @@ function asTreatments(
       }
     })
     .filter((item): item is HomeTreatment => Boolean(item))
-  return mapped.length ? mapped : cloneTreatments(fallback)
+  return mapped
 }
 
 /** Merge partial/jsonb site content with shipped defaults. */
@@ -465,6 +465,11 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
   })
 
   return {
+    texts: row.texts && typeof row.texts === 'object' && !Array.isArray(row.texts) ? Object.fromEntries(Object.entries(row.texts).filter((entry): entry is [string, string] => typeof entry[1] === 'string')) : {},
+    reviews: Array.isArray(row.reviews) ? row.reviews.filter((v): v is Record<string, unknown> => !!v && typeof v === 'object').map(v => ({ name: asString(v.name), role: asString(v.role), quote: asString(v.quote), image: asString(v.image), video: asString(v.video) })) : defaults.reviews,
+    reviewsTitle: asString(row.reviewsTitle, defaults.reviewsTitle),
+    reviewsIntro: asString(row.reviewsIntro, defaults.reviewsIntro),
+    reviewsVisible: asBoolean(row.reviewsVisible, true),
     name: migrateBrandLabel(asString(row.name, defaults.name), defaults.name),
     fullName: migrateBrandLabel(
       asString(row.fullName, defaults.fullName),

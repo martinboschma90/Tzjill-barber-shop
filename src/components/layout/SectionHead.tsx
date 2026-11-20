@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Reveal } from '@/components/motion/Reveal'
 
 type SectionHeadProps = {
-  kicker: string
+  kicker: ReactNode
   title: ReactNode
   intro?: ReactNode
   as?: 'h1' | 'h2'

@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
@@ -41,7 +42,7 @@ const missionItems = [
   },
 ]
 
-function SectionKicker({ children }: { children: string }) {
+function SectionKicker({ children }: { children: import('react').ReactNode }) {
   return (
     <p className="type-label inline-flex items-center justify-center gap-2 rounded-full bg-[#efeae3] px-3.5 py-1.5 text-[#2c241c]">
       <span className="h-1.5 w-1.5 rounded-full bg-[#2c241c]" aria-hidden />
@@ -93,7 +94,7 @@ export function AboutPage() {
     <AppShell navVariant="wordmark">
       <PageFrame>
         <div className="mx-auto max-w-3xl text-center">
-          <SectionKicker>Over ons</SectionKicker>
+          <SectionKicker><SiteText textKey="AboutPage.1" /></SectionKicker>
           <h1 className="type-headline mt-6">
             {site.aboutTitle || 'Over ons'}
           </h1>
@@ -119,8 +120,8 @@ export function AboutPage() {
         </ul>
 
         <div className="mx-auto mt-20 max-w-3xl text-center sm:mt-24">
-          <SectionKicker>Missie</SectionKicker>
-          <h2 className="type-headline mt-6">Onze missie</h2>
+          <SectionKicker><SiteText textKey="AboutPage.2" /></SectionKicker>
+          <h2 className="type-headline mt-6"><SiteText textKey="AboutPage.3" /></h2>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
             {site.about.slice(1).join('\n') || 'Elke coupe maatwerk — knippen, scheren, baard. Traditioneel barbierwerk, met de technieken van nu.'}
           </p>
@@ -128,10 +129,7 @@ export function AboutPage() {
 
         <div className="mt-14 grid items-start gap-10 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-6">
-            <p className="type-subhead max-w-md text-white">
-              Wij geven je de look die past bij persoonlijkheid, stijl en
-              gezichtsvorm.
-            </p>
+            <p className="type-subhead max-w-md text-white"><SiteText textKey="AboutPage.4" /></p>
             <ul className="mt-8 space-y-3">
               {missionItems.map((item, index) => {
                 const isOpen = open === index
@@ -204,12 +202,8 @@ export function AboutPage() {
 
         {site.teamVisible !== false ? <>
         <div className="mx-auto mt-20 max-w-3xl text-center sm:mt-24">
-          <SectionKicker>Team</SectionKicker>
-          <h2 className="type-headline mt-6">
-            Meet
-            <br />
-            the team
-          </h2>
+          <SectionKicker><SiteText textKey="AboutPage.5" /></SectionKicker>
+          <h2 className="type-headline mt-6"><SiteText textKey="AboutPage.6" /><br /><SiteText textKey="AboutPage.7" /></h2>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
             {team.length
               ? 'De kappers achter de coupe.'
@@ -222,14 +216,12 @@ export function AboutPage() {
               <TeamSection members={team} />
             </div>
             <div className="mt-10 text-center">
-              <Link to="/team" className="type-ui text-white/50 hover:text-white">
-                Alle kappers →
-              </Link>
+              <Link to="/team" className="type-ui text-white/50 hover:text-white"><SiteText textKey="AboutPage.8" /></Link>
             </div>
           </>
         ) : (
           <div className="mt-10 text-center">
-            <BookButton surface="dark">Afspraak maken</BookButton>
+            <BookButton surface="dark"><SiteText textKey="AboutPage.9" /></BookButton>
           </div>
         )}
         </> : null}
@@ -239,13 +231,11 @@ export function AboutPage() {
 
       <PageFrame>
         <div className="rounded-[1.75rem] bg-black px-8 py-14 text-center sm:rounded-[2rem] sm:px-12 sm:py-16">
-          <SectionKicker>Studio</SectionKicker>
-          <h2 className="type-headline mt-6">Klaar voor de stoel?</h2>
-          <p className="type-lead mx-auto mt-5 max-w-md text-white/55">
-            Boek via Salonhub. Voorstreek 18, Leeuwarden.
-          </p>
+          <SectionKicker><SiteText textKey="AboutPage.10" /></SectionKicker>
+          <h2 className="type-headline mt-6"><SiteText textKey="AboutPage.11" /></h2>
+          <p className="type-lead mx-auto mt-5 max-w-md text-white/55"><SiteText textKey="AboutPage.12" /></p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-            <BookButton surface="dark">Afspraak maken</BookButton>
+            <BookButton surface="dark"><SiteText textKey="AboutPage.13" /></BookButton>
             <PillButton
               href={INSTAGRAM_URL}
               target="_blank"

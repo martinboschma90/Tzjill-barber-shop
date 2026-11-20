@@ -1,0 +1,394 @@
+{
+  "AboutPage.1": {
+    "group": "AboutPage",
+    "text": "Over ons"
+  },
+  "AboutPage.2": {
+    "group": "AboutPage",
+    "text": "Missie"
+  },
+  "AboutPage.3": {
+    "group": "AboutPage",
+    "text": "Onze missie"
+  },
+  "AboutPage.4": {
+    "group": "AboutPage",
+    "text": "Wij geven je de look die past bij persoonlijkheid, stijl en gezichtsvorm."
+  },
+  "AboutPage.5": {
+    "group": "AboutPage",
+    "text": "Team"
+  },
+  "AboutPage.6": {
+    "group": "AboutPage",
+    "text": "Meet"
+  },
+  "AboutPage.7": {
+    "group": "AboutPage",
+    "text": "the team"
+  },
+  "AboutPage.8": {
+    "group": "AboutPage",
+    "text": "Alle kappers →"
+  },
+  "AboutPage.9": {
+    "group": "AboutPage",
+    "text": "Afspraak maken"
+  },
+  "AboutPage.10": {
+    "group": "AboutPage",
+    "text": "Studio"
+  },
+  "AboutPage.11": {
+    "group": "AboutPage",
+    "text": "Klaar voor de stoel?"
+  },
+  "AboutPage.12": {
+    "group": "AboutPage",
+    "text": "Boek via Salonhub. Voorstreek 18, Leeuwarden."
+  },
+  "AboutPage.13": {
+    "group": "AboutPage",
+    "text": "Afspraak maken"
+  },
+  "CollabsPage.kicker": {
+    "group": "CollabsPage",
+    "text": "Studio"
+  },
+  "CollabsPage.1": {
+    "group": "CollabsPage",
+    "text": "Gasten"
+  },
+  "CollabsPage.2": {
+    "group": "CollabsPage",
+    "text": "& merken"
+  },
+  "CollabsPage.intro": {
+    "group": "CollabsPage",
+    "text": "Gasten en merken. Mail als het past."
+  },
+  "CollabsPage.3": {
+    "group": "CollabsPage",
+    "text": "Collab aanvragen"
+  },
+  "ContactPage.1": {
+    "group": "ContactPage",
+    "text": "Contact"
+  },
+  "ContactPage.2": {
+    "group": "ContactPage",
+    "text": "Kom langs."
+  },
+  "ContactPage.3": {
+    "group": "ContactPage",
+    "text": "Voorstreek 18."
+  },
+  "ContactPage.4": {
+    "group": "ContactPage",
+    "text": "Adres & openingstijden"
+  },
+  "ContactPage.5": {
+    "group": "ContactPage",
+    "text": "Afspraak maken"
+  },
+  "ContactPage.6": {
+    "group": "ContactPage",
+    "text": "Instagram"
+  },
+  "ContactPage.7": {
+    "group": "ContactPage",
+    "text": "Bericht"
+  },
+  "ContactPage.8": {
+    "group": "ContactPage",
+    "text": "Vraag of collab — knipafspraak via Salonhub."
+  },
+  "FaqPage.kicker": {
+    "group": "FaqPage",
+    "text": "FAQ"
+  },
+  "LegalPage.1": {
+    "group": "LegalPage",
+    "text": "verwerkt de gegevens die je via deze website aan ons geeft."
+  },
+  "LegalPage.2": {
+    "group": "LegalPage",
+    "text": "Afspraak en contact"
+  },
+  "LegalPage.3": {
+    "group": "LegalPage",
+    "text": "Voor een afspraak vraagt Salonhub om je naam, e-mailadres en telefoonnummer. Deze gegevens worden gebruikt om je afspraak te maken en te bevestigen. Een contactbericht bevat de gegevens die je zelf invult; het wordt per e-mail bij de salon afgeleverd."
+  },
+  "LegalPage.4": {
+    "group": "LegalPage",
+    "text": "Aanmeldingen"
+  },
+  "LegalPage.5": {
+    "group": "LegalPage",
+    "text": "Als je je aanmeldt voor de nieuwsbrief of jubileumactie gebruiken we je opgegeven contactgegevens voor die aanmelding. Je kunt je toestemming intrekken door ons te mailen."
+  },
+  "LegalPage.6": {
+    "group": "LegalPage",
+    "text": "Diensten achter deze site"
+  },
+  "LegalPage.7": {
+    "group": "LegalPage",
+    "text": "De website gebruikt Vercel voor hosting en bezoekersstatistieken, Supabase voor het CMS, Salonhub voor afspraken en een e-maildienst voor formulierberichten. De kaart van Google wordt pas geladen als je daar zelf voor kiest."
+  },
+  "LegalPage.8": {
+    "group": "LegalPage",
+    "text": "Vragen over je gegevens"
+  },
+  "LegalPage.9": {
+    "group": "LegalPage",
+    "text": "Wil je je gegevens inzien, laten corrigeren of laten verwijderen? Mail"
+  },
+  "LegalPage.10": {
+    "group": "LegalPage",
+    "text": ". Deel alleen gegevens die nodig zijn voor je vraag."
+  },
+  "LegalPage.11": {
+    "group": "LegalPage",
+    "text": "De site bewaart lokaal je weergavevoorkeur, de laatst geladen publieke inhoud en of je de jubileumpopup hebt gesloten. CMS-login bewaart daarnaast een sessie op jouw apparaat."
+  },
+  "LegalPage.12": {
+    "group": "LegalPage",
+    "text": "Vercel Web Analytics wordt gebruikt voor bezoekersstatistieken. De Google-kaart maakt pas verbinding met Google nadat je op ‘Kaart laden’ hebt gedrukt. Via links naar Instagram en Salonhub gelden de instellingen van die diensten."
+  },
+  "LegalPage.13": {
+    "group": "LegalPage",
+    "text": "Je kunt lokale websitegegevens verwijderen via de privacy-instellingen van je browser. Je hoeft de kaart niet te laden om een afspraak te maken."
+  },
+  "LegalPage.14": {
+    "group": "LegalPage",
+    "text": "Contact:"
+  },
+  "LookbookPage.kicker": {
+    "group": "LookbookPage",
+    "text": "Looks"
+  },
+  "LookbookPage.1": {
+    "group": "LookbookPage",
+    "text": "Behind"
+  },
+  "LookbookPage.2": {
+    "group": "LookbookPage",
+    "text": "the chair"
+  },
+  "LookbookPage.intro": {
+    "group": "LookbookPage",
+    "text": "Looks uit de zaak. #tzjill"
+  },
+  "LookbookPage.3": {
+    "group": "LookbookPage",
+    "text": "Nog geen looks in deze categorie. Check Instagram of kies een andere filter."
+  },
+  "MenuPage.kicker": {
+    "group": "MenuPage",
+    "text": "Behandelingen"
+  },
+  "MenuPage.1": {
+    "group": "MenuPage",
+    "text": "Vaste"
+  },
+  "MenuPage.2": {
+    "group": "MenuPage",
+    "text": "tarieven"
+  },
+  "MenuPage.intro": {
+    "group": "MenuPage",
+    "text": "Knippen, scheren, baard en kids. Wat hier staat, betaal je aan de stoel."
+  },
+  "MenuPage.3": {
+    "group": "MenuPage",
+    "text": "Afspraak maken"
+  },
+  "NotFoundPage.1": {
+    "group": "NotFoundPage",
+    "text": "Pagina niet gevonden"
+  },
+  "NotFoundPage.2": {
+    "group": "NotFoundPage",
+    "text": "Deze pagina bestaat niet meer of het adres klopt niet."
+  },
+  "NotFoundPage.3": {
+    "group": "NotFoundPage",
+    "text": "Terug naar Home"
+  },
+  "ProductsPage.kicker": {
+    "group": "ProductsPage",
+    "text": "Shop"
+  },
+  "ProductsPage.title": {
+    "group": "ProductsPage",
+    "text": "Producten"
+  },
+  "ProductsPage.intro": {
+    "group": "ProductsPage",
+    "text": "Haar- en baardverzorging. Koop je in de zaak."
+  },
+  "TeamPage.kicker": {
+    "group": "TeamPage",
+    "text": "Team"
+  },
+  "TeamPage.1": {
+    "group": "TeamPage",
+    "text": "Meet"
+  },
+  "TeamPage.2": {
+    "group": "TeamPage",
+    "text": "the team"
+  },
+  "TeamPage.intro": {
+    "group": "TeamPage",
+    "text": "De kappers achter de coupe."
+  },
+  "TeamPage.3": {
+    "group": "TeamPage",
+    "text": "Kies je kapper bij het boeken in Salonhub. Namen volgen in de zaak — we zetten hier geen placeholder-team."
+  },
+  "TeamPage.4": {
+    "group": "TeamPage",
+    "text": "Afspraak maken"
+  },
+  "HomeCollabs.1": {
+    "group": "HomeCollabs",
+    "text": "Bekijk collab"
+  },
+  "HomeCollabs.2": {
+    "group": "HomeCollabs",
+    "text": "Collabs"
+  },
+  "HomeCollabs.3": {
+    "group": "HomeCollabs",
+    "text": "Gasten & merken"
+  },
+  "HomeCollabs.4": {
+    "group": "HomeCollabs",
+    "text": "Alle collabs"
+  },
+  "HomeFaq.1": {
+    "group": "HomeFaq",
+    "text": "FAQ"
+  },
+  "HomeFaq.2": {
+    "group": "HomeFaq",
+    "text": "Voor je in"
+  },
+  "HomeFaq.3": {
+    "group": "HomeFaq",
+    "text": "de stoel zit"
+  },
+  "HomeFaq.4": {
+    "group": "HomeFaq",
+    "text": "Boeken, te laat, kids — de rest regel je aan de balie."
+  },
+  "HomePrices.kicker": {
+    "group": "HomePrices",
+    "text": "Menu"
+  },
+  "HomePrices.1": {
+    "group": "HomePrices",
+    "text": "Vaste"
+  },
+  "HomePrices.2": {
+    "group": "HomePrices",
+    "text": "tarieven"
+  },
+  "HomePrices.3": {
+    "group": "HomePrices",
+    "text": "Volledig menu →"
+  },
+  "HomePrices.4": {
+    "group": "HomePrices",
+    "text": "Afspraak maken"
+  },
+  "InstagramFeed.1": {
+    "group": "InstagramFeed",
+    "text": "Instagram"
+  },
+  "InstagramFeed.2": {
+    "group": "InstagramFeed",
+    "text": "Looks van"
+  },
+  "InstagramFeed.3": {
+    "group": "InstagramFeed",
+    "text": "de stoel"
+  },
+  "Newsletter.1": {
+    "group": "Newsletter",
+    "text": "Nieuwsbrief"
+  },
+  "Newsletter.2": {
+    "group": "Newsletter",
+    "text": "Blijf op de hoogte"
+  },
+  "Newsletter.3": {
+    "group": "Newsletter",
+    "text": "Looks, drops en nieuws uit de lounge. Geen spam."
+  },
+  "Newsletter.4": {
+    "group": "Newsletter",
+    "text": "E-mail"
+  },
+  "Newsletter.5": {
+    "group": "Newsletter",
+    "text": "Ik wil de nieuwsbrief ontvangen."
+  },
+  "Newsletter.6": {
+    "group": "Newsletter",
+    "text": "Privacy"
+  },
+  "Newsletter.7": {
+    "group": "Newsletter",
+    "text": "Je aanmelding is verstuurd."
+  },
+  "Testimonials.1": {
+    "group": "Testimonials",
+    "text": "Reviews"
+  },
+  "Welcome.1": {
+    "group": "Welcome",
+    "text": "Over ons"
+  },
+  "Footer.1": {
+    "group": "Footer",
+    "text": "Volg ons"
+  },
+  "Footer.2": {
+    "group": "Footer",
+    "text": "Instagram"
+  },
+  "Footer.3": {
+    "group": "Footer",
+    "text": "Route"
+  },
+  "Footer.4": {
+    "group": "Footer",
+    "text": "Pagina’s"
+  },
+  "Footer.5": {
+    "group": "Footer",
+    "text": "Studio"
+  },
+  "Footer.6": {
+    "group": "Footer",
+    "text": "Get in touch"
+  },
+  "MenuOverlay.1": {
+    "group": "MenuOverlay",
+    "text": "Afspraak"
+  },
+  "Navbar.1": {
+    "group": "Navbar",
+    "text": "Afspraak"
+  },
+  "StickyContactBar.1": {
+    "group": "StickyContactBar",
+    "text": "Afspraak"
+  },
+  "StickyContactBar.2": {
+    "group": "StickyContactBar",
+    "text": "Bellen"
+  }
+}

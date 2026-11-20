@@ -66,6 +66,21 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
   }, [theme, mountNode])
 
   useEffect(() => {
+    if(!mountNode)return
+    const focusSection=(event:Event)=>{
+      const id=(event as CustomEvent<string>).detail
+      const alias:Record<string,string>={'texts-Testimonials':'reviews','texts-Welcome':'welcome'}
+      const key=alias[id]||id
+      const target=Array.from(mountNode.querySelectorAll('[data-cms-section]')).find(node=>node.getAttribute('data-cms-section')===key)
+      if(!target)return
+      const top=target.getBoundingClientRect().top-mountNode.getBoundingClientRect().top+mountNode.scrollTop
+      mountNode.scrollTo({top:Math.max(0,top-16),behavior:'smooth'})
+    }
+    window.addEventListener('cms-preview-section',focusSection)
+    return ()=>window.removeEventListener('cms-preview-section',focusSection)
+  },[mountNode])
+
+  useEffect(() => {
     if (!mountNode) return
     let attempts = 0
     let timer = 0

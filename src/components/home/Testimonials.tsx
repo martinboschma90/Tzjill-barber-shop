@@ -1,27 +1,23 @@
+import { SiteText } from '@/cms/SiteText'
 import { useCallback, useState } from 'react'
 import { Reveal } from '@/components/motion/Reveal'
-import { reviews } from '@/data/reviews'
-
-const COUNT = reviews.length
-
-function wrap(index: number) {
-  return ((index % COUNT) + COUNT) % COUNT
-}
+import { useCms } from '@/cms/CmsContext'
+import type { SiteContent } from '@/cms/content'
 
 const cardClass =
   'flex h-full min-h-[16.5rem] flex-col justify-between rounded-[1.75rem] bg-[#efeae3] px-7 py-7 text-left text-[#2c241c] sm:min-h-[18rem] sm:rounded-[2rem] sm:px-8 sm:py-8'
 
-function ReviewCard({ item }: { item: (typeof reviews)[number] }) {
+function ReviewCard({ item }: { item: SiteContent['reviews'][number] }) {
   return (
     <>
       <p className="type-lead text-[1.15rem] leading-snug">“{item.quote}”</p>
       <div className="mt-8 flex items-center gap-3">
-        <img
+        {item.image ? <img
           src={item.image}
           alt=""
           className="h-12 w-12 shrink-0 rounded-full object-cover"
           draggable={false}
-        />
+        /> : null}
         <div>
           <p className="type-ui">{item.name}</p>
           <p className="type-label mt-0.5 text-[#2c241c]/70">{item.role}</p>
@@ -32,31 +28,31 @@ function ReviewCard({ item }: { item: (typeof reviews)[number] }) {
 }
 
 export function Testimonials() {
+  const {content: {site}} = useCms()
+  const reviews = site.reviews.filter(r => r.quote.trim())
+  const count = reviews.length
   const [active, setActive] = useState(0)
 
   const go = useCallback((dir: -1 | 1) => {
-    setActive((current) => wrap(current + dir))
-  }, [])
+    setActive((current) => count ? (current + dir + count) % count : 0)
+  }, [count])
 
-  const current = reviews[active]
+  if (!site.reviewsVisible || !count) return null
+  const current = reviews[active % count]
 
   return (
-    <section className="section-y text-white">
+    <section data-cms-section="reviews" className="section-y text-white">
       <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
             <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
-              <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
-              Reviews
-            </p>
+              <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden /><SiteText textKey="Testimonials.1" /></p>
             <Reveal>
               <h2 className="type-headline mt-5">
-                Wat klanten
-                <br />
-                zeggen
+                {site.reviewsTitle}
               </h2>
             </Reveal>
             <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
-              Niet van ons — van mannen uit de stoel.
+              {site.reviewsIntro}
             </p>
           </div>
 
@@ -72,7 +68,7 @@ export function Testimonials() {
 
         <ul className="mt-14 hidden gap-5 sm:grid sm:grid-cols-3">
           {reviews.map((item, index) => (
-            <li key={item.name}>
+            <li key={index}>
               <Reveal delay={index * 0.08} className="h-full">
                 <article className={cardClass}>
                   <ReviewCard item={item} />

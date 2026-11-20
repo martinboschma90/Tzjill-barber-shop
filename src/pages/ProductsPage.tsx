@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
 import { PageIntro } from '@/components/layout/PageIntro'
@@ -13,9 +14,9 @@ export function ProductsPage() {
     <AppShell navVariant="wordmark">
       <PageFrame>
         <PageIntro
-          kicker="Shop"
-          title="Producten"
-          intro="Haar- en baardverzorging. Koop je in de zaak."
+          kicker={<SiteText textKey="ProductsPage.kicker" />}
+          title={<SiteText textKey="ProductsPage.title" />}
+          intro={<SiteText textKey="ProductsPage.intro" />}
         />
         <ul className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
           {products.map((item) => (

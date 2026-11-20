@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { ResolvedImg } from '@/components/ui/ResolvedMedia'
 import { Link } from 'react-router-dom'
 import { buttonClass } from '@/components/ui/buttonStyles'
@@ -16,7 +17,7 @@ export function Welcome() {
   const posterSrc = poster || FALLBACK_POSTER
 
   return (
-    <section className="text-white">
+    <section data-cms-section="welcome" className="text-white">
       <div className="mx-auto grid max-w-[1240px] items-center gap-12 px-6 section-y lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16 lg:px-8">
         <div>
           <p className="type-label text-white/65">{content.site.welcomeKicker || 'Studio'}</p>
@@ -32,9 +33,7 @@ export function Welcome() {
           <Link
             to="/over-ons"
             className={buttonClass({ variant: 'ghost', surface: 'dark', className: 'mt-8' })}
-          >
-            Over ons
-            <span aria-hidden className="motion-arrow">
+          ><SiteText textKey="Welcome.1" /><span aria-hidden className="motion-arrow">
               →
             </span>
           </Link>
