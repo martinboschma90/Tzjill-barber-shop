@@ -7,23 +7,40 @@ import type { SiteContent } from '@/cms/content'
 const cardClass =
   'flex h-full min-h-[16.5rem] flex-col justify-between rounded-[1.75rem] bg-[#efeae3] px-7 py-7 text-left text-[#2c241c] sm:min-h-[18rem] sm:rounded-[2rem] sm:px-8 sm:py-8'
 
+function ReviewStars({ stars }: { stars: number }) {
+  const count = Math.min(5, Math.max(1, stars || 5))
+  return (
+    <p className="type-label tracking-wide text-[#2c241c]/55" aria-label={`${count} van 5 sterren`}>
+      <span aria-hidden>{'★'.repeat(count)}</span>
+      <span className="text-[#2c241c]/25" aria-hidden>
+        {'☆'.repeat(5 - count)}
+      </span>
+    </p>
+  )
+}
+
 function ReviewCard({ item }: { item: SiteContent['reviews'][number] }) {
   return (
-    <>
+  <>
+    <div className="space-y-4">
+      <ReviewStars stars={item.stars} />
       <p className="type-lead text-[1.15rem] leading-snug">“{item.quote}”</p>
-      <div className="mt-8 flex items-center gap-3">
-        {item.image ? <img
-          src={item.image}
-          alt=""
-          className="h-12 w-12 shrink-0 rounded-full object-cover"
-          draggable={false}
-        /> : null}
-        <div>
-          <p className="type-ui">{item.name}</p>
-          <p className="type-label mt-0.5 text-[#2c241c]/70">{item.role}</p>
-        </div>
+    </div>
+    <div className="mt-8 flex items-center gap-3">
+      {item.image ? <img
+        src={item.image}
+        alt=""
+        className="h-12 w-12 shrink-0 rounded-full object-cover"
+        draggable={false}
+      /> : null}
+      <div>
+        <p className="type-ui">{item.name}</p>
+        <p className="type-label mt-0.5 text-[#2c241c]/70">
+          {[item.role, item.source].filter(Boolean).join(' · ')}
+        </p>
       </div>
-    </>
+    </div>
+  </>
   )
 }
 
@@ -44,7 +61,10 @@ export function Testimonials() {
     <section data-cms-section="reviews" className="section-y text-white">
       <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-            <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
+            <p
+              data-cms-section="reviews"
+              className="type-label inline-flex items-center justify-center gap-2 text-white/65"
+            >
               <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden /><SiteText textKey="Testimonials.1" /></p>
             <Reveal>
               <h2 className="type-headline mt-5">
@@ -57,7 +77,7 @@ export function Testimonials() {
           </div>
 
         <div className="mt-14 sm:hidden">
-          <article className={cardClass} aria-live="polite">
+          <article data-cms-section="reviews" className={cardClass} aria-live="polite">
             <ReviewCard item={current} />
           </article>
           <div className="mt-6 flex justify-center gap-2">
@@ -70,7 +90,7 @@ export function Testimonials() {
           {reviews.map((item, index) => (
             <li key={index}>
               <Reveal delay={index * 0.08} className="h-full">
-                <article className={cardClass}>
+                <article data-cms-section="reviews" className={cardClass}>
                   <ReviewCard item={item} />
                 </article>
               </Reveal>

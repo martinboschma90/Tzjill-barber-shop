@@ -466,7 +466,27 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
 
   return {
     texts: row.texts && typeof row.texts === 'object' && !Array.isArray(row.texts) ? Object.fromEntries(Object.entries(row.texts).filter((entry): entry is [string, string] => typeof entry[1] === 'string')) : {},
-    reviews: Array.isArray(row.reviews) ? row.reviews.filter((v): v is Record<string, unknown> => !!v && typeof v === 'object').map(v => ({ name: asString(v.name), role: asString(v.role), quote: asString(v.quote), image: asString(v.image), video: asString(v.video) })) : defaults.reviews,
+    reviews: Array.isArray(row.reviews)
+      ? row.reviews
+          .filter((v): v is Record<string, unknown> => !!v && typeof v === 'object')
+          .map((v) => {
+            const rawStars = v.stars
+            const stars =
+              typeof rawStars === 'number' && Number.isFinite(rawStars)
+                ? Math.min(5, Math.max(1, Math.round(rawStars)))
+                : 5
+            const source = asString(v.source ?? v.bron, '')
+            return {
+              name: asString(v.name),
+              role: asString(v.role),
+              quote: asString(v.quote),
+              image: asString(v.image),
+              video: asString(v.video),
+              stars,
+              source,
+            }
+          })
+      : defaults.reviews,
     reviewsTitle: asString(row.reviewsTitle, defaults.reviewsTitle),
     reviewsIntro: asString(row.reviewsIntro, defaults.reviewsIntro),
     reviewsVisible: asBoolean(row.reviewsVisible, true),
