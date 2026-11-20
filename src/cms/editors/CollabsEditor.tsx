@@ -5,6 +5,7 @@ import { listBtnClass } from '@/cms/editors/listBtn'
 import { AdminListCard } from '@/cms/editors/AdminListCard'
 import { TextArea, TextInput } from '@/cms/fields'
 import { MediaUrlField } from '@/cms/media/MediaUrlField'
+import { VideoFramePicker } from '@/cms/editors/VideoFramePicker'
 
 export function CollabsEditor() {
   const { content, setSite } = useCms()
@@ -107,6 +108,19 @@ export function CollabsEditor() {
               }))
             }
           />
+          {item.video?.trim() ? (
+            <VideoFramePicker
+              videoUrl={item.video}
+              onThumbnail={(image) =>
+                setSite((s) => ({
+                  ...s,
+                  collabs: s.collabs.map((row, i) =>
+                    i === index ? { ...row, image } : row,
+                  ),
+                }))
+              }
+            />
+          ) : null}
         </AdminListCard>
       ))}
       <button
