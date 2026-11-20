@@ -14,6 +14,8 @@ type MediaUrlFieldProps = {
   onChange: (url: string) => void
   kind?: 'image' | 'video' | 'any'
   hint?: string
+  /** Hide inline image/video preview (e.g. when another control owns playback). */
+  hidePreview?: boolean
 }
 
 /** URL field with upload (→ WebP/WebM) and library picker. */
@@ -23,6 +25,7 @@ export function MediaUrlField({
   onChange,
   kind = 'image',
   hint,
+  hidePreview = false,
 }: MediaUrlFieldProps) {
   const { uploadFiles, assets, syncingRemote, uploading } = useMedia()
   const fileRef = useRef<HTMLInputElement>(null)
@@ -133,7 +136,7 @@ export function MediaUrlField({
           </p>
         ) : null}
 
-        {previewUrl && kind !== 'video' ? (
+        {previewUrl && !hidePreview && kind !== 'video' ? (
           <div className="overflow-hidden rounded-xl border border-dashed border-neutral-300 bg-neutral-50">
             <div className="aspect-[4/3] w-full">
               <OptimizedImg
@@ -145,7 +148,7 @@ export function MediaUrlField({
             </div>
           </div>
         ) : null}
-        {previewUrl && kind === 'video' ? (
+        {previewUrl && !hidePreview && kind === 'video' ? (
           <div className="overflow-hidden rounded-xl border border-dashed border-neutral-300 bg-neutral-50">
             <div className="aspect-[4/3] w-full">
               <video

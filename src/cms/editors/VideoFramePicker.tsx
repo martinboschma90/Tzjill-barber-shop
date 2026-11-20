@@ -5,13 +5,18 @@ import { captureCurrentVideoFrame } from '@/cms/media/convert'
 import { useMedia } from '@/cms/media/MediaProvider'
 import { toMediaRef } from '@/cms/media/refs'
 import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
+import { OptimizedImg } from '@/components/ui/OptimizedImg'
 
 const TAINTED_MESSAGE =
   'Kan geen beeld uit deze video halen, upload de video via de mediabibliotheek'
 
+const INITIAL_FRAME_OFFSET = 0.1
+
 type VideoFramePickerProps = {
   videoUrl: string
   onThumbnail: (url: string) => void
+  currentImage?: string
+  onClearImage?: () => void
 }
 
 function formatTime(seconds: number) {
@@ -21,8 +26,92 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, '0')}`
 }
 
-export function VideoFramePicker({ videoUrl, onThumbnail }: VideoFramePickerProps) {
+function waitForSeeked(video: HTMLVideoElement): Promise<void> {
+  if (video.seeking) {
+    return new Promise((resolve, reject) => {
+      const onOk = () => {
+        cleanup()
+        resolve()
+      }
+      const onErr = () => {
+        cleanup()
+        reject(new Error('Video kon niet worden geladen.'))
+      }
+      const cleanup = () => {
+        video.removeEventListener('seeked', onOk)
+        video.removeEventListener('error', onErr)
+      }
+      video.addEventListener('seeked', onOk)
+      video.addEventListener('error', onErr)
+    })
+  }
+  return Promise.resolve()
+}
+
+function waitForReadyState(video: HTMLVideoElement, minState: number): Promise<void> {
+  if (video.readyState >= minState) return Promise.resolve()
+  return new Promise((resolve, reject) => {
+    const onOk = () => {
+      if (video.readyState >= minState) {
+        cleanup()
+        resolve()
+      }
+    }
+    const onErr = () => {
+      cleanup()
+      reject(new Error('Video kon niet worden geladen.'))
+    }
+    const cleanup = () => {
+      video.removeEventListener('loadeddata', onOk)
+      video.removeEventListener('canplay', onOk)
+      video.removeEventListener('error', onErr)
+    }
+    video.addEventListener('loadeddata', onOk)
+    video.addEventListener('canplay', onOk)
+    video.addEventListener('error', onErr)
+    onOk()
+  })
+}
+
+function videoFrameLooksBlack(video: HTMLVideoElement): boolean {
+  if (!video.videoWidth || !video.videoHeight) return false
+  const canvas = document.createElement('canvas')
+  canvas.width = 16
+  canvas.height = 16
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return false
+  ctx.drawImage(video, 0, 0, 16, 16)
+  try {
+    const { data } = ctx.getImageData(0, 0, 16, 16)
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i] > 4 || data[i + 1] > 4 || data[i + 2] > 4) return false
+    }
+    return true
+  } catch {
+    return false
+  }
+}
+
+async function waitForPaintedFrame(video: HTMLVideoElement): Promise<void> {
+  await waitForReadyState(video, 2)
+  await waitForSeeked(video)
+  if ('requestVideoFrameCallback' in video) {
+    await new Promise<void>((resolve) => {
+      video.requestVideoFrameCallback(() => resolve())
+    })
+    return
+  }
+  await new Promise<void>((r) => window.setTimeout(r, 50))
+}
+
+export function VideoFramePicker({
+  videoUrl,
+  onThumbnail,
+  currentImage,
+  onClearImage,
+}: VideoFramePickerProps) {
   const resolvedUrl = useResolvedMediaUrl(videoUrl)
+  const previewImage = useResolvedMediaUrl(currentImage)
   const { uploadFiles, uploading } = useMedia()
   const videoRef = useRef<HTMLVideoElement>(null)
   const [playing, setPlaying] = useState(false)
@@ -42,6 +131,16 @@ export function VideoFramePicker({ videoUrl, onThumbnail }: VideoFramePickerProp
     const d = el.duration
     if (Number.isFinite(d) && d > 0) setDuration(d)
   }, [])
+
+  const primeFirstFrame = useCallback((el: HTMLVideoElement) => {
+    readDuration(el)
+    const d = el.duration
+    const target =
+      Number.isFinite(d) && d > 0
+        ? Math.min(INITIAL_FRAME_OFFSET, Math.max(0, d - 0.05))
+        : INITIAL_FRAME_OFFSET
+    el.currentTime = target
+  }, [readDuration])
 
   const togglePlay = useCallback(() => {
     const el = videoRef.current
@@ -63,38 +162,30 @@ export function VideoFramePicker({ videoUrl, onThumbnail }: VideoFramePickerProp
     el.currentTime = next
   }, [])
 
+  const captureFrameBlob = useCallback(async (el: HTMLVideoElement) => {
+    await waitForPaintedFrame(el)
+    let result = await captureCurrentVideoFrame(el, 1920)
+    if (videoFrameLooksBlack(el)) {
+      await new Promise<void>((r) => window.setTimeout(r, 150))
+      await waitForPaintedFrame(el)
+      result = await captureCurrentVideoFrame(el, 1920)
+    }
+    return result
+  }, [])
+
   const captureThumbnail = useCallback(async () => {
     const el = videoRef.current
     if (!el || !resolvedUrl) return
     setBusy(true)
     setError(null)
     try {
-      if (el.readyState < 2) {
-        await new Promise<void>((resolve, reject) => {
-          const onOk = () => {
-            cleanup()
-            resolve()
-          }
-          const onErr = () => {
-            cleanup()
-            reject(new Error('Video kon niet worden geladen.'))
-          }
-          const cleanup = () => {
-            el.removeEventListener('loadeddata', onOk)
-            el.removeEventListener('error', onErr)
-          }
-          el.addEventListener('loadeddata', onOk)
-          el.addEventListener('error', onErr)
-        })
+      el.pause()
+      setPlaying(false)
+      const at = Math.min(scrub, duration > 0 ? duration : scrub)
+      if (Math.abs(el.currentTime - at) > 0.02) {
+        el.currentTime = at
       }
-      if ('requestVideoFrameCallback' in el) {
-        await new Promise<void>((resolve) => {
-          el.requestVideoFrameCallback(() => resolve())
-        })
-      } else {
-        await new Promise<void>((r) => window.setTimeout(r, 80))
-      }
-      const { blob } = await captureCurrentVideoFrame(el, 1920)
+      const { blob } = await captureFrameBlob(el)
       const file = new File([blob], `collab-thumbnail-${Date.now()}.webp`, {
         type: 'image/webp',
       })
@@ -108,11 +199,12 @@ export function VideoFramePicker({ videoUrl, onThumbnail }: VideoFramePickerProp
     } finally {
       setBusy(false)
     }
-  }, [onThumbnail, resolvedUrl, uploadFiles])
+  }, [captureFrameBlob, duration, onThumbnail, resolvedUrl, scrub, uploadFiles])
 
   if (!videoUrl.trim()) return null
 
-  const uploadBusy = busy || (uploading !== null && uploading.stage !== 'error' && uploading.stage !== 'done')
+  const uploadBusy =
+    busy || (uploading !== null && uploading.stage !== 'error' && uploading.stage !== 'done')
 
   return (
     <Field
@@ -134,12 +226,15 @@ export function VideoFramePicker({ videoUrl, onThumbnail }: VideoFramePickerProp
                 crossOrigin="anonymous"
                 muted
                 playsInline
-                preload="metadata"
+                preload="auto"
                 className="h-full w-full object-cover object-center"
-                onLoadedMetadata={(e) => readDuration(e.currentTarget)}
-                onLoadedData={(e) => readDuration(e.currentTarget)}
+                onLoadedMetadata={(e) => primeFirstFrame(e.currentTarget)}
                 onDurationChange={(e) => readDuration(e.currentTarget)}
-                onTimeUpdate={(e) => setScrub(e.currentTarget.currentTime)}
+                onSeeked={(e) => setScrub(e.currentTarget.currentTime)}
+                onTimeUpdate={(e) => {
+                  const el = e.currentTarget
+                  if (!el.seeking) setScrub(el.currentTime)
+                }}
                 onPlay={() => setPlaying(true)}
                 onPause={() => setPlaying(false)}
                 onEnded={() => setPlaying(false)}
@@ -185,6 +280,33 @@ export function VideoFramePicker({ videoUrl, onThumbnail }: VideoFramePickerProp
             {uploadBusy ? 'Bezig…' : 'Gebruik als thumbnail'}
           </button>
         </div>
+
+        {previewImage ? (
+          <div className="flex items-start gap-3 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2.5">
+            <div className="h-14 w-20 shrink-0 overflow-hidden rounded-md border border-neutral-200 bg-neutral-100">
+              <OptimizedImg
+                src={previewImage}
+                alt=""
+                size="thumb"
+                className="h-full w-full object-cover"
+              />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+                Huidige thumbnail
+              </p>
+              {onClearImage ? (
+                <button
+                  type="button"
+                  className="mt-1 text-[11px] font-medium text-neutral-600 underline decoration-neutral-300 underline-offset-2 hover:text-neutral-900"
+                  onClick={onClearImage}
+                >
+                  Verwijderen
+                </button>
+              ) : null}
+            </div>
+          </div>
+        ) : null}
 
         {error ? (
           <p className="rounded-lg border border-red-200 bg-red-50 px-2.5 py-2 text-[11px] leading-relaxed text-red-800">
