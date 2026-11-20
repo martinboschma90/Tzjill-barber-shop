@@ -35,7 +35,7 @@ export const LIVE_SITE_URL = "/";
 /*  Status pill                                                                */
 /* -------------------------------------------------------------------------- */
 
-export type EditorStatus = "draft" | "saving" | "published";
+export type EditorStatus = "draft" | "saving" | "published" | "error";
 
 export function EditorStatusPill({
   state,
@@ -45,6 +45,7 @@ export function EditorStatusPill({
   flash?: boolean;
 }) {
   const cfg = {
+    error: { dot: "bg-rose-500", text: "Opslaan mislukt", color: "text-rose-700" },
     draft: {
       dot: "bg-amber-500 animate-pulse",
       text: "Concept · niet opgeslagen",
@@ -57,7 +58,7 @@ export function EditorStatusPill({
     },
     published: {
       dot: flash ? "bg-emerald-500 ring-4 ring-emerald-500/20" : "bg-emerald-500",
-      text: flash ? "Zojuist opgeslagen" : "Live",
+      text: flash ? "Zojuist opgeslagen" : "Opgeslagen",
       color: "text-emerald-700",
     },
   }[state];
@@ -157,6 +158,7 @@ type BufferedProps = {
 };
 
 type AutoSaveProps = {
+  error?: string | null;
   mode: "auto-save";
   /** True when any per-row mutation on the page is running. */
   saving?: boolean;
@@ -233,13 +235,14 @@ export function EditorTopBar(props: EditorTopBarProps) {
   }
 
   const {
+    error,
     saving = false,
     lastSavedAt,
     hint = DEFAULT_AUTOSAVE_HINT,
     extraInfo,
     extraActions,
   } = props;
-  const state: EditorStatus = saving ? "saving" : "published";
+  const state: EditorStatus = error ? "error" : saving ? "saving" : "published";
   return (
     <div className="sticky top-[var(--cms-editor-sticky-top,0px)] z-20 mb-5 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-neutral-200/70 bg-white/95 px-4 py-3 shadow-sm backdrop-blur">
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3 text-xs text-neutral-500">

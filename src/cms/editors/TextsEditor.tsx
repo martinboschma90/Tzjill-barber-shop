@@ -1,0 +1,11 @@
+import { useState } from 'react'
+import { useCms } from '@/cms/CmsContext'
+import { EditorSection, TextArea, TextInput } from '@/cms/fields'
+import defaults from '@/cms/textDefaults.json'
+const names: Record<string,string> = {AboutPage:'Over ons',CollabsPage:'Collabs',ContactPage:'Contact',LegalPage:'Privacy en cookies',LookbookPage:'Lookbook',MenuPage:'Prijzen',NotFoundPage:'Pagina niet gevonden',TeamPage:'Team',HomeCollabs:'Collabs op de homepage',HomeFaq:'Veelgestelde vragen',HomePrices:'Prijzen op de homepage',InstagramFeed:'Fotoreeks',Newsletter:'Nieuwsbrief',Testimonials:'Reviewlabel',Welcome:'Welkomstblok',Footer:'Footer',Navbar:'Navigatie',MenuOverlay:'Mobiel menu',StickyContactBar:'Contactknoppen',FaqPage:'Veelgestelde vragen',ProductsPage:'Producten'}
+export function TextsEditor({onlyGroups}: {onlyGroups?:string[]}) {
+ const {content:{site},setSite}=useCms();const [search,setSearch]=useState('')
+ const groups=[...new Set(Object.values(defaults).map(v=>v.group))].filter(g=>!onlyGroups||onlyGroups.includes(g))
+ return <div className="space-y-4"><p className="text-sm leading-relaxed text-neutral-600">Pas de teksten hieronder aan. Wijzigingen worden automatisch opgeslagen. Met ‘Oorspronkelijke tekst’ herstel je één veld.</p>{!onlyGroups&&<TextInput label="Zoek een tekst of onderdeel" value={search} onChange={setSearch}/>}
+ {groups.map(group=>{const entries=Object.entries(defaults).filter(([k,v])=>v.group===group&&`${names[group]} ${v.text} ${site.texts[k]??''}`.toLowerCase().includes(search.toLowerCase()));if(!entries.length)return null;return <EditorSection key={group} sectionKey={'texts-'+group} title={names[group]??group} description={`${entries.length} bewerkbare teksten`}><div className="space-y-5">{entries.map(([key,item])=><div key={key}><TextArea label={item.text} value={site.texts[key]??item.text} onChange={value=>setSite(s=>({...s,texts:{...s.texts,[key]:value}}))}/><button type="button" className="mt-2 text-xs text-neutral-500 underline disabled:opacity-40" disabled={site.texts[key]===undefined} onClick={()=>setSite(s=>{const texts={...s.texts};delete texts[key];return {...s,texts}})}>Oorspronkelijke tekst</button></div>)}</div></EditorSection>})}</div>
+}

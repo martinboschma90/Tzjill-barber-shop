@@ -13,7 +13,7 @@ export function Treatments() {
     : cloneTreatments()
 
   return (
-    <section className="text-white">
+    <section data-cms-section="treatments" className="text-white">
       <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">

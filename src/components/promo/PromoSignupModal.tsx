@@ -1,3 +1,4 @@
+import { popupDefaults } from '@/cms/popupDefaults'
 import { useCms } from '@/cms/CmsContext'
 import { useModalFocus } from '@/lib/useModalFocus'
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
@@ -11,16 +12,16 @@ import {
 } from '@/lib/promoSignup'
 
 const OPEN_DELAY_MS = 20_000
-const PROMO_IMAGE = '/promo/10-years-tzjill.jpg'
 
 const fieldClass =
   'mt-2 w-full rounded-full border border-white/20 bg-white/5 px-5 py-3 type-body text-white outline-none placeholder:text-white/35 transition-colors focus:border-[#efeae3]'
 
-export function PromoSignupModal() {
+export function PromoSignupModal({ preview = false }: { preview?: boolean }) {
   const titleId = useId()
   const { content } = useCms()
+  const copy = (key: keyof typeof popupDefaults) => content.site.texts[key] ?? popupDefaults[key]
   const submitting = useRef(false)
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(preview)
   const modal = useModalFocus(open && content.site.promoSignupVisible !== false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -31,11 +32,11 @@ export function PromoSignupModal() {
 
   useEffect(() => {
     const preload = new Image()
-    preload.src = PROMO_IMAGE
+    preload.src = copy('popup.image')
   }, [])
 
   useEffect(() => {
-    if (promoAlreadySeen()) return
+    if (preview || promoAlreadySeen()) return
     let opened = false
     const open = () => {
       if (opened || promoAlreadySeen()) return
@@ -69,13 +70,13 @@ export function PromoSignupModal() {
   }, [open, content.site.promoSignupVisible])
 
   function dismiss(state: 'dismissed' | 'submitted') {
-    markPromoSeen(state)
+    if (!preview) markPromoSeen(state)
     setOpen(false)
   }
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
-    if (submitting.current) return
+    if (preview || submitting.current) return
     const nextName = name.trim()
     const nextEmail = email.trim()
     const nextPhone = phone.trim()
@@ -129,7 +130,7 @@ export function PromoSignupModal() {
       >
         <div className="relative h-[min(26svh,13.5rem)] shrink-0 overflow-hidden bg-black sm:h-auto sm:w-[46%]">
           <img
-            src={PROMO_IMAGE}
+            src={copy('popup.image')}
             alt="10 jaar Tzjill, 2016–2026"
             width={1080}
             height={1356}
@@ -151,27 +152,22 @@ export function PromoSignupModal() {
 
           <p className="type-label mt-1 inline-flex items-center gap-2 pr-12 text-[#efeae3]/70">
             <span className="h-1.5 w-1.5 rounded-full bg-[#c4a574]" aria-hidden />
-            10 jaar Tzjill
+            {copy('popup.label')}
           </p>
           <h2
             id={titleId}
             className="type-headline mt-2.5 text-[1.65rem] leading-[0.95] sm:text-[2rem]"
           >
-            Meld je aan
-            <br />
-            voor te gekke
-            <br />
-            prijzen
+            <span className="whitespace-pre-line">{copy('popup.title')}</span>
           </h2>
           <p className="type-lead mt-3 text-[0.92rem] text-white/55">
-            2016–2026. Winacties en cadeaus volgen dit jubileumjaar — laat je
-            gegevens achter en je hoort het als eerste.
+            {copy('popup.intro')}
           </p>
 
           {sent ? (
             <p className="type-lead mt-8 inline-flex items-center gap-2 text-white/75">
               <Check />
-              Staat. We mailen je als er iets te pakken valt.
+              {copy('popup.success')}
             </p>
           ) : (
             <form onSubmit={onSubmit} className="mt-5 flex flex-col gap-3 sm:mt-6 sm:gap-3.5">
@@ -225,7 +221,7 @@ export function PromoSignupModal() {
                 className="type-ui mt-1 inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-[#efeae3] bg-[#efeae3] px-6 py-3 text-[#2c241c] transition-[color,background-color] duration-[320ms] hover:border-white hover:bg-white disabled:pointer-events-none disabled:opacity-60"
               >
                 {sending ? <Spinner /> : null}
-                {sending ? 'Versturen' : 'Aanmelden'}
+                {sending ? 'Versturen' : copy('popup.button')}
               </button>
             </form>
           )}

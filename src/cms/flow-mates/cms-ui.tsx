@@ -25,11 +25,11 @@ export function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-700">
+      <label className="block text-xs font-semibold tracking-[0.02em] text-neutral-700">
         {label}
       </label>
       {children}
-      {hint && <p className="text-[11px] leading-relaxed text-neutral-500">{hint}</p>}
+      {hint && <p className="text-xs leading-relaxed text-neutral-500">{hint}</p>}
     </div>
   );
 }
@@ -69,7 +69,7 @@ export function SectionGroup({
   return (
     <section className="space-y-4">
       <header className="space-y-1">
-        <h4 className="text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-500">
+        <h4 className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-500">
           {title}
         </h4>
         {description && <p className="text-xs text-neutral-500">{description}</p>}

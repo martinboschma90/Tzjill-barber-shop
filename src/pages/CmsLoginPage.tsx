@@ -1,148 +1,23 @@
-import { requestPasswordReset } from '@/lib/auth'
-import { useState, type FormEvent } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '@/cms/auth/AuthProvider'
-import { CmsLockedPage } from '@/cms/auth/CmsLockedPage'
-import { isCmsLocalBypassAllowed } from '@/lib/cmsLocalBypass'
-import { isSupabaseConfigured } from '@/lib/supabaseEnv'
-
-const controlClass =
-  'w-full rounded-lg border border-white/12 bg-white/8 px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-white/40'
-
-export function CmsLoginPage() {
-  const { ready, session, authRequired, signIn } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const from =
-    (location.state as { from?: string } | null)?.from &&
-    !(location.state as { from?: string }).from?.startsWith('/cms/login')
-      ? (location.state as { from: string }).from
-      : '/cms/dashboard'
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
-  const [resetMode, setResetMode] = useState(false)
-  const [notice, setNotice] = useState('')
-
-  if (isCmsLocalBypassAllowed()) {
-    return <Navigate to="/cms/dashboard" replace />
-  }
-
-  if (!isSupabaseConfigured) {
-    return <CmsLockedPage />
-  }
-
-  if (authRequired && ready && session) {
-    return <Navigate to={from} replace />
-  }
-
-  async function onSubmit(e: FormEvent) {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
-    if (resetMode) {
-      const result = await requestPasswordReset(email)
-      setLoading(false)
-      if (result.error) setError('Link aanvragen lukt nu niet. Probeer later opnieuw.')
-      else setNotice('Als er een account bestaat, ontvang je een herstellink per e-mail.')
-      return
-    }
-    const result = await signIn(email, password)
-    setLoading(false)
-    if (result.error) {
-      setError(result.error)
-      return
-    }
-    navigate(from, { replace: true })
-  }
-
-  return (
-    <div
-      data-cms
-      data-cms-theme="dark"
-      className="relative flex min-h-svh items-center justify-center overflow-hidden bg-[#071315] px-4"
-      style={{ fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif" }}
-    >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-[-12%] opacity-[0.78] blur-[78px]"
-        style={{
-          background:
-            'radial-gradient(circle at 50% 5%, rgb(7 171 166 / 0.95) 0, transparent 39%), radial-gradient(circle at 72% 66%, rgb(100 161 118 / 0.55) 0, transparent 30%), radial-gradient(circle at 40% 64%, rgb(244 183 153 / 0.76) 0, transparent 28%), radial-gradient(circle at 50% 51%, rgb(255 239 211 / 0.64) 0, transparent 31%)',
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            'radial-gradient(ellipse at center, transparent 28%, rgb(2 14 14 / 0.58) 100%), linear-gradient(180deg, rgb(1 13 16 / 0.15), transparent 48%, rgb(2 16 13 / 0.48))',
-        }}
-      />
-
-      <div className="relative z-10 w-full max-w-sm">
-        <div className="mb-8 text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/55">
-            Flow Mates
-          </p>
-          <p className="mt-1 text-2xl font-semibold tracking-tight text-white">CMS</p>
-        </div>
-
-        <div className="rounded-2xl border border-white/12 bg-[#111718]/85 p-6 shadow-2xl shadow-black/35 backdrop-blur-xl">
-          <h1 className="mb-1 text-lg font-semibold text-white">Welkom in Flow Mates CMS</h1>
-          <p className="mb-5 text-sm text-white/50">
-            Log in met het account uit Supabase → Authentication → Users
-            (Auto Confirm aan).
-          </p>
-
-          <form className="space-y-3" onSubmit={onSubmit}>
-            <label className="block">
-              <span className="mb-1 block text-xs font-medium text-white/50">E-mail</span>
-              <input
-                type="email"
-                autoComplete="username"
-                required
-                className={controlClass}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={loading}
-              />
-            </label>
-            {!resetMode ? <label className="block">
-              <span className="mb-1 block text-xs font-medium text-white/70">Wachtwoord</span>
-              <input
-                type="password"
-                autoComplete="current-password"
-                required
-                className={controlClass}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={loading}
-              />
-            </label> : null}
-            {notice ? <p role="status" className="text-sm text-white/80">{notice}</p> : null}
-            {error ? (
-              <p className="text-xs text-red-400" role="alert">
-                {error}
-              </p>
-            ) : null}
-            <button
-              type="submit"
-              disabled={loading || !email.trim() || (!resetMode && !password)}
-              className="mt-1 w-full rounded-lg bg-white px-4 py-2.5 text-sm font-medium text-neutral-950 hover:bg-white/90 disabled:opacity-40"
-            >
-              {loading ? 'Bezig…' : resetMode ? 'Herstellink aanvragen' : 'Inloggen'}
-            </button>
-          </form>
-          <button type="button" disabled={loading} onClick={() => { setResetMode((value) => !value); setError(null); setNotice('') }} className="mt-4 min-h-11 text-sm text-white/80 underline">{resetMode ? 'Terug naar inloggen' : 'Wachtwoord vergeten?'}</button>
-        </div>
-
-        <a href="/" className="mt-6 block text-center text-xs text-white/35 hover:text-white/70">
-          ← Terug naar de site
-        </a>
-      </div>
-    </div>
-  )
+import {useRef,useState,type FormEvent} from 'react'
+import {Navigate,useLocation,useNavigate} from 'react-router-dom'
+import {requestPasswordReset} from '@/lib/auth'
+import {useAuth} from '@/cms/auth/AuthProvider'
+import {CmsLockedPage} from '@/cms/auth/CmsLockedPage'
+import {isCmsLocalBypassAllowed} from '@/lib/cmsLocalBypass'
+import {isSupabaseConfigured} from '@/lib/supabaseEnv'
+const field='mt-2 w-full rounded-lg border border-neutral-300 bg-white px-3.5 py-3 text-sm outline-none focus:border-neutral-900 focus:ring-2 focus:ring-neutral-200'
+export function CmsLoginPage(){
+ const {ready,session,authRequired,signIn}=useAuth();const location=useLocation();const navigate=useNavigate()
+ const requested=(location.state as {from?:string}|null)?.from
+ const from=requested?.startsWith('/cms/')&&!requested.startsWith('/cms/login')&&!requested.startsWith('/cms/reset-password')?requested:'/cms/dashboard'
+ const [email,setEmail]=useState(''),[password,setPassword]=useState(''),[error,setError]=useState(''),[notice,setNotice]=useState(''),[resetMode,setResetMode]=useState(false),[loading,setLoading]=useState(false),[show,setShow]=useState(false)
+ const submitting=useRef(false)
+ if(isCmsLocalBypassAllowed())return <Navigate to="/cms/dashboard" replace/>
+ if(!isSupabaseConfigured)return <CmsLockedPage/>
+ if(authRequired&&ready&&session)return <Navigate to={from} replace/>
+ async function submit(event:FormEvent){event.preventDefault();if(submitting.current)return;submitting.current=true;setLoading(true);setError('');setNotice('');try{
+ if(resetMode){const result=await requestPasswordReset(email);if(result.error)setError('De herstellink kon niet worden aangevraagd. Probeer het later opnieuw.');else setNotice('Als er een account bestaat, ontvang je een herstellink per e-mail. Controleer ook je spammap.')}
+ else{const result=await signIn(email,password);if(result.error)setError('Inloggen lukt niet. Controleer je e-mailadres en wachtwoord en probeer opnieuw.');else navigate(from,{replace:true})}
+ }catch{setError('Verbinding mislukt. Probeer het opnieuw.')}finally{submitting.current=false;setLoading(false)}}
+ return <main data-cms data-cms-theme="light" className="flex min-h-svh items-center justify-center bg-neutral-50 px-5 py-12 text-neutral-900"><div className="w-full max-w-sm"><p className="mb-6 text-center text-sm font-semibold">Tzjill · Websitebeheer</p><div className="rounded-2xl border border-neutral-200 bg-white p-6 shadow-sm"><h1 className="text-2xl font-semibold">{resetMode?'Wachtwoord vergeten?':'Inloggen'}</h1><p className="mt-2 text-sm leading-relaxed text-neutral-600">{resetMode?'Vul het e-mailadres van je account in. Je ontvangt een link om een nieuw wachtwoord te kiezen.':'Log in om de website te beheren.'}</p><form onSubmit={submit} className="mt-6 space-y-4"><label className="block text-sm font-medium">E-mailadres<input type="email" autoComplete="username" required value={email} disabled={loading} onChange={e=>setEmail(e.target.value)} className={field}/></label>{!resetMode&&<><label className="block text-sm font-medium">Wachtwoord<input type={show?'text':'password'} autoComplete="current-password" required value={password} disabled={loading} onChange={e=>setPassword(e.target.value)} className={field}/></label><label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={show} onChange={e=>setShow(e.target.checked)}/>Wachtwoord tonen</label></>}{error&&<p role="alert" className="text-sm text-red-700">{error}</p>}{notice&&<p role="status" className="text-sm text-emerald-800">{notice}</p>}<button disabled={loading} className="min-h-11 w-full rounded-lg bg-neutral-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-50">{loading?'Bezig…':resetMode?'Herstellink aanvragen':'Inloggen'}</button></form><button type="button" disabled={loading} className="mt-4 min-h-11 text-sm underline" onClick={()=>{setResetMode(!resetMode);setError('');setNotice('');setPassword('')}}>{resetMode?'Terug naar inloggen':'Wachtwoord vergeten?'}</button></div><a href="/" className="mt-6 block text-center text-sm text-neutral-600 underline">Terug naar de website</a></div></main>
 }

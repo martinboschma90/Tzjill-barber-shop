@@ -118,7 +118,7 @@ async function listRoleRows() {
 
 function mapUsers(authUsers, roles) {
   const byId = new Map(roles.map((row) => [row.user_id, row]))
-  return authUsers.map((user) => {
+  return authUsers.filter(user => byId.has(user.id)).map((user) => {
     const role = byId.get(user.id)
     const last = user.last_sign_in_at || null
     const email = user.email || role?.email || ''
@@ -141,7 +141,7 @@ function mapUsers(authUsers, roles) {
 
 async function upsertRole({ userId, email, name, role, status }) {
   const { url } = supabaseEnv()
-  await fetch(`${url}/rest/v1/user_roles`, {
+  const response = await fetch(`${url}/rest/v1/user_roles`, {
     method: 'POST',
     headers: {
       ...restHeaders(),
@@ -155,6 +155,7 @@ async function upsertRole({ userId, email, name, role, status }) {
       status,
     }),
   })
+  if (!response.ok) throw new Error('De rol kon niet worden opgeslagen.');
 }
 
 async function adminCount() {
@@ -194,29 +195,6 @@ function inviteErrorMessage(email, raw) {
 
 async function inviteAuthUser({ email, name, role, redirectTo }) {
   const { url } = supabaseEnv()
-  const linkResponse = await fetch(`${url}/auth/v1/admin/generate_link`, {
-    method: 'POST',
-    headers: adminAuthHeaders(),
-    body: JSON.stringify({
-      type: 'invite',
-      email,
-      options: {
-        redirectTo,
-        redirect_to: redirectTo,
-        data: { display_name: name, cms_role: role },
-      },
-    }),
-  })
-  const linkPayload = await linkResponse.json().catch(() => null)
-  if (linkResponse.ok) {
-    const user = linkPayload?.user || linkPayload
-    return {
-      ok: true,
-      userId: user?.id || linkPayload?.id,
-      inviteLink: linkPayload?.properties?.action_link || linkPayload?.action_link || null,
-    }
-  }
-
   const inviteResponse = await fetch(
     `${url}/auth/v1/invite?redirect_to=${encodeURIComponent(redirectTo)}`,
     {
@@ -234,34 +212,10 @@ async function inviteAuthUser({ email, name, role, redirectTo }) {
     return { ok: true, userId: invited?.id, inviteLink: null }
   }
 
-  const createResponse = await fetch(`${url}/auth/v1/admin/users`, {
-    method: 'POST',
-    headers: adminAuthHeaders(),
-    body: JSON.stringify({
-      email,
-      email_confirm: false,
-      user_metadata: { display_name: name, cms_role: role },
-    }),
-  })
-  const created = await createResponse.json().catch(() => null)
-  if (createResponse.ok && created?.id) {
-    return { ok: true, userId: created.id, inviteLink: null }
-  }
-
-  return {
-    ok: false,
-    error: inviteErrorMessage(
-      email,
-      linkPayload?.msg ||
-        linkPayload?.error_description ||
-        invitePayload?.msg ||
-        created?.msg ||
-        created?.error_description,
-    ),
-  }
+  return { ok: false, error: inviteErrorMessage(email, invitePayload?.msg || invitePayload?.error_description || invitePayload?.message) }
 }
 
-export async function handleCmsUsers(req, res) {
+async function dispatchCmsUsers(req, res) {
   if (req.method === 'OPTIONS') {
     res.statusCode = 204
     res.end()
@@ -304,10 +258,11 @@ export async function handleCmsUsers(req, res) {
     }
     const publicSite = String(
       process.env.PUBLIC_SITE_URL ||
+        process.env.VITE_PUBLIC_SITE_URL ||
         process.env.VITE_SITE_URL ||
         'https://tzjill-barber-shop.vercel.app',
     ).replace(/\/$/, '')
-    const redirectTo = `${publicSite}/cms/login`
+    const redirectTo = `${publicSite}/cms/reset-password`
     const invited = await inviteAuthUser({ email, name, role, redirectTo })
     if (!invited.ok) {
       json(res, 502, { error: invited.error })
@@ -338,6 +293,7 @@ export async function handleCmsUsers(req, res) {
       return
     }
     const current = await fetchRole(userId)
+    if (!current) { json(res, 404, { error: 'Deze gebruiker heeft geen toegang tot Tzjill.' }); return }
     if (isOwnerEmail(current?.email) && role !== 'admin') {
       json(res, 400, { error: 'martin@viraal.media blijft admin.' })
       return
@@ -377,6 +333,7 @@ export async function handleCmsUsers(req, res) {
       return
     }
     const current = await fetchRole(userId)
+    if (!current) { json(res, 404, { error: 'Deze gebruiker heeft geen toegang tot Tzjill.' }); return }
     if (isOwnerEmail(current?.email)) {
       json(res, 400, { error: 'martin@viraal.media kan niet verwijderd worden.' })
       return
@@ -388,13 +345,10 @@ export async function handleCmsUsers(req, res) {
         return
       }
     }
-    const { url, serviceKey } = supabaseEnv()
-    const response = await fetch(`${url}/auth/v1/admin/users/${userId}`, {
+    const { url } = supabaseEnv()
+    const response = await fetch(`${url}/rest/v1/user_roles?user_id=eq.${encodeURIComponent(userId)}`, {
       method: 'DELETE',
-      headers: {
-        apikey: serviceKey,
-        Authorization: `Bearer ${serviceKey}`,
-      },
+      headers: restHeaders(),
     })
     if (!response.ok && response.status !== 404) {
       json(res, 502, { error: 'Verwijderen mislukt.' })
@@ -405,4 +359,9 @@ export async function handleCmsUsers(req, res) {
   }
 
   json(res, 405, { error: 'Method not allowed' })
+}
+
+export async function handleCmsUsers(req, res) {
+  try { await dispatchCmsUsers(req, res) }
+  catch { json(res, 503, { error: 'Gebruikersbeheer kon niet worden bijgewerkt. Probeer het opnieuw.' }) }
 }

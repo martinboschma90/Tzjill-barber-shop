@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -51,7 +52,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<CmsRole>('viewer')
   const [displayName, setDisplayName] = useState('')
 
+  const roleRequest = useRef(0)
   const loadRole = useCallback(async (user: User | null) => {
+    const request = ++roleRequest.current
+    setRole('viewer')
+    setDisplayName('')
     if (!isSupabaseConfigured || !supabase || !user) {
       setRole('viewer')
       setDisplayName('')
@@ -65,6 +70,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     )
     try {
       const { data } = await supabase.rpc('cms_ensure_role')
+      if (request !== roleRequest.current) return
       const nextRole = owner ? 'admin' : asRole(data)
       setRole(nextRole)
       const { data: row } = await supabase
@@ -72,6 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select('display_name,email,role')
         .eq('user_id', user.id)
         .maybeSingle()
+      if (request !== roleRequest.current) return
       setDisplayName(
         String(row?.display_name || user.user_metadata?.display_name || user.email || ''),
       )
@@ -79,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       else if (row?.role) setRole(asRole(row.role))
     } catch (error) {
       console.warn('[cms auth] loadRole:', error)
-      if (owner) setRole('admin')
+      if (request === roleRequest.current) setRole(owner ? 'admin' : 'viewer')
     }
   }, [])
 
@@ -134,6 +141,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signOut = useCallback(async () => {
+    roleRequest.current += 1
+    setRole('viewer')
     const { error } = await authSignOut()
     if (error) {
       return { error: error.message }

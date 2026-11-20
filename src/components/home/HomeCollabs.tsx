@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { Link } from 'react-router-dom'
 import { Reveal } from '@/components/motion/Reveal'
 import { buttonClass } from '@/components/ui/buttonStyles'
@@ -30,9 +31,7 @@ function CollabCard({ item, index }: { item: ShopCollab; index: number }) {
           </p>
           <h3 className="type-subhead mt-3">{item.name}</h3>
           <p className="type-lead mt-2 line-clamp-1 text-white/55">{line}</p>
-          <span className="type-ui mt-4 inline-flex items-center gap-2 text-white">
-            Bekijk collab
-            <span aria-hidden className="motion-arrow">
+          <span className="type-ui mt-4 inline-flex items-center gap-2 text-white"><SiteText textKey="HomeCollabs.1" /><span aria-hidden className="motion-arrow">
               →
             </span>
           </span>
@@ -48,15 +47,13 @@ export function HomeCollabs() {
   if (collabs.length < 2) return null
 
   return (
-    <section className="text-white" aria-labelledby="home-collabs-title">
+    <section data-cms-section="texts-HomeCollabs" className="text-white" aria-labelledby="home-collabs-title">
       <div className="mx-auto max-w-[1240px] px-6 py-[72px] lg:px-8 lg:py-[120px]">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <p className="type-label text-white/65">Collabs</p>
+            <p className="type-label text-white/65"><SiteText textKey="HomeCollabs.2" /></p>
             <Reveal className="mt-4">
-              <h2 id="home-collabs-title" className="type-headline">
-                Gasten & merken
-              </h2>
+              <h2 id="home-collabs-title" className="type-headline"><SiteText textKey="HomeCollabs.3" /></h2>
             </Reveal>
           </div>
           <Link
@@ -66,9 +63,7 @@ export function HomeCollabs() {
               surface: 'dark',
               className: 'w-full shrink-0 lg:w-auto',
             })}
-          >
-            Alle collabs
-            <span aria-hidden className="motion-arrow">
+          ><SiteText textKey="HomeCollabs.4" /><span aria-hidden className="motion-arrow">
               →
             </span>
           </Link>

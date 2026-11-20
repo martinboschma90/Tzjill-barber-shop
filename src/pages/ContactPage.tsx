@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { ResolvedImg } from '@/components/ui/ResolvedMedia'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
@@ -26,14 +27,8 @@ export function ContactPage() {
       <PageFrame>
         <header className="mx-auto max-w-3xl text-center">
           <p className="type-label inline-flex items-center justify-center gap-2 rounded-full bg-[#efeae3] px-3.5 py-1.5 text-[#2c241c]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#2c241c]" aria-hidden />
-            Contact
-          </p>
-          <h1 className="type-headline mt-6">
-            Kom langs.
-            <br />
-            Voorstreek 18.
-          </h1>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#2c241c]" aria-hidden /><SiteText textKey="ContactPage.1" /></p>
+          <h1 className="type-headline mt-6"><SiteText textKey="ContactPage.2" /><br /><SiteText textKey="ContactPage.3" /></h1>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
             {site.contactIntro || 'Afspraak, vragen of collab. Boek via Salonhub of stuur een bericht.'}
           </p>
@@ -49,7 +44,7 @@ export function ContactPage() {
 
         <div className="mt-14 grid items-start gap-14 lg:grid-cols-2 lg:gap-20">
           <section>
-            <h2 className="type-subhead">Adres & openingstijden</h2>
+            <h2 className="type-subhead"><SiteText textKey="ContactPage.4" /></h2>
 
             <div className="type-body mt-6 space-y-0.5 text-white/80">
               {officeLines.map((line) => (
@@ -96,7 +91,7 @@ export function ContactPage() {
             </div>
 
             <div className="mt-5 flex flex-wrap gap-2.5">
-              <BookButton surface="dark">Afspraak maken</BookButton>
+              <BookButton surface="dark"><SiteText textKey="ContactPage.5" /></BookButton>
               <PillButton
                 href={site.instagram}
                 target="_blank"
@@ -104,17 +99,13 @@ export function ContactPage() {
                 variant="ghost"
                 surface="dark"
                 arrow={false}
-              >
-                Instagram
-              </PillButton>
+              ><SiteText textKey="ContactPage.6" /></PillButton>
             </div>
           </section>
 
           <section>
-            <h2 className="type-subhead">Bericht</h2>
-            <p className="type-body mt-3 max-w-sm text-white/50">
-              Vraag of collab — knipafspraak via Salonhub.
-            </p>
+            <h2 className="type-subhead"><SiteText textKey="ContactPage.7" /></h2>
+            <p className="type-body mt-3 max-w-sm text-white/50"><SiteText textKey="ContactPage.8" /></p>
             <div className="mt-6">
               <ContactForm />
             </div>

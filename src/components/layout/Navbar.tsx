@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { useCms } from '@/cms/CmsContext'
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
@@ -93,9 +94,7 @@ export function Navbar({
               <NavItem key={link.to} to={link.to} label={link.label} pathname={pathname} />
             ))}
           </nav>
-          <BookButton surface="dark" className="shrink-0 px-5 py-2.5">
-            Afspraak
-          </BookButton>
+          <BookButton surface="dark" className="shrink-0 px-5 py-2.5"><SiteText textKey="Navbar.1" /></BookButton>
         </div>
 
         <button

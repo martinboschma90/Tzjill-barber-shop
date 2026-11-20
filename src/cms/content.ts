@@ -1,3 +1,4 @@
+import { reviews as defaultReviews } from '@/data/reviews'
 import { createDefaultFaqCategories } from '@/data/faq'
 import { FALLBACK_PUBLIC_SITE_URL } from '@/lib/publicSiteUrl'
 import { stripLeftoverMusicArtists } from '@/cms/leftoverArtists'
@@ -178,6 +179,11 @@ export type FaqCategory = {
 }
 
 export type SiteContent = {
+  texts: Record<string, string>
+  reviews: {name: string; role: string; quote: string; image: string; video: string}[]
+  reviewsTitle: string
+  reviewsIntro: string
+  reviewsVisible: boolean
   name: string
   fullName: string
   tagline: string
@@ -282,6 +288,11 @@ export type CmsContent = {
 /** Site/team defaults without the seed roster — safe on the public bundle. */
 export function createDefaultSiteContent(): SiteContent {
   return {
+    texts: {},
+    reviews: defaultReviews.map(r => ({...r})),
+    reviewsTitle: "Wat klanten zeggen",
+    reviewsIntro: "Niet van ons — van mannen uit de stoel.",
+    reviewsVisible: true,
     name: defaultSite.name,
     fullName: defaultSite.fullName,
     tagline: defaultSite.tagline,

@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { Navigate } from 'react-router-dom'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
@@ -17,28 +18,21 @@ export function TeamPage() {
       <PageFrame>
         <PageIntro
           introPlacement="below"
-          kicker="Team"
+          kicker={<SiteText textKey="TeamPage.kicker" />}
           title={
-            <>
-              Meet
-              <br />
-              the team
-            </>
+            <><SiteText textKey="TeamPage.1" /><br /><SiteText textKey="TeamPage.2" /></>
           }
-          intro="De kappers achter de coupe."
+          intro={<SiteText textKey="TeamPage.intro" />}
         />
         <div className="mt-16">
           {team.length ? (
             <TeamSection members={team} />
           ) : (
-            <p className="type-lead max-w-lg text-white/55">
-              Kies je kapper bij het boeken in Salonhub. Namen volgen in de
-              zaak — we zetten hier geen placeholder-team.
-            </p>
+            <p className="type-lead max-w-lg text-white/55"><SiteText textKey="TeamPage.3" /></p>
           )}
         </div>
         <div className="mt-14">
-          <BookButton surface="dark">Afspraak maken</BookButton>
+          <BookButton surface="dark"><SiteText textKey="TeamPage.4" /></BookButton>
         </div>
       </PageFrame>
     </AppShell>

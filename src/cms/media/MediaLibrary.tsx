@@ -1,3 +1,5 @@
+import { useCms } from '@/cms/CmsContext'
+import { collectSiteMedia } from './siteMedia'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import {
   Check,
@@ -54,7 +56,7 @@ export function MediaLibrary({
   folder: folderProp,
 }: MediaLibraryProps) {
   const {
-    assets,
+    assets: uploadedAssets,
     ready,
     syncingRemote,
     uploading,
@@ -62,6 +64,11 @@ export function MediaLibrary({
     removeAsset,
     clearAll,
   } = useMedia()
+  const { content } = useCms()
+  const assets = useMemo(() => {
+    const uploadedUrls = new Set(uploadedAssets.map(asset => asset.publicUrl || asset.url))
+    return [...uploadedAssets, ...collectSiteMedia(content).filter(asset => !uploadedUrls.has(asset.url))]
+  }, [uploadedAssets, content])
   const inputRef = useRef<HTMLInputElement>(null)
   const [dragOver, setDragOver] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -302,7 +309,7 @@ export function MediaLibrary({
             <div className="flex items-center justify-between gap-2 px-2 py-1.5 text-xs text-neutral-600">
               <span className="inline-flex items-center gap-2">
                 <Cloud className="h-3.5 w-3.5" />
-                Supabase
+                Bestanden
               </span>
               <span className="tabular-nums">{folderAssets.length - localCount}</span>
             </div>
@@ -414,7 +421,7 @@ export function MediaLibrary({
               onCopy={setCopiedId}
               previewVideo={folder === 'live'}
             />
-            {assets.length > 0 ? (
+            {uploadedAssets.length > 0 ? (
               <div className="mt-8 flex justify-end border-t border-neutral-200 pt-4">
                 <button
                   type="button"
@@ -577,7 +584,7 @@ function AssetGrid({
                 {asset.name}
               </p>
               <p className="mt-1 truncate text-[10px] text-neutral-400">
-                {formatBytes(asset.size)}
+                {asset.source === 'website' ? 'In gebruik op de website' : formatBytes(asset.size)}
                 {asset.width && asset.height ? ` · ${asset.width}×${asset.height}` : null}
                 {asset.kind === 'video' && formatDuration(asset.duration)
                   ? ` · ${formatDuration(asset.duration)}`
@@ -598,8 +605,10 @@ function AssetGrid({
                 </button>
                 <button
                   type="button"
+                  disabled={asset.source === 'website'}
+                  title={asset.source === 'website' ? 'Dit bestand wordt op de website gebruikt. Vervang het bij de betreffende pagina.' : 'Verwijderen'}
                   aria-label={`${asset.name} verwijderen`}
-                  className="ml-auto inline-flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 hover:bg-red-500/10 hover:text-red-500"
+                  className="disabled:cursor-not-allowed disabled:opacity-30 ml-auto inline-flex h-7 w-7 items-center justify-center rounded-md text-neutral-400 hover:bg-red-500/10 hover:text-red-500"
                   onClick={() => {
                     if (window.confirm(`${asset.name} verwijderen?`)) void onRemove(asset.id)
                   }}

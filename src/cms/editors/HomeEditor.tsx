@@ -1,3 +1,4 @@
+import { ReviewsEditor } from './ReviewsEditor'
 import { useCms } from '@/cms/CmsProvider'
 import { EditorSection, TextArea, TextInput } from '@/cms/fields'
 import { SectionGroup } from '@/cms/flow-mates/cms-ui'
@@ -8,12 +9,11 @@ import { listBtnClass } from '@/cms/editors/listBtn'
 export function HomeEditor() {
   const { content, setSite } = useCms()
   const { site } = content
-  const treatments = site.treatments?.length
-    ? site.treatments
-    : cloneTreatments()
+  const treatments = site.treatments ?? cloneTreatments()
 
   return (
     <div className="space-y-3">
+      <ReviewsEditor />
       <EditorSection
         sectionKey="hero"
         title="Hero"
@@ -196,7 +196,7 @@ export function HomeEditor() {
                 >
                   {treatments.map((item, index) => (
                     <div
-                      key={`${item.title}-${index}`}
+                      key={index}
                       className="space-y-3 rounded-xl border border-neutral-200 bg-neutral-50/70 p-3.5"
                     >
                       <TextInput

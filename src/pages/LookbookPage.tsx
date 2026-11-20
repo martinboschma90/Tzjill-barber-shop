@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { useMemo, useState } from 'react'
 import { AppShell } from '@/components/layout/AppShell'
 import { PageFrame } from '@/components/layout/PageFrame'
@@ -30,15 +31,11 @@ export function LookbookPage() {
     <AppShell navVariant="wordmark">
       <PageFrame>
         <PageIntro
-          kicker="Looks"
+          kicker={<SiteText textKey="LookbookPage.kicker" />}
           title={
-            <>
-              Behind
-              <br />
-              the chair
-            </>
+            <><SiteText textKey="LookbookPage.1" /><br /><SiteText textKey="LookbookPage.2" /></>
           }
-          intro="Looks uit de zaak. #tzjill"
+          intro={<SiteText textKey="LookbookPage.intro" />}
         />
         <div className="mt-10 flex flex-wrap items-center gap-3">
           {lookbookFilters.map((item) => {
@@ -71,10 +68,7 @@ export function LookbookPage() {
           </PillButton>
         </div>
         {images.length === 0 ? (
-          <p className="type-lead mt-16 max-w-sm text-white/50">
-            Nog geen looks in deze categorie. Check Instagram of kies een andere
-            filter.
-          </p>
+          <p className="type-lead mt-16 max-w-sm text-white/50"><SiteText textKey="LookbookPage.3" /></p>
         ) : (
           <ul className="mt-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {images.map((image, index) => (

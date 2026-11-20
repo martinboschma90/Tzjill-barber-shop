@@ -58,6 +58,7 @@ export function EditorAccordionScope({ children }: { children: ReactNode }) {
   }, [])
 
   const setOpen = useCallback((id: string, open: boolean) => {
+    if(open) window.dispatchEvent(new CustomEvent('cms-preview-section', {detail:id}))
     setOpenIds((current) => {
       const next = new Set(current)
       if (open) next.add(id)

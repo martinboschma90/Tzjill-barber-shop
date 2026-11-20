@@ -70,7 +70,7 @@ export function Hero() {
   }, [videoSrc, showFilm])
 
   return (
-    <section className="full-bleed-hero" data-home-hero aria-label="Hero">
+    <section data-cms-section="hero" className="full-bleed-hero" data-home-hero aria-label="Hero">
       <div className="absolute inset-0 overflow-hidden rounded-none" style={{ backgroundColor: '#1c1612' }}>
         <div className="absolute inset-0">
           {stockPoster ? (

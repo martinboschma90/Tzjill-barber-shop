@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { useMemo, useState } from 'react'
 import { Reveal } from '@/components/motion/Reveal'
 import { buttonClass } from '@/components/ui/buttonStyles'
@@ -18,23 +19,15 @@ export function HomeFaq() {
   )
 
   return (
-    <section id="faq" className="text-white">
+    <section data-cms-section="texts-HomeFaq" id="faq" className="text-white">
       <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
-            <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
-            FAQ
-          </p>
+            <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden /><SiteText textKey="HomeFaq.1" /></p>
           <Reveal>
-            <h2 className="type-headline mt-5">
-              Voor je in
-              <br />
-              de stoel zit
-            </h2>
+            <h2 className="type-headline mt-5"><SiteText textKey="HomeFaq.2" /><br /><SiteText textKey="HomeFaq.3" /></h2>
           </Reveal>
-          <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
-            Boeken, te laat, kids — de rest regel je aan de balie.
-          </p>
+          <p className="type-lead mx-auto mt-5 max-w-lg text-white/55"><SiteText textKey="HomeFaq.4" /></p>
         </div>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-3">

@@ -1,18 +1,12 @@
+import { SiteText } from '@/cms/SiteText'
 import { ResolvedImg } from '@/components/ui/ResolvedMedia'
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from 'react'
 import { useReducedMotion } from 'framer-motion'
 import { feedFrameClass } from '@/data/feed'
-import { lookbookImages } from '@/data/lookbook'
+import { useCms } from '@/cms/CmsContext'
 import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '@/data/site'
 
-const slides = lookbookImages
-const COUNT = slides.length
-
-function wrap(index: number) {
-  return ((index % COUNT) + COUNT) % COUNT
-}
-
-function shortestOffset(index: number, active: number) {
+function shortestOffset(index: number, active: number, COUNT: number) {
   let delta = index - active
   if (delta > COUNT / 2) delta -= COUNT
   if (delta < -COUNT / 2) delta += COUNT
@@ -20,14 +14,17 @@ function shortestOffset(index: number, active: number) {
 }
 
 export function InstagramFeed() {
+  const {content: {site}} = useCms()
+  const slides = site.lookbookImages
+  const COUNT = slides.length
   const reduce = useReducedMotion()
   const [active, setActive] = useState(0)
   const [paused, setPaused] = useState(false)
   const drag = useRef<{ x: number } | null>(null)
 
   const go = useCallback((dir: -1 | 1) => {
-    setActive((current) => wrap(current + dir))
-  }, [])
+    setActive((current) => COUNT ? (current + dir + COUNT) % COUNT : 0)
+  }, [COUNT])
 
   useEffect(() => {
     if (reduce || paused) return
@@ -51,19 +48,14 @@ export function InstagramFeed() {
     go(dx < 0 ? 1 : -1)
   }
 
+  if (!COUNT) return null
   return (
-    <section className="section-y overflow-hidden text-white">
+    <section data-cms-section="texts-InstagramFeed" className="section-y overflow-hidden text-white">
       <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
           <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
-            <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />
-            Instagram
-          </p>
-          <h2 className="type-headline mt-5">
-            Looks van
-            <br />
-            de stoel
-          </h2>
+            <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden /><SiteText textKey="InstagramFeed.1" /></p>
+          <h2 className="type-headline mt-5"><SiteText textKey="InstagramFeed.2" /><br /><SiteText textKey="InstagramFeed.3" /></h2>
           <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
             <a
               href={INSTAGRAM_URL}
@@ -94,7 +86,7 @@ export function InstagramFeed() {
           className="relative mx-auto h-[min(96vw,46rem)] w-full overflow-hidden"
         >
           {slides.map((image, index) => {
-            const offset = shortestOffset(index, active)
+            const offset = shortestOffset(index, active % COUNT, COUNT)
             const abs = Math.abs(offset)
             if (abs > 2) return null
             const isCenter = offset === 0

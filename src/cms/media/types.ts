@@ -14,6 +14,7 @@ export type MediaAssetMeta = {
 }
 
 export type MediaAsset = MediaAssetMeta & {
+  source?: 'website'
   blob: Blob
   /** Object URL for preview / site use — revoked on delete */
   url: string

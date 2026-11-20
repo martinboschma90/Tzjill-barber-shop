@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { Link } from 'react-router-dom'
 import { BookButton } from '@/components/booking/BookButton'
 import { SectionHead } from '@/components/layout/SectionHead'
@@ -11,24 +12,18 @@ export function HomePrices() {
     .slice(0, 6)
 
   return (
-    <section className="text-white">
+    <section data-cms-section="texts-HomePrices" className="text-white">
       <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
         <SectionHead
-          kicker="Menu"
+          kicker={<SiteText textKey="HomePrices.kicker" />}
           title={
-            <>
-              Vaste
-              <br />
-              tarieven
-            </>
+            <><SiteText textKey="HomePrices.1" /><br /><SiteText textKey="HomePrices.2" /></>
           }
           intro={
             <Link
               to="/prijzen"
               className="wf-link type-ui text-white/65 hover:text-white"
-            >
-              Volledig menu →
-            </Link>
+            ><SiteText textKey="HomePrices.3" /></Link>
           }
         />
 
@@ -45,7 +40,7 @@ export function HomePrices() {
           ))}
         </ul>
         <div className="mt-10">
-          <BookButton surface="dark">Afspraak maken</BookButton>
+          <BookButton surface="dark"><SiteText textKey="HomePrices.4" /></BookButton>
         </div>
       </div>
     </section>

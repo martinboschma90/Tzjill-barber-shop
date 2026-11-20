@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { openSalonhub } from '@/lib/salonhub'
@@ -102,12 +103,8 @@ export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
           type="button"
           onClick={() => openSalonhub()}
           className="type-ui min-h-11 border-r border-white/10 text-[#f6f3ee]"
-        >
-          Afspraak
-        </button>
-        <a href={phoneHref(content.site.phoneNumber || PHONE_TEL)} className="type-ui flex min-h-11 items-center justify-center text-[#f6f3ee]">
-          Bellen
-        </a>
+        ><SiteText textKey="StickyContactBar.1" /></button>
+        <a href={phoneHref(content.site.phoneNumber || PHONE_TEL)} className="type-ui flex min-h-11 items-center justify-center text-[#f6f3ee]"><SiteText textKey="StickyContactBar.2" /></a>
       </div>
     </div>
   )

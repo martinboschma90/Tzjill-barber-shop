@@ -2,9 +2,9 @@ import type { ReactNode } from 'react'
 import { Reveal } from '@/components/motion/Reveal'
 
 type PageIntroProps = {
-  kicker: string
+  kicker: ReactNode
   title: ReactNode
-  intro?: string
+  intro?: ReactNode
   /** `below` places the intro under the title. `side` keeps it on the right from lg. */
   introPlacement?: 'side' | 'below'
 }

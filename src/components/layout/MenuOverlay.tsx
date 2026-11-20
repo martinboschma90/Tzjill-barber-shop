@@ -1,3 +1,4 @@
+import { SiteText } from '@/cms/SiteText'
 import { Link, useLocation } from 'react-router-dom'
 import { BookButton } from '@/components/booking/BookButton'
 import { OpenStatus } from '@/components/layout/OpenStatus'
@@ -69,9 +70,7 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
             </li>
           ))}
         </ul>
-        <BookButton surface="dark" className="mt-4 w-full" onClick={onClose}>
-          Afspraak
-        </BookButton>
+        <BookButton surface="dark" className="mt-4 w-full" onClick={onClose}><SiteText textKey="MenuOverlay.1" /></BookButton>
       </div>
     </div>
   )
