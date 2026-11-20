@@ -457,6 +457,37 @@ export async function captureVideoPoster(
   return { blob, width, height }
 }
 
+/** Capture the frame currently shown on a <video> element (CMS thumbnail picker). */
+export async function captureCurrentVideoFrame(
+  video: HTMLVideoElement,
+  maxEdge = 1920,
+): Promise<{ blob: Blob; width: number; height: number }> {
+  if (!video.videoWidth || !video.videoHeight) {
+    throw new Error('Video-afmetingen nog niet geladen.')
+  }
+  let width = video.videoWidth
+  let height = video.videoHeight
+  const longest = Math.max(width, height)
+  if (longest > maxEdge) {
+    const scale = maxEdge / longest
+    width = Math.round(width * scale)
+    height = Math.round(height * scale)
+  }
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d')
+  if (!ctx) throw new Error('Canvas unavailable')
+  ctx.drawImage(video, 0, 0, width, height)
+  try {
+    ctx.getImageData(0, 0, 1, 1)
+  } catch {
+    throw new Error('TAINTED_CANVAS')
+  }
+  const blob = await canvasToWebp(canvas, 0.88)
+  return { blob, width, height }
+}
+
 function waitForVideoFrame(video: HTMLVideoElement): Promise<void> {
   return new Promise((resolve) => {
     if ('requestVideoFrameCallback' in video) {
