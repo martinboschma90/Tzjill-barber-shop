@@ -1,6 +1,7 @@
 import { HomeCollabsSectionEditor } from './HomeCollabsSectionEditor'
 import { HomeFotoreeksEditor } from './HomeFotoreeksEditor'
 import { ReviewsEditor } from './ReviewsEditor'
+import { TextGroupFields } from '@/cms/editors/TextGroupFields'
 import { useCms } from '@/cms/CmsProvider'
 import { EditorSection, TextArea, TextInput } from '@/cms/fields'
 import { SectionGroup } from '@/cms/flow-mates/cms-ui'
@@ -56,6 +57,7 @@ export function HomeEditor() {
                     rows={2}
                     onChange={(homeHeroSubtitle) => setSite((current) => ({ ...current, homeHeroSubtitle }))}
                   />
+                  <TextGroupFields group="Hero" />
                 </SectionGroup>
               </div>
             ),
@@ -283,6 +285,14 @@ export function HomeEditor() {
 
       <HomeCollabsSectionEditor />
       <HomeFotoreeksEditor />
+
+      <EditorSection
+        sectionKey="texts-HomeFaq"
+        title="FAQ op homepage"
+        description="Kopteksten; vragen en antwoorden staan onder FAQ in het menu."
+      >
+        <TextGroupFields group="HomeFaq" />
+      </EditorSection>
     </div>
   )
 }

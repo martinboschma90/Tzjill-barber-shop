@@ -22,11 +22,17 @@ import {
 } from '@/cms/content'
 import { cloneFaqCategories, isLeftoverPromoterFaq } from '@/data/faq'
 import { isNotypeHost } from '@/lib/publicSiteUrl'
+import { defaultNavLinks } from '@/lib/siteNav'
 import { normalizeRosterGlowPreset } from '@/cms/rosterGlow'
 import type { Json } from '@/lib/database.types'
+import type { SiteNavLink } from '@/cms/content'
 
 function asString(value: unknown, fallback = ''): string {
   return typeof value === 'string' ? value : fallback
+}
+
+function hasKey(row: Record<string, unknown>, key: string): boolean {
+  return Object.prototype.hasOwnProperty.call(row, key)
 }
 
 function asAboutHeroVideoUrl(value: unknown, fallback: string): string {
@@ -210,8 +216,11 @@ function asFaqCategories(
   value: unknown,
   fallback: FaqCategory[],
 ): FaqCategory[] {
-  if (!Array.isArray(value) || value.length === 0) {
+  if (!Array.isArray(value)) {
     return cloneFaqCategories(fallback)
+  }
+  if (value.length === 0) {
+    return []
   }
   return value
     .map((item, index) => {
@@ -286,7 +295,8 @@ function asShopMenu(
   value: unknown,
   fallback: ShopMenuCategory[],
 ): ShopMenuCategory[] {
-  if (!Array.isArray(value) || value.length === 0) return cloneShopMenu(fallback)
+  if (!Array.isArray(value)) return cloneShopMenu(fallback)
+  if (value.length === 0) return []
   const mapped = value
     .map((item, index) => {
       if (!item || typeof item !== 'object') return null
@@ -358,6 +368,7 @@ function asCollabs(
   fallback: ShopCollab[],
 ): ShopCollab[] {
   if (!Array.isArray(value)) return cloneCollabs(fallback)
+  if (value.length === 0) return []
   const mapped = value
     .map((item, index) => {
       if (!item || typeof item !== 'object') return null
@@ -367,10 +378,12 @@ function asCollabs(
       const text = asString(row.text) || asString(row.description)
       const image =
         asString(row.image) || asString(row.poster) || asString(row.photo)
-      const video =
-        asString(row.video) ||
-        asString(row.videoUrl) ||
-        seedVideoForName(name, fallback)
+      const hasVideoKey = 'video' in row || 'videoUrl' in row
+      const videoFromRow =
+        asString(row.video) || asString(row.videoUrl)
+      const video = hasVideoKey
+        ? videoFromRow
+        : videoFromRow || seedVideoForName(name, fallback)
       if (!name && !text && !image && !video) return null
       return {
         name: name || `Collab ${index + 1}`,
@@ -399,11 +412,41 @@ function seedVideoForName(name: string, fallback: ShopCollab[]): string {
   return fallback.find((item) => item.name.trim().toLowerCase() === key)?.video ?? ''
 }
 
+function asNavLinks(value: unknown, fallback: SiteNavLink[]): SiteNavLink[] {
+  if (!Array.isArray(value)) return fallback.map((link) => ({ ...link }))
+  const mapped = value
+    .map((item) => {
+      if (!item || typeof item !== 'object') return null
+      const row = item as Record<string, unknown>
+      const to = asString(row.to) || asString(row.href)
+      const label = asString(row.label)
+      if (!label || !to) return null
+      const desktopRaw = asString(row.desktop)
+      const desktop: SiteNavLink['desktop'] =
+        desktopRaw === 'left' || desktopRaw === 'right' || desktopRaw === 'none'
+          ? desktopRaw
+          : 'none'
+      const footerRaw = asString(row.footerSection)
+      const footerSection: SiteNavLink['footerSection'] =
+        footerRaw === 'main' || footerRaw === 'studio' ? footerRaw : 'main'
+      return {
+        label,
+        to,
+        visible: asBoolean(row.visible, true),
+        desktop,
+        footerSection,
+      }
+    })
+    .filter((item): item is SiteNavLink => Boolean(item))
+  return mapped.length ? mapped : fallback.map((link) => ({ ...link }))
+}
+
 function asTreatments(
   value: unknown,
   fallback: HomeTreatment[],
 ): HomeTreatment[] {
   if (!Array.isArray(value)) return cloneTreatments(fallback)
+  if (value.length === 0) return []
   const mapped = value
     .map((item) => {
       if (!item || typeof item !== 'object') return null
@@ -505,17 +548,24 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
     homeHeroVisible: asBoolean(row.homeHeroVisible, defaults.homeHeroVisible),
     homeHeroImageUrl: asString(row.homeHeroImageUrl, defaults.homeHeroImageUrl),
     homeHeroVideoUrl: asString(row.homeHeroVideoUrl, defaults.homeHeroVideoUrl),
-    instagram: asString(row.instagram, defaults.instagram).trim() || defaults.instagram,
+    instagram: hasKey(row, 'instagram')
+      ? asString(row.instagram)
+      : defaults.instagram,
     year: asNumber(row.year, defaults.year),
     contactFormVisible: asBoolean(row.contactFormVisible, true),
     newsletterVisible: asBoolean(row.newsletterVisible, true),
     promoSignupVisible: asBoolean(row.promoSignupVisible, true),
     contactIntro: asString(row.contactIntro, defaults.contactIntro),
+    contactHeroImageUrl: hasKey(row, 'contactHeroImageUrl')
+      ? asString(row.contactHeroImageUrl)
+      : defaults.contactHeroImageUrl,
     contact,
     legal: asLegal(row.legal, defaults.legal),
-    about: about.length ? about : [...defaults.about],
+    about: hasKey(row, 'about') ? about : [...defaults.about],
     aboutTitle: asString(row.aboutTitle, defaults.aboutTitle),
-    aboutImages: aboutImages.length ? aboutImages : [...defaults.aboutImages],
+    aboutImages: hasKey(row, 'aboutImages')
+      ? aboutImages
+      : [...defaults.aboutImages],
     aboutHeroVideoUrl: asAboutHeroVideoUrl(
       row.aboutHeroVideoUrl,
       defaults.aboutHeroVideoUrl,
@@ -546,29 +596,35 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
     bookingIntro: asString(row.bookingIntro, defaults.bookingIntro),
     bookingVisible: asBoolean(row.bookingVisible, defaults.bookingVisible),
     bookingTreatments: asBookingTreatments(row.bookingTreatments),
-    phoneNumber: asString(row.phoneNumber, defaults.phoneNumber).trim()
-      ? asString(row.phoneNumber, defaults.phoneNumber)
+    phoneNumber: hasKey(row, 'phoneNumber')
+      ? asString(row.phoneNumber)
       : defaults.phoneNumber,
-    whatsappNumber: asString(row.whatsappNumber, defaults.whatsappNumber).trim()
-      ? asString(row.whatsappNumber, defaults.whatsappNumber)
+    whatsappNumber: hasKey(row, 'whatsappNumber')
+      ? asString(row.whatsappNumber)
       : defaults.whatsappNumber,
     faqTitle: leftoverFaq ? defaults.faqTitle : faqTitle,
     faqIntro: leftoverFaq ? defaults.faqIntro : faqIntro,
     faqVisible: asBoolean(row.faqVisible, defaults.faqVisible),
     faqCategories: leftoverFaq
       ? cloneFaqCategories(defaults.faqCategories)
-      : faqCategories,
+      : hasKey(row, 'faqCategories')
+        ? asFaqCategories(row.faqCategories, defaults.faqCategories)
+        : cloneFaqCategories(defaults.faqCategories),
     publicSiteUrl: asPublicSiteUrl(
       row.publicSiteUrl,
       defaults.publicSiteUrl,
     ),
     metaDescription: asString(row.metaDescription, defaults.metaDescription),
     searchIndexing: asBoolean(row.searchIndexing, defaults.searchIndexing),
-    shopMenu: asShopMenu(row.shopMenu, defaults.shopMenu),
+    shopMenu: hasKey(row, 'shopMenu')
+      ? asShopMenu(row.shopMenu, defaults.shopMenu)
+      : cloneShopMenu(defaults.shopMenu),
     lookbookImages: asLookbook(row.lookbookImages, defaults.lookbookImages),
     products: asProducts(row.products, defaults.products),
     productsEnabled: defaults.productsEnabled,
-    collabs: asCollabs(row.collabs, defaults.collabs),
+    collabs: hasKey(row, 'collabs')
+      ? asCollabs(row.collabs, defaults.collabs)
+      : cloneCollabs(defaults.collabs),
     welcomeKicker: asString(row.welcomeKicker, defaults.welcomeKicker),
     welcomeTitle: asString(row.welcomeTitle, defaults.welcomeTitle),
     welcomeText: asString(row.welcomeText, defaults.welcomeText),
@@ -576,7 +632,12 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
     treatmentsKicker: asString(row.treatmentsKicker, defaults.treatmentsKicker),
     treatmentsTitle: asString(row.treatmentsTitle, defaults.treatmentsTitle),
     treatmentsIntro: asString(row.treatmentsIntro, defaults.treatmentsIntro),
-    treatments: asTreatments(row.treatments, defaults.treatments),
+    treatments: hasKey(row, 'treatments')
+      ? asTreatments(row.treatments, defaults.treatments)
+      : cloneTreatments(defaults.treatments),
+    navLinks: hasKey(row, 'navLinks')
+      ? asNavLinks(row.navLinks, defaults.navLinks ?? defaultNavLinks())
+      : (defaults.navLinks ?? defaultNavLinks()).map((link) => ({ ...link })),
   }
 }
 

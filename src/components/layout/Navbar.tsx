@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { BookButton } from '@/components/booking/BookButton'
 import { Logo } from '@/components/ui/Logo'
-import { desktopNavLeft, desktopNavRight } from '@/data/nav'
+import { desktopNavLeft, desktopNavRight } from '@/lib/siteNav'
+import type { SiteNavLink } from '@/cms/content'
+import { siteText } from '@/cms/siteText'
 
 type NavbarProps = {
   menuOpen: boolean
@@ -20,24 +22,20 @@ function navActive(pathname: string, to: string) {
 }
 
 function NavItem({
-  to,
-  label,
+  link,
   pathname,
 }: {
-  to: string
-  label: string
+  link: SiteNavLink
   pathname: string
 }) {
-  const { content } = useCms()
-  if (to === '/team' && content.site.teamVisible === false) return null
   return (
     <Link
-      to={to}
+      to={link.to}
       className={`wf-link type-ui inline-flex min-h-11 items-center ${
-        navActive(pathname, to) ? 'opacity-100' : 'opacity-55 hover:opacity-100'
+        navActive(pathname, link.to) ? 'opacity-100' : 'opacity-55 hover:opacity-100'
       }`}
     >
-      {label}
+      {link.label}
     </Link>
   )
 }
@@ -49,6 +47,7 @@ export function Navbar({
   variant = 'wordmark',
 }: NavbarProps) {
   const { pathname } = useLocation()
+  const { content } = useCms()
   const [scrolled, setScrolled] = useState(false)
   const onHomeHero = variant === 'hero' && pathname === '/'
 
@@ -61,6 +60,8 @@ export function Navbar({
 
   const solid = !onHomeHero || scrolled || menuOpen
   const ink = 'text-white'
+  const left = desktopNavLeft(content.site)
+  const right = desktopNavRight(content.site)
 
   return (
     <header
@@ -75,8 +76,8 @@ export function Navbar({
           className="pointer-events-auto hidden items-center justify-end gap-5 pe-1 lg:flex xl:gap-8"
           aria-label="Primary left"
         >
-          {desktopNavLeft.map((link) => (
-            <NavItem key={link.to} to={link.to} label={link.label} pathname={pathname} />
+          {left.map((link) => (
+            <NavItem key={link.to} link={link} pathname={pathname} />
           ))}
         </nav>
 
@@ -90,11 +91,13 @@ export function Navbar({
 
         <div className="pointer-events-auto hidden items-center justify-between gap-5 ps-1 lg:flex xl:gap-8">
           <nav className="flex items-center gap-5 xl:gap-8" aria-label="Primary right">
-            {desktopNavRight.map((link) => (
-              <NavItem key={link.to} to={link.to} label={link.label} pathname={pathname} />
+            {right.map((link) => (
+              <NavItem key={link.to} link={link} pathname={pathname} />
             ))}
           </nav>
-          <BookButton surface="dark" className="shrink-0 px-5 py-2.5"><SiteText textKey="Navbar.1" /></BookButton>
+          <BookButton surface="dark" className="shrink-0 px-5 py-2.5">
+            <SiteText textKey="Navbar.1" />
+          </BookButton>
         </div>
 
         <button
@@ -103,7 +106,11 @@ export function Navbar({
           onPointerEnter={onMenuIntent}
           onTouchStart={onMenuIntent}
           onClick={onMenuToggle}
-          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-label={
+            menuOpen
+              ? siteText(content.site, 'Navbar.menuClose')
+              : siteText(content.site, 'Navbar.menuOpen')
+          }
           aria-expanded={menuOpen}
         >
           <span className="relative flex h-[12px] w-4 flex-col items-stretch justify-between">

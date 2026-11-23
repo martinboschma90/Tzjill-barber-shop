@@ -7,7 +7,9 @@ import { cloneShopMenu } from '@/cms/content'
 
 export function HomePrices() {
   const { content } = useCms()
-  const highlights = (content.site.shopMenu ?? cloneShopMenu())
+  const menu =
+    content.site.shopMenu !== undefined ? content.site.shopMenu : cloneShopMenu()
+  const highlights = menu
     .flatMap((category) => category.groups.flatMap((group) => group.items))
     .slice(0, 6)
 

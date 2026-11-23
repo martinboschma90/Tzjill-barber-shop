@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useCms } from '@/cms/CmsContext'
+import { siteText, type TextDefaultKey } from '@/cms/siteText'
 import { BookButton } from '@/components/booking/BookButton'
 import { BookingWell } from '@/components/booking/BookingWell'
 import { DateAgenda } from '@/components/booking/DateAgenda'
@@ -12,7 +13,7 @@ import {
   presentTreatments,
   type BookableTreatment,
 } from '@/data/salonhubCatalog'
-import { PHONE_DISPLAY, PHONE_TEL } from '@/data/site'
+import { PHONE_TEL } from '@/data/site'
 import {
   bookAppointment,
   loadDates,
@@ -448,23 +449,21 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
     else if (step === 'verify') setStep('details')
   }
 
+  const stepTitles: Record<Step, TextDefaultKey> = {
+    treatment: 'BookingFlow.stepTreatment',
+    employee: 'BookingFlow.stepEmployee',
+    date: 'BookingFlow.stepDate',
+    details: 'BookingFlow.stepDetails',
+    verify: 'BookingFlow.stepVerify',
+    success: 'BookingFlow.stepSuccess',
+  }
   const customTitle = content.site.bookingTitle.trim()
   const title =
-    step === 'employee'
-      ? 'Kies een kapper'
-      : step === 'date'
-        ? 'Kies dag en tijd'
-        : step === 'details'
-            ? 'Bevestig je afspraak'
-            : step === 'verify'
-              ? 'Code uit je mail'
-              : step === 'success'
-                ? 'Afspraak staat'
-                : customTitle && customTitle !== STALE_BOOKING_TITLE
-                  ? customTitle
-                  : 'Afspraak maken'
+    step === 'treatment' && customTitle && customTitle !== STALE_BOOKING_TITLE
+      ? customTitle
+      : siteText(content.site, stepTitles[step])
 
-  const phone = content.site.phoneNumber.trim() || PHONE_DISPLAY
+  const phone = content.site.phoneNumber.trim()
   const address = content.site.legal.addressLines.map((line) => line.trim()).filter(Boolean).join(', ')
   const customIntro = content.site.bookingIntro.trim()
   const barberName = (person: LiveEmployee | null) => {

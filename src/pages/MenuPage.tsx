@@ -54,7 +54,8 @@ function PriceRows({ items }: { items: ShopMenuItem[] }) {
 
 export function MenuPage() {
   const { content } = useCms()
-  const menu = content.site.shopMenu ?? cloneShopMenu()
+  const menu =
+    content.site.shopMenu !== undefined ? content.site.shopMenu : cloneShopMenu()
   const { columns, full } = blocksFor(menu)
 
   return (

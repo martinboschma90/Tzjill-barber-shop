@@ -1,8 +1,9 @@
+import { SiteText } from '@/cms/SiteText'
 import { useCms } from '@/cms/CmsContext'
+import { siteText } from '@/cms/siteText'
 import { useRef, useState, type FormEvent } from 'react'
 import { buttonClass } from '@/components/ui/buttonStyles'
 import { Check, Spinner } from '@/components/ui/StatusIcon'
-
 import { submitMessage } from '@/lib/messages'
 
 const fieldClass =
@@ -27,21 +28,48 @@ export function ContactForm() {
     setError('')
     setPhase('sending')
     try {
-      await submitMessage({ kind: 'contact', name, email, phone, message, website, requestId: requestId.current })
+      await submitMessage({
+        kind: 'contact',
+        name,
+        email,
+        phone,
+        message,
+        website,
+        requestId: requestId.current,
+      })
       setPhase('done')
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : 'Verzenden mislukt.')
       setPhase('idle')
-    } finally { sendingRef.current = false }
+    } finally {
+      sendingRef.current = false
+    }
   }
 
   if (content.site.contactFormVisible === false) return null
 
+  const submitLabel =
+    phase === 'sending'
+      ? siteText(content.site, 'ContactForm.submitSending')
+      : phase === 'done'
+        ? siteText(content.site, 'ContactForm.submitDone')
+        : siteText(content.site, 'ContactForm.submitIdle')
+
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3.5">
-      <label className="hidden" aria-hidden="true">Website<input tabIndex={-1} autoComplete="off" value={website} onChange={(event) => setWebsite(event.target.value)} /></label>
+      <label className="hidden" aria-hidden="true">
+        Website
+        <input
+          tabIndex={-1}
+          autoComplete="off"
+          value={website}
+          onChange={(event) => setWebsite(event.target.value)}
+        />
+      </label>
       <label className="block">
-        <span className="type-label text-white/65">Naam</span>
+        <span className="type-label text-white/65">
+          <SiteText textKey="ContactForm.name" />
+        </span>
         <input
           required
           name="name"
@@ -52,7 +80,9 @@ export function ContactForm() {
         />
       </label>
       <label className="block">
-        <span className="type-label text-white/65">E-mail</span>
+        <span className="type-label text-white/65">
+          <SiteText textKey="ContactForm.email" />
+        </span>
         <input
           required
           type="email"
@@ -64,7 +94,9 @@ export function ContactForm() {
         />
       </label>
       <label className="block">
-        <span className="type-label text-white/65">Telefoon</span>
+        <span className="type-label text-white/65">
+          <SiteText textKey="ContactForm.phone" />
+        </span>
         <input
           type="tel"
           name="phone"
@@ -75,7 +107,9 @@ export function ContactForm() {
         />
       </label>
       <label className="block">
-        <span className="type-label text-white/65">Bericht</span>
+        <span className="type-label text-white/65">
+          <SiteText textKey="ContactForm.message" />
+        </span>
         <textarea
           required
           name="message"
@@ -85,15 +119,28 @@ export function ContactForm() {
           className={`${fieldClass} mt-2 resize-none`}
         />
       </label>
-      {error ? <p role="alert" className="type-body text-[#e8c4a8]">{error}</p> : null}
-      <p className="type-body text-white/70">We gebruiken je gegevens om op je bericht te reageren. <a href="/privacy" className="underline">Privacy</a></p>
+      {error ? (
+        <p role="alert" className="type-body text-[#e8c4a8]">
+          {error}
+        </p>
+      ) : null}
+      <p className="type-body text-white/70">
+        <SiteText textKey="ContactForm.privacy" />{' '}
+        <a href="/privacy" className="underline">
+          <SiteText textKey="ContactForm.privacyLink" />
+        </a>
+      </p>
       <button
         type="submit"
         disabled={phase !== 'idle'}
-        className={buttonClass({ variant: 'solid', surface: 'dark', className: 'mt-1 w-fit disabled:opacity-70' })}
+        className={buttonClass({
+          variant: 'solid',
+          surface: 'dark',
+          className: 'mt-1 w-fit disabled:opacity-70',
+        })}
       >
         {phase === 'sending' ? <Spinner /> : phase === 'done' ? <Check /> : null}
-        {phase === 'sending' ? 'Versturen' : phase === 'done' ? 'Verstuurd' : 'Verstuur'}
+        {submitLabel}
         {phase === 'idle' ? (
           <span aria-hidden className="motion-arrow">
             →
@@ -102,7 +149,7 @@ export function ContactForm() {
       </button>
       {phase === 'done' ? (
         <p className="type-lead max-w-sm text-white/70" role="status">
-          Je bericht is verstuurd. We reageren zo snel mogelijk.
+          <SiteText textKey="ContactForm.success" />
         </p>
       ) : null}
     </form>

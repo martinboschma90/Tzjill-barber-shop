@@ -1,29 +1,32 @@
 import { productsEnabled } from '@/data/site'
+import {
+  defaultNavLinks,
+  visibleNavLinks,
+  desktopNavLeft,
+  desktopNavRight,
+  footerNavMain,
+  footerNavStudio,
+} from '@/lib/siteNav'
+import type { SiteContent } from '@/cms/content'
 
-const publicNavAll = [
-  { label: 'Home', to: '/' },
-  { label: 'Prijzen', to: '/prijzen' },
-  { label: 'Lookbook', to: '/lookbook' },
-  { label: 'Producten', to: '/products' },
-  { label: 'Team', to: '/team' },
-  { label: 'Over ons', to: '/over-ons' },
-  { label: 'Contact', to: '/contact' },
-] as const
-
-/** Public nav only. /collabs stays a page, linked from the homepage section. */
+/** @deprecated Prefer `visibleNavLinks(site)` — kept for scripts that lack CMS context. */
 export const publicNav = productsEnabled
-  ? publicNavAll
-  : publicNavAll.filter((link) => link.to !== '/products')
+  ? defaultNavLinks().filter((link) => link.visible)
+  : defaultNavLinks().filter((link) => link.visible && link.to !== '/products')
 
 export const publicMenuLinks = publicNav
+export const desktopNavLeftLegacy = defaultNavLinks().filter((l) => l.desktop === 'left')
+export const desktopNavRightLegacy = defaultNavLinks().filter((l) => l.desktop === 'right')
 
-const desktopLeftTo = ['/', '/prijzen', '/lookbook'] as const
-const desktopRightTo = ['/team', '/over-ons', '/contact'] as const
-
-function pickNav(targets: readonly string[]) {
-  return targets.flatMap((to) => publicNav.filter((link) => link.to === to))
+export {
+  visibleNavLinks,
+  desktopNavLeft,
+  desktopNavRight,
+  footerNavMain,
+  footerNavStudio,
+  defaultNavLinks,
 }
 
-/** Three links each side of the logo. */
-export const desktopNavLeft = pickNav(desktopLeftTo)
-export const desktopNavRight = pickNav(desktopRightTo)
+export function pickNavForSite(site: SiteContent) {
+  return visibleNavLinks(site)
+}

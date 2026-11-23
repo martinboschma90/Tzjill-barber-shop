@@ -37,18 +37,18 @@ export function PublicSeo() {
   useEffect(() => {
     const origin = resolvePublicSiteUrl(site.publicSiteUrl)
     const canonical = `${origin}${pathname === '/' ? '/' : pathname}`
-    const description =
-      site.metaDescription?.trim() ||
-      'Tzjill Barber & Lounge in Leeuwarden. Trendy haircuts and hot towel straight razor shaves. Tag #tzjill.'
-    const titleBase = site.fullName?.trim() || site.name || 'Tzjill Barber Shop'
+    const description = site.metaDescription.trim()
+    const titleBase = site.fullName.trim() || site.name.trim()
     const page = pageSeo(pathname, origin, titleBase, description)
     document.title = page.title
 
     upsertLink('canonical', canonical)
-    upsertMeta('meta[name="description"]', {
-      name: 'description',
-      content: description,
-    })
+    if (description) {
+      upsertMeta('meta[name="description"]', {
+        name: 'description',
+        content: description,
+      })
+    }
     upsertMeta('meta[name="robots"]', {
       name: 'robots',
       content: shouldNoIndexPublicSite(origin, site.searchIndexing)
@@ -63,10 +63,12 @@ export function PublicSeo() {
       property: 'og:title',
       content: page.title,
     })
-    upsertMeta('meta[property="og:description"]', {
-      property: 'og:description',
-      content: description,
-    })
+    if (description) {
+      upsertMeta('meta[property="og:description"]', {
+        property: 'og:description',
+        content: description,
+      })
+    }
     upsertMeta('meta[property="og:image"]', { property: 'og:image', content: page.image })
     let schema = document.getElementById('salon-schema')
     if (!schema) { schema = document.createElement('script'); schema.setAttribute('type', 'application/ld+json'); schema.id = 'salon-schema'; document.head.appendChild(schema) }

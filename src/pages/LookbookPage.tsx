@@ -17,7 +17,10 @@ import { Reveal } from '@/components/motion/Reveal'
 
 export function LookbookPage() {
   const { content } = useCms()
-  const lookbookImages = content.site.lookbookImages ?? cloneLookbook()
+  const lookbookImages =
+    content.site.lookbookImages !== undefined
+      ? content.site.lookbookImages
+      : cloneLookbook()
   const [filter, setFilter] = useState<LookbookFilterId>('all')
 
   const images = useMemo(() => {

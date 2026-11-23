@@ -3,12 +3,11 @@ import { useReducedMotion } from 'framer-motion'
 import { BookButton } from '@/components/booking/BookButton'
 import { OptimizedImg } from '@/components/ui/OptimizedImg'
 import { Reveal } from '@/components/motion/Reveal'
+import { SiteText } from '@/cms/SiteText'
 import { useCms } from '@/cms/CmsContext'
 import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
 import { feedFrameClass, HERO_POSTER, HERO_POSTER_AVIF, HERO_POSTER_WEBP } from '@/data/feed'
 
-const FALLBACK_POSTER = HERO_POSTER
-const FALLBACK_VIDEO = '/brand/hero.mp4'
 const DESKTOP_MEDIA_QUERY = '(min-width: 768px)'
 function isDirectVideo(url: string) {
   return /\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(url) || url.startsWith('blob:')
@@ -22,16 +21,12 @@ export function Hero() {
   const { content } = useCms()
   const reduce = useReducedMotion()
   const videoRef = useRef<HTMLVideoElement>(null)
-  const poster = useResolvedMediaUrl(
-    content.site.homeHeroImageUrl,
-    FALLBACK_POSTER,
-  )
-  const video = useResolvedMediaUrl(
-    content.site.homeHeroVideoUrl,
-    FALLBACK_VIDEO,
-  )
-  const posterSrc = poster || FALLBACK_POSTER
-  const videoSrc = video || FALLBACK_VIDEO
+  const posterField = content.site.homeHeroImageUrl?.trim() ?? ''
+  const videoField = content.site.homeHeroVideoUrl?.trim() ?? ''
+  const poster = useResolvedMediaUrl(posterField || null)
+  const video = useResolvedMediaUrl(videoField || null)
+  const posterSrc = poster
+  const videoSrc = video
   const playVideo = isDirectVideo(videoSrc)
   const stockPoster = isStockPoster(posterSrc)
   const showFilm = playVideo && !reduce
@@ -98,15 +93,28 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto flex min-h-svh max-w-[1600px] flex-col justify-end px-8 pb-10 pt-28 sm:px-12 sm:pb-14 lg:px-16">
         <div className="max-w-4xl">
-          <p className="type-label text-white/70">{content.site.fullName || 'Tzjill Barber & Lounge'} · Leeuwarden</p>
-          <Reveal trigger="load">
-            <h1 className="type-display mt-5 whitespace-pre-line text-white">{content.site.homeHeroTitle || "A man’s\nworld."}</h1>
-          </Reveal>
-          <p className="type-lead mt-6 max-w-[16rem] text-white/70">
-            {content.site.homeHeroSubtitle || 'Trendy haircuts. Hot towel straight razor. Elke coupe op maat.'}
-          </p>
+          {content.site.fullName.trim() ? (
+            <p className="type-label text-white/70">
+              {content.site.fullName.trim()}
+              <SiteText textKey="Hero.locationSuffix" />
+            </p>
+          ) : null}
+          {content.site.homeHeroTitle.trim() ? (
+            <Reveal trigger="load">
+              <h1 className="type-display mt-5 whitespace-pre-line text-white">
+                {content.site.homeHeroTitle}
+              </h1>
+            </Reveal>
+          ) : null}
+          {content.site.homeHeroSubtitle.trim() ? (
+            <p className="type-lead mt-6 max-w-[16rem] text-white/70">
+              {content.site.homeHeroSubtitle}
+            </p>
+          ) : null}
           <div className="pointer-events-auto mt-8">
-            <BookButton surface="dark">Afspraak</BookButton>
+            <BookButton surface="dark">
+              <SiteText textKey="Hero.cta" />
+            </BookButton>
           </div>
         </div>
       </div>

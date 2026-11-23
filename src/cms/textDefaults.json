@@ -390,5 +390,181 @@
   "StickyContactBar.2": {
     "group": "StickyContactBar",
     "text": "Bellen"
+  },
+  "Hero.cta": {
+    "group": "Hero",
+    "text": "Afspraak"
+  },
+  "Hero.locationSuffix": {
+    "group": "Hero",
+    "text": "· Leeuwarden"
+  },
+  "AboutStats.1.n": {
+    "group": "AboutStats",
+    "text": "3"
+  },
+  "AboutStats.1.label": {
+    "group": "AboutStats",
+    "text": "Specialismen"
+  },
+  "AboutStats.2.n": {
+    "group": "AboutStats",
+    "text": "6"
+  },
+  "AboutStats.2.label": {
+    "group": "AboutStats",
+    "text": "Dagen open"
+  },
+  "AboutStats.3.n": {
+    "group": "AboutStats",
+    "text": "11"
+  },
+  "AboutStats.3.label": {
+    "group": "AboutStats",
+    "text": "Kids t/m"
+  },
+  "AboutStats.4.n": {
+    "group": "AboutStats",
+    "text": "18"
+  },
+  "AboutStats.4.label": {
+    "group": "AboutStats",
+    "text": "Voorstreek"
+  },
+  "AboutMission.1.title": {
+    "group": "AboutMission",
+    "text": "Elke coupe is maatwerk"
+  },
+  "AboutMission.1.text": {
+    "group": "AboutMission",
+    "text": "Strak, classic of fade — altijd in verhouding met je gezicht."
+  },
+  "AboutMission.2.title": {
+    "group": "AboutMission",
+    "text": "Traditioneel, met de technieken van nu"
+  },
+  "AboutMission.2.text": {
+    "group": "AboutMission",
+    "text": "Knippen, scheren, baard. Hot towel straight razor als het erom gaat."
+  },
+  "AboutMission.3.title": {
+    "group": "AboutMission",
+    "text": "Een look die bij je past"
+  },
+  "AboutMission.3.text": {
+    "group": "AboutMission",
+    "text": "Persoonlijkheid, stijl en gezichtsvorm. Niet een trend van de week."
+  },
+  "AboutMission.4.title": {
+    "group": "AboutMission",
+    "text": "Haar, baard en gezicht"
+  },
+  "AboutMission.4.text": {
+    "group": "AboutMission",
+    "text": "Verzorging in de lounge. Producten koop je in de zaak."
+  },
+  "AboutPage.teamIntroWithTeam": {
+    "group": "AboutPage",
+    "text": "De kappers achter de coupe."
+  },
+  "AboutPage.teamIntroEmpty": {
+    "group": "AboutPage",
+    "text": "Kies je kapper bij het boeken in Salonhub."
+  },
+  "ContactForm.name": {
+    "group": "ContactForm",
+    "text": "Naam"
+  },
+  "ContactForm.email": {
+    "group": "ContactForm",
+    "text": "E-mail"
+  },
+  "ContactForm.phone": {
+    "group": "ContactForm",
+    "text": "Telefoon"
+  },
+  "ContactForm.message": {
+    "group": "ContactForm",
+    "text": "Bericht"
+  },
+  "ContactForm.privacy": {
+    "group": "ContactForm",
+    "text": "We gebruiken je gegevens om op je bericht te reageren."
+  },
+  "ContactForm.privacyLink": {
+    "group": "ContactForm",
+    "text": "Privacy"
+  },
+  "ContactForm.submitIdle": {
+    "group": "ContactForm",
+    "text": "Verstuur"
+  },
+  "ContactForm.submitSending": {
+    "group": "ContactForm",
+    "text": "Versturen"
+  },
+  "ContactForm.submitDone": {
+    "group": "ContactForm",
+    "text": "Verstuurd"
+  },
+  "ContactForm.success": {
+    "group": "ContactForm",
+    "text": "Je bericht is verstuurd. We reageren zo snel mogelijk."
+  },
+  "BookingFlow.stepTreatment": {
+    "group": "BookingFlow",
+    "text": "Afspraak maken"
+  },
+  "BookingFlow.stepEmployee": {
+    "group": "BookingFlow",
+    "text": "Kies een kapper"
+  },
+  "BookingFlow.stepDate": {
+    "group": "BookingFlow",
+    "text": "Kies dag en tijd"
+  },
+  "BookingFlow.stepDetails": {
+    "group": "BookingFlow",
+    "text": "Bevestig je afspraak"
+  },
+  "BookingFlow.stepVerify": {
+    "group": "BookingFlow",
+    "text": "Code uit je mail"
+  },
+  "BookingFlow.stepSuccess": {
+    "group": "BookingFlow",
+    "text": "Afspraak staat"
+  },
+  "LegalPage.privacyTitle": {
+    "group": "LegalPage",
+    "text": "Privacy"
+  },
+  "LegalPage.cookiesTitle": {
+    "group": "LegalPage",
+    "text": "Cookies en externe diensten"
+  },
+  "Newsletter.placeholder": {
+    "group": "Newsletter",
+    "text": "Je e-mail"
+  },
+  "Newsletter.submitIdle": {
+    "group": "Newsletter",
+    "text": "Aanmelden"
+  },
+  "Newsletter.submitSending": {
+    "group": "Newsletter",
+    "text": "Versturen"
+  },
+  "Newsletter.submitDone": {
+    "group": "Newsletter",
+    "text": "Aangemeld"
+  },
+  "Navbar.menuOpen": {
+    "group": "Navbar",
+    "text": "Menu openen"
+  },
+  "Navbar.menuClose": {
+    "group": "Navbar",
+    "text": "Menu sluiten"
   }
 }

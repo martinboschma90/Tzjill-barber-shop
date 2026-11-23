@@ -8,7 +8,8 @@ import { feedFrameClass } from '@/data/feed'
 
 export function ProductsPage() {
   const { content } = useCms()
-  const products = content.site.products ?? cloneProducts()
+  const products =
+    content.site.products !== undefined ? content.site.products : cloneProducts()
 
   return (
     <AppShell navVariant="wordmark">

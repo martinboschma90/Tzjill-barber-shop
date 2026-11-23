@@ -5,4 +5,4 @@ function EmptyPreview() {
   return null
 }
 
-export default createCmsPanel(SettingsEditor, EmptyPreview)
+export default createCmsPanel(SettingsEditor, EmptyPreview, ['NotFoundPage'])

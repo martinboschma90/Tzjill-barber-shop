@@ -1,5 +1,6 @@
 import { SiteText } from '@/cms/SiteText'
 import { useCms } from '@/cms/CmsContext'
+import { siteText } from '@/cms/siteText'
 import { useRef, useState, type FormEvent } from 'react'
 import { buttonClass } from '@/components/ui/buttonStyles'
 import { Check, Spinner } from '@/components/ui/StatusIcon'
@@ -51,7 +52,7 @@ export function Newsletter() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Je e-mail"
+                placeholder={siteText(content.site, 'Newsletter.placeholder')}
                 className="type-ui min-h-[3rem] flex-1 rounded-full border border-white/75 bg-white/5 px-6 py-3 text-center text-white outline-none placeholder:text-white/65 backdrop-blur-[2px] transition-colors focus:border-white sm:text-left"
               />
               <label className="type-body order-3 flex flex-wrap items-center gap-2 text-left text-white/75 sm:col-span-2"><input type="checkbox" required checked={consent} onChange={(event) => setConsent(event.target.checked)} /><SiteText textKey="Newsletter.5" /><a href="/privacy" className="underline"><SiteText textKey="Newsletter.6" /></a></label>
@@ -61,7 +62,11 @@ export function Newsletter() {
                 className={buttonClass({ variant: 'solid', surface: 'dark', className: 'shrink-0 disabled:opacity-70' })}
               >
                 {phase === 'sending' ? <Spinner /> : phase === 'done' ? <Check /> : null}
-                {phase === 'sending' ? 'Versturen' : phase === 'done' ? 'Aangemeld' : 'Aanmelden'}
+                {phase === 'sending'
+                  ? siteText(content.site, 'Newsletter.submitSending')
+                  : phase === 'done'
+                    ? siteText(content.site, 'Newsletter.submitDone')
+                    : siteText(content.site, 'Newsletter.submitIdle')}
                 {phase === 'idle' ? (
                   <span aria-hidden className="motion-arrow">
                     →

@@ -43,7 +43,9 @@ function CollabCard({ item, index }: { item: ShopCollab; index: number }) {
 
 export function HomeCollabs() {
   const { content } = useCms()
-  const collabs = (content.site.collabs ?? cloneCollabs()).filter((item) => item.name.trim())
+  const collabs = (
+    content.site.collabs !== undefined ? content.site.collabs : cloneCollabs()
+  ).filter((item) => item.name.trim())
   if (collabs.length < 2) return null
 
   return (

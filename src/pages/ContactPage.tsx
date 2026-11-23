@@ -9,18 +9,18 @@ import { BookButton } from '@/components/booking/BookButton'
 import { PillButton } from '@/components/ui/PillButton'
 import { phoneHref } from '@/lib/contactLinks'
 import { useCms } from '@/cms/CmsContext'
-import { feed, feedWideClass } from '@/data/feed'
-import {
-  PHONE_DISPLAY,
-} from '@/data/site'
+import { feedWideClass } from '@/data/feed'
+import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
 
 
 export function ContactPage() {
   const { content } = useCms()
   const { site } = content
-  const phone = site.phoneNumber?.trim() || PHONE_DISPLAY
+  const phone = site.phoneNumber?.trim() ?? ''
   const officeLines = site.legal.addressLines.filter((line) => line.trim())
-  const email = site.contact[0]?.email ?? 'info@tzjill.nl'
+  const email = site.contact[0]?.email?.trim() ?? ''
+  const heroField = site.contactHeroImageUrl?.trim() ?? ''
+  const heroSrc = useResolvedMediaUrl(heroField || null)
 
   return (
     <AppShell navVariant="wordmark">
@@ -29,18 +29,22 @@ export function ContactPage() {
           <p className="type-label inline-flex items-center justify-center gap-2 rounded-full bg-[#efeae3] px-3.5 py-1.5 text-[#2c241c]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#2c241c]" aria-hidden /><SiteText textKey="ContactPage.1" /></p>
           <h1 className="type-headline mt-6"><SiteText textKey="ContactPage.2" /><br /><SiteText textKey="ContactPage.3" /></h1>
-          <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
-            {site.contactIntro || 'Afspraak, vragen of collab. Boek via Salonhub of stuur een bericht.'}
-          </p>
+          {site.contactIntro.trim() ? (
+            <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">
+              {site.contactIntro.trim()}
+            </p>
+          ) : null}
         </header>
 
-        <MediaReveal className="mt-10 overflow-hidden rounded-[1.75rem] bg-black sm:mt-12 sm:rounded-[2rem]">
-          <ResolvedImg
-            src={feed.dsc09971}
-            alt="Tzjill Barber & Lounge, Voorstreek 18 Leeuwarden"
-            className={`aspect-[16/9] w-full sm:aspect-[2.4/1] ${feedWideClass}`}
-          />
-        </MediaReveal>
+        {heroSrc ? (
+          <MediaReveal className="mt-10 overflow-hidden rounded-[1.75rem] bg-black sm:mt-12 sm:rounded-[2rem]">
+            <ResolvedImg
+              src={heroSrc}
+              alt="Tzjill Barber & Lounge, Voorstreek 18 Leeuwarden"
+              className={`aspect-[16/9] w-full sm:aspect-[2.4/1] ${feedWideClass}`}
+            />
+          </MediaReveal>
+        ) : null}
 
         <div className="mt-14 grid items-start gap-14 lg:grid-cols-2 lg:gap-20">
           <section>
