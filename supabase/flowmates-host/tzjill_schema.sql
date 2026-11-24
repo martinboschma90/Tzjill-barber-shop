@@ -44,7 +44,6 @@ CREATE OR REPLACE FUNCTION "tzjill"."cms_ensure_role"() RETURNS "text"
     AS $$
 declare
   current_role text;
-  total int;
   user_email text;
   owner_email constant text := 'martin@viraal.media';
 begin
@@ -88,19 +87,6 @@ begin
       email = case when email = '' then user_email else email end
     where user_id = auth.uid();
     return current_role;
-  end if;
-
-  select count(*) into total from tzjill.user_roles;
-  if total = 0 then
-    insert into tzjill.user_roles (user_id, email, display_name, role, status)
-    values (
-      auth.uid(),
-      user_email,
-      coalesce(auth.jwt() ->> 'email', 'Admin'),
-      'admin',
-      'active'
-    );
-    return 'admin';
   end if;
 
   insert into tzjill.user_roles (user_id, email, display_name, role, status)
@@ -405,21 +391,19 @@ ALTER TABLE ONLY "tzjill"."user_roles"
 
 CREATE POLICY "Anon can read public CMS keys" ON "tzjill"."cms_content" FOR SELECT TO "anon" USING (("key" = ANY (ARRAY['tzjill-public-site-v1'::"text", 'tzjill-public-artists-v3'::"text", 'tzjill-public-team-v1'::"text"])));
 
-CREATE POLICY "Anyone can submit booking stats" ON "tzjill"."booking_requests" FOR INSERT TO "authenticated", "anon" WITH CHECK ((("jsonb_typeof"("artists") = 'array'::"text") AND (("jsonb_array_length"("artists") >= 1) AND ("jsonb_array_length"("artists") <= 25)) AND ("pg_column_size"("artists") <= 8192) AND ("char_length"("country") <= 120) AND ("char_length"("city") <= 120) AND (("submitted_at" >= ("now"() - '7 days'::interval)) AND ("submitted_at" <= ("now"() + '1 day'::interval)))));
+CREATE POLICY "Editors can read CMS content" ON "tzjill"."cms_content" FOR SELECT TO "authenticated" USING (("tzjill"."cms_is_editor"() AND ("key" !~~ 'tzjill-rate-limit:%'::"text")));
 
-CREATE POLICY "Anyone can submit site rum" ON "tzjill"."site_rum" FOR INSERT TO "authenticated", "anon" WITH CHECK ((("kind" = ANY (ARRAY['vital'::"text", 'error'::"text", 'presence'::"text", 'notfound'::"text"])) AND ("char_length"("name") <= 12) AND (("char_length"("path") >= 1) AND ("char_length"("path") <= 180)) AND ("char_length"("message") <= 280) AND ("char_length"("session_id") <= 64) AND ("char_length"("city") <= 80) AND ("char_length"("country") <= 8) AND (("value" IS NULL) OR (("value" <> 'NaN'::double precision) AND ("abs"("value") < ('1000000000'::numeric)::double precision))) AND (("created_at" >= ("now"() - '01:00:00'::interval)) AND ("created_at" <= ("now"() + '00:05:00'::interval)))));
+CREATE POLICY "Viewers can read published CMS keys" ON "tzjill"."cms_content" FOR SELECT TO "authenticated" USING (("key" = ANY (ARRAY['tzjill-public-site-v1'::"text", 'tzjill-public-artists-v2'::"text", 'tzjill-public-artists-v3'::"text", 'tzjill-public-team-v1'::"text"])));
 
-CREATE POLICY "Authenticated can read CMS content" ON "tzjill"."cms_content" FOR SELECT TO "authenticated" USING (("key" !~~ 'tzjill-rate-limit:%'::"text"));
+CREATE POLICY "Editors can read all CMS artists" ON "tzjill"."cms_artists" FOR SELECT TO "authenticated" USING ("tzjill"."cms_is_editor"());
 
-CREATE POLICY "Authenticated can read all CMS artists" ON "tzjill"."cms_artists" FOR SELECT TO "authenticated" USING (true);
+CREATE POLICY "Editors can read all artists" ON "tzjill"."artists" FOR SELECT TO "authenticated" USING ("tzjill"."cms_is_editor"());
 
-CREATE POLICY "Authenticated can read all artists" ON "tzjill"."artists" FOR SELECT TO "authenticated" USING (true);
-
-CREATE POLICY "CMS can read speed tests" ON "tzjill"."site_speed_tests" FOR SELECT TO "authenticated" USING (true);
+CREATE POLICY "Editors can read speed tests" ON "tzjill"."site_speed_tests" FOR SELECT TO "authenticated" USING ("tzjill"."cms_is_editor"());
 
 CREATE POLICY "Editors can delete CMS artists" ON "tzjill"."cms_artists" FOR DELETE TO "authenticated" USING ("tzjill"."cms_is_editor"());
 
-CREATE POLICY "Editors can delete CMS content" ON "tzjill"."cms_content" FOR DELETE TO "authenticated" USING ("tzjill"."cms_is_editor"());
+CREATE POLICY "Editors can delete CMS content" ON "tzjill"."cms_content" FOR DELETE TO "authenticated" USING (("tzjill"."cms_is_editor"() AND ("key" !~~ 'tzjill-rate-limit:%'::"text")));
 
 CREATE POLICY "Editors can delete artists" ON "tzjill"."artists" FOR DELETE TO "authenticated" USING ("tzjill"."cms_is_editor"());
 
@@ -431,7 +415,7 @@ CREATE POLICY "Editors can delete team members" ON "tzjill"."team_members" FOR D
 
 CREATE POLICY "Editors can insert CMS artists" ON "tzjill"."cms_artists" FOR INSERT TO "authenticated" WITH CHECK ("tzjill"."cms_is_editor"());
 
-CREATE POLICY "Editors can insert CMS content" ON "tzjill"."cms_content" FOR INSERT TO "authenticated" WITH CHECK ("tzjill"."cms_is_editor"());
+CREATE POLICY "Editors can insert CMS content" ON "tzjill"."cms_content" FOR INSERT TO "authenticated" WITH CHECK (("tzjill"."cms_is_editor"() AND ("key" !~~ 'tzjill-rate-limit:%'::"text")));
 
 CREATE POLICY "Editors can insert artists" ON "tzjill"."artists" FOR INSERT TO "authenticated" WITH CHECK ("tzjill"."cms_is_editor"());
 
@@ -451,7 +435,7 @@ CREATE POLICY "Editors can read site rum" ON "tzjill"."site_rum" FOR SELECT TO "
 
 CREATE POLICY "Editors can update CMS artists" ON "tzjill"."cms_artists" FOR UPDATE TO "authenticated" USING ("tzjill"."cms_is_editor"()) WITH CHECK ("tzjill"."cms_is_editor"());
 
-CREATE POLICY "Editors can update CMS content" ON "tzjill"."cms_content" FOR UPDATE TO "authenticated" USING ("tzjill"."cms_is_editor"()) WITH CHECK ("tzjill"."cms_is_editor"());
+CREATE POLICY "Editors can update CMS content" ON "tzjill"."cms_content" FOR UPDATE TO "authenticated" USING (("tzjill"."cms_is_editor"() AND ("key" !~~ 'tzjill-rate-limit:%'::"text"))) WITH CHECK (("tzjill"."cms_is_editor"() AND ("key" !~~ 'tzjill-rate-limit:%'::"text")));
 
 CREATE POLICY "Editors can update artists" ON "tzjill"."artists" FOR UPDATE TO "authenticated" USING ("tzjill"."cms_is_editor"()) WITH CHECK ("tzjill"."cms_is_editor"());
 
