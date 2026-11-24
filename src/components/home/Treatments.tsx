@@ -21,7 +21,7 @@ export function Treatments() {
 
   return (
     <section data-cms-section="treatments" className="text-white">
-      <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
+      <div className="content-wrap section-y">
         {hasHeader ? (
           <div className="mx-auto max-w-3xl text-center">
             {site.treatmentsKicker.trim() ? (
@@ -57,7 +57,7 @@ export function Treatments() {
                       {item.image.trim() ? (
                         <MediaReveal
                           delay={0.08 + index * 0.08}
-                          className="relative overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]"
+                          className="relative overflow-hidden radius-media bg-black"
                         >
                           <div className="relative aspect-[3/4]">
                             <ResolvedImg

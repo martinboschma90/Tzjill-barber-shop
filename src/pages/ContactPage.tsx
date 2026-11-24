@@ -26,7 +26,7 @@ export function ContactPage() {
     <AppShell navVariant="wordmark">
       <PageFrame>
         <header className="mx-auto max-w-3xl text-center">
-          <p className="type-label inline-flex items-center justify-center gap-2 rounded-full bg-[#efeae3] px-3.5 py-1.5 text-[#2c241c]">
+          <p className="type-label inline-flex items-center justify-center gap-2 rounded-full bg-cream-soft px-3.5 py-1.5 text-ink">
             <span className="h-1.5 w-1.5 rounded-full bg-[#2c241c]" aria-hidden /><SiteText textKey="ContactPage.1" /></p>
           <h1 className="type-headline mt-6"><SiteText textKey="ContactPage.2" /><br /><SiteText textKey="ContactPage.3" /></h1>
           {site.contactIntro.trim() ? (

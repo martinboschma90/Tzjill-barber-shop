@@ -173,7 +173,7 @@ export function ArtistReelsCarousel({
       <section
         ref={sectionRef}
         id="artist-visuals"
-        className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-8"
+        className="content-wrap-wide py-12"
       >
         <div className="rounded-[1.5rem] border border-white/8 bg-[#121014] px-6 py-14 text-center">
           <p className="type-headline text-lg text-[#F5F5F5]">Shows</p>
@@ -196,7 +196,7 @@ export function ArtistReelsCarousel({
       <section
         ref={sectionRef}
         id="artist-visuals"
-        className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-8 lg:py-20"
+        className="content-wrap-wide py-14 lg:py-20"
       >
         <motion.div
           initial={previewMode ? false : { opacity: 0 }}
@@ -224,7 +224,7 @@ export function ArtistReelsCarousel({
             ) : null}
           </div>
 
-          <div className="overflow-hidden rounded-[1.75rem] border border-white/8 bg-[#0d090b] py-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] sm:py-14">
+          <div className="overflow-hidden radius-media border border-white/8 bg-[#0d090b] py-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] sm:py-14">
             <div
               ref={trackRef}
               className={

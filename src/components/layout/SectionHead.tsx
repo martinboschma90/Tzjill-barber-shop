@@ -19,8 +19,8 @@ export function SectionHead({
   trigger = 'view',
 }: SectionHeadProps) {
   const Heading = as
-  const kickerColor = invert ? 'text-[#2c241c]/40' : 'text-white/65'
-  const introColor = invert ? 'text-[#2c241c]/55' : 'text-white/55'
+  const kickerColor = invert ? 'text-ink/40' : 'text-white/65'
+  const introColor = invert ? 'text-ink/55' : 'text-white/55'
 
   return (
     <div>

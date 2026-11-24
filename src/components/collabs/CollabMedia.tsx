@@ -101,7 +101,7 @@ export function CollabMedia({
     <div
       ref={tileRef}
       className={`group relative overflow-hidden bg-black ${
-        embedded ? 'rounded-none' : 'rounded-[1.75rem] sm:rounded-[2rem]'
+        embedded ? 'rounded-none' : 'radius-media'
       } ${
         frame === 'carousel'
           ? 'h-[min(36svh,16.5rem)]'

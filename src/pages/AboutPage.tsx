@@ -66,7 +66,7 @@ function AboutHeroVideo() {
   if (!videoField && !posterField && !poster) return null
 
   return (
-    <div className="relative mt-12 overflow-hidden rounded-[1.75rem] bg-black sm:mt-14 sm:rounded-[2rem]">
+    <div className="relative mt-12 overflow-hidden radius-media bg-black sm:mt-14">
       {reduced || !videoField || !/\.(mp4|webm|mov)(?:[?#]|$)/i.test(video) ? (
         poster ? (
           <ResolvedImg
@@ -132,7 +132,7 @@ export function AboutPage() {
             {stats.map((item, index) => (
               <li key={`${item.label}-${index}`}>
                 <Reveal delay={index * 0.06}>
-                  <div className="rounded-[1.5rem] bg-[#efeae3] px-5 py-6 text-[#2c241c] sm:rounded-[1.75rem] sm:px-6 sm:py-8">
+                  <div className="rounded-3xl bg-cream-soft px-5 py-6 text-ink sm:px-6 sm:py-8">
                     {item.n.trim() ? (
                       <p className="type-headline leading-none">{item.n}</p>
                     ) : null}
@@ -233,7 +233,7 @@ export function AboutPage() {
 
             {sideImage ? (
               <div
-                className={`group overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem] ${
+                className={`group overflow-hidden radius-media bg-black ${
                   missionItems.length ? 'lg:col-span-6' : 'lg:col-span-12'
                 }`}
               >
@@ -293,7 +293,7 @@ export function AboutPage() {
       <Testimonials />
 
       <PageFrame>
-        <div className="rounded-[1.75rem] bg-black px-8 py-14 text-center sm:rounded-[2rem] sm:px-12 sm:py-16">
+        <div className="panel-cta">
           <SectionKicker>
             <SiteText textKey="AboutPage.10" />
           </SectionKicker>

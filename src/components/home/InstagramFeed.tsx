@@ -51,7 +51,7 @@ export function InstagramFeed() {
   if (!COUNT) return null
   return (
     <section data-cms-section="texts-InstagramFeed" className="section-y overflow-hidden text-white">
-      <div className="mx-auto max-w-[1240px] px-6 lg:px-8">
+      <div className="content-wrap">
         <div className="mx-auto max-w-3xl text-center">
           <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
             <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden /><SiteText textKey="InstagramFeed.1" /></p>
@@ -104,7 +104,7 @@ export function InstagramFeed() {
                   event.preventDefault()
                   setActive(index)
                 }}
-                className="group absolute left-1/2 top-1/2 block origin-center overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]"
+                className="group absolute left-1/2 top-1/2 block origin-center overflow-hidden radius-media bg-black"
                 style={{
                   width: 'min(78vw, 380px)',
                   aspectRatio: '3 / 4',

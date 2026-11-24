@@ -22,7 +22,7 @@ export function ProductsPage() {
         <ul className="mt-16 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
           {products.map((item) => (
             <li key={item.name}>
-              <figure className="overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]">
+              <figure className="overflow-hidden radius-media bg-black">
                 <img
                   src={item.image}
                   alt=""

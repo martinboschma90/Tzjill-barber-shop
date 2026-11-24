@@ -17,11 +17,11 @@ export function buttonClass({
   const styles =
     surface === 'dark'
       ? variant === 'ghost'
-        ? 'border-white/75 bg-transparent text-white hover:border-white hover:bg-white hover:text-[#2c241c]'
-        : 'border-[#efeae3] bg-[#efeae3] text-[#2c241c] hover:border-white hover:bg-white'
+        ? 'border-white/75 bg-transparent text-white hover:border-white hover:bg-white hover:text-ink'
+        : 'border-cream-soft bg-cream-soft text-ink hover:border-white hover:bg-white'
       : variant === 'ghost'
-        ? 'border-[#2c241c]/70 bg-transparent text-[#2c241c] hover:bg-[#2c241c] hover:text-[#efeae3]'
-        : 'border-[#2c241c] bg-[#2c241c] text-[#efeae3] hover:border-black hover:bg-black'
+        ? 'border-ink/70 bg-transparent text-ink hover:bg-ink hover:text-cream-soft'
+        : 'border-ink bg-ink text-cream-soft hover:border-ink-deep hover:bg-ink-deep'
 
   return `${base} ${styles} ${className}`.trim()
 }

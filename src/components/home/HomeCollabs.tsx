@@ -15,7 +15,7 @@ function CollabCard({ item, index }: { item: ShopCollab; index: number }) {
     <li>
       <Reveal delay={index * 0.08} className="h-full">
         <Link to="/collabs" className="group flex h-full flex-col">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-black">
+          <div className="relative aspect-[4/5] overflow-hidden radius-media bg-black">
             {src ? (
               <img
                 src={src}
@@ -26,7 +26,7 @@ function CollabCard({ item, index }: { item: ShopCollab; index: number }) {
               />
             ) : null}
           </div>
-          <p className="type-ui mt-4 w-fit rounded-full border border-white/20 px-3 py-1 text-[12px] normal-case tracking-normal text-white/70">
+          <p className="type-caption mt-4 w-fit rounded-full border border-white/20 px-3 py-1 normal-case text-white/70">
             {item.year} · {item.name}
           </p>
           <h3 className="type-subhead mt-3">{item.name}</h3>
@@ -50,7 +50,7 @@ export function HomeCollabs() {
 
   return (
     <section data-cms-section="texts-HomeCollabs" className="text-white" aria-labelledby="home-collabs-title">
-      <div className="mx-auto max-w-[1240px] px-6 py-[72px] lg:px-8 lg:py-[120px]">
+      <div className="content-wrap section-y">
         <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="type-label text-white/65"><SiteText textKey="HomeCollabs.2" /></p>

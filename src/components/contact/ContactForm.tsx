@@ -3,11 +3,9 @@ import { useCms } from '@/cms/CmsContext'
 import { siteText } from '@/cms/siteText'
 import { useRef, useState, type FormEvent } from 'react'
 import { buttonClass } from '@/components/ui/buttonStyles'
+import { darkUnderlineFieldClass } from '@/components/ui/formStyles'
 import { Check, Spinner } from '@/components/ui/StatusIcon'
 import { submitMessage } from '@/lib/messages'
-
-const fieldClass =
-  'w-full border-b border-white/20 bg-transparent py-2 type-body text-white outline-none transition-colors placeholder:text-white/30 focus:border-white'
 
 export function ContactForm() {
   const [name, setName] = useState('')
@@ -76,7 +74,7 @@ export function ContactForm() {
           autoComplete="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className={`${fieldClass} mt-2`}
+          className={`${darkUnderlineFieldClass} mt-2`}
         />
       </label>
       <label className="block">
@@ -90,7 +88,7 @@ export function ContactForm() {
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className={`${fieldClass} mt-2`}
+          className={`${darkUnderlineFieldClass} mt-2`}
         />
       </label>
       <label className="block">
@@ -103,7 +101,7 @@ export function ContactForm() {
           autoComplete="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className={`${fieldClass} mt-2`}
+          className={`${darkUnderlineFieldClass} mt-2`}
         />
       </label>
       <label className="block">
@@ -116,7 +114,7 @@ export function ContactForm() {
           rows={3}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          className={`${fieldClass} mt-2 resize-none`}
+          className={`${darkUnderlineFieldClass} mt-2 resize-none`}
         />
       </label>
       {error ? (

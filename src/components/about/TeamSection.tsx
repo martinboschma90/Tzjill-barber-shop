@@ -13,7 +13,7 @@ export function TeamSection({ members }: TeamSectionProps) {
         {members.map((member, index) => (
           <Reveal key={member.id} delay={Math.min(index, 5) * 0.08} className="h-full">
           <article>
-            <div className="group aspect-[3/4] overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]">
+            <div className="group aspect-[3/4] overflow-hidden radius-media bg-black">
               <ResolvedImg
                 src={member.imageUrl}
                 alt={member.name}

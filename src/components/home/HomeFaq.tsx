@@ -48,7 +48,7 @@ export function HomeFaq() {
 
   return (
     <section data-cms-section="texts-HomeFaq" id="faq" className="text-white">
-      <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
+      <div className="content-wrap section-y">
         <div className="mx-auto max-w-3xl text-center">
             <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
               <span className="h-1.5 w-1.5 rounded-full bg-white/55" aria-hidden />

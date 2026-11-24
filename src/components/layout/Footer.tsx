@@ -27,8 +27,8 @@ export function Footer() {
 
   return (
     <footer className="mt-4 pb-32 md:pb-10">
-      <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-4 px-6 lg:grid-cols-[5fr_7fr] lg:gap-6 lg:px-8">
-        <div className="flex flex-col justify-between rounded-[1.75rem] border border-white/10 bg-[#252421] p-7 text-white lg:p-10">
+      <div className="content-wrap grid grid-cols-1 gap-4 lg:grid-cols-[5fr_7fr] lg:gap-6">
+        <div className="radius-media flex flex-col justify-between border border-white/10 bg-surface-elevated p-7 text-white lg:p-10">
           <div>
             {site.logoUrl ? (
               <ResolvedImg
@@ -83,7 +83,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="rounded-[1.75rem] bg-black p-7 text-white lg:p-10">
+        <div className="radius-media bg-black p-7 text-white lg:p-10">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,280px)]">
             {navMain.length ? (
               <div>
