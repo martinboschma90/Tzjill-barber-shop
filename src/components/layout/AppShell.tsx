@@ -67,6 +67,12 @@ export function AppShell({
   return (
     <>
       <div className="relative z-[1] min-h-svh overflow-x-clip bg-[var(--body-bg)]">
+        <a
+          href="#inhoud"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[80] focus:rounded-full focus:bg-cream-soft focus:px-4 focus:py-2 focus:text-ink"
+        >
+          Ga naar inhoud
+        </a>
         {salonhubOpen ? null : (
           <Navbar
             menuOpen={menuOpen}
@@ -101,7 +107,7 @@ export function AppShell({
             navVariant === 'hero' ? '' : 'pt-[6.25rem] sm:pt-[6.75rem]'
           }`}
         >
-          <main className="flex flex-col">
+          <main id="inhoud" className="flex flex-col">
             {children}
           </main>
           {showFooter && !preview && !salonhubOpen ? (

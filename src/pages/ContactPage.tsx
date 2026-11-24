@@ -37,7 +37,7 @@ export function ContactPage() {
         </header>
 
         {heroSrc ? (
-          <MediaReveal className="mt-10 overflow-hidden rounded-[1.75rem] bg-black sm:mt-12 sm:rounded-[2rem]">
+          <MediaReveal className="mt-10 overflow-hidden radius-media bg-black sm:mt-12">
             <ResolvedImg
               src={heroSrc}
               alt="Tzjill Barber & Lounge, Voorstreek 18 Leeuwarden"

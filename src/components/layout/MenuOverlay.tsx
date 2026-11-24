@@ -6,6 +6,7 @@ import { prefetchRoute } from '@/lib/prefetchRoute'
 import { useCms } from '@/cms/CmsContext'
 import { phoneHref } from '@/lib/contactLinks'
 import { useModalFocus } from '@/lib/useModalFocus'
+import { useEffect } from 'react'
 import { visibleNavLinks } from '@/lib/siteNav'
 import { siteText } from '@/cms/siteText'
 
@@ -19,10 +20,15 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
   const { content } = useCms()
   const modal = useModalFocus(open, onClose)
   const phone = content.site.phoneNumber?.trim() ?? ''
-  if (!open) return null
-
   const menuLinks = visibleNavLinks(content.site)
-  menuLinks.forEach((link) => prefetchRoute(link.to))
+  const menuKey = menuLinks.map((link) => link.to).join('|')
+  useEffect(() => {
+    if (!open) return
+    for (const to of menuKey.split('|')) {
+      if (to) prefetchRoute(to)
+    }
+  }, [open, menuKey])
+  if (!open) return null
 
   return (
     <div
@@ -44,7 +50,7 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
       </button>
       <nav
         className="flex flex-1 flex-col items-center justify-start gap-1 overflow-y-auto px-6 pb-4 pt-28"
-        aria-label="Primary"
+        aria-label="Hoofdnavigatie"
       >
         {menuLinks.map((link) => {
           const active = pathname === link.to
@@ -53,8 +59,9 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
               key={link.to}
               to={link.to}
               onClick={onClose}
-              className={`type-headline inline-flex min-h-11 items-center text-[clamp(2rem,7vw,3.25rem)] ${
-                active ? 'text-ink' : 'text-ink/65 hover:text-ink'
+              aria-current={active ? 'page' : undefined}
+              className={`type-headline inline-flex min-h-11 items-center text-white text-[clamp(2rem,7vw,3.25rem)] ${
+                active ? 'opacity-100' : 'opacity-65 hover:opacity-100'
               }`}
             >
               {link.label}

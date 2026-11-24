@@ -31,7 +31,8 @@ function NavItem({
   return (
     <Link
       to={link.to}
-      className={`wf-link type-ui inline-flex min-h-11 items-center ${
+        aria-current={navActive(pathname, link.to) ? 'page' : undefined}
+        className={`wf-link type-ui inline-flex min-h-11 items-center ${
         navActive(pathname, link.to) ? 'opacity-100' : 'opacity-55 hover:opacity-100'
       }`}
     >
@@ -74,7 +75,7 @@ export function Navbar({
       >
         <nav
           className="pointer-events-auto hidden items-center justify-end gap-5 pe-1 lg:flex xl:gap-8"
-          aria-label="Primary left"
+          aria-label="Hoofdnavigatie"
         >
           {left.map((link) => (
             <NavItem key={link.to} link={link} pathname={pathname} />
@@ -86,11 +87,11 @@ export function Navbar({
           aria-label="Tzjill Barber & Lounge — home"
           className="pointer-events-auto shrink-0 justify-self-center px-5 xl:px-8"
         >
-          <Logo tone="white" height={56} fetchPriority="high" />
+          <Logo tone="white" height={56} fetchPriority="low" decoding="async" />
         </Link>
 
         <div className="pointer-events-auto hidden items-center justify-between gap-5 ps-1 lg:flex xl:gap-8">
-          <nav className="flex items-center gap-5 xl:gap-8" aria-label="Primary right">
+          <nav className="flex items-center gap-5 xl:gap-8" aria-label="Hoofdnavigatie, rechts">
             {right.map((link) => (
               <NavItem key={link.to} link={link} pathname={pathname} />
             ))}

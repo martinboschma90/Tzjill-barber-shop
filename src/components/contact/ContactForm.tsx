@@ -64,38 +64,43 @@ export function ContactForm() {
           onChange={(event) => setWebsite(event.target.value)}
         />
       </label>
-      <label className="block">
+      <label className="block" htmlFor="contact-name">
         <span className="type-label text-white/65">
           <SiteText textKey="ContactForm.name" />
         </span>
         <input
+          id="contact-name"
           required
           name="name"
           autoComplete="name"
           value={name}
+          aria-invalid={Boolean(error)}
           onChange={(e) => setName(e.target.value)}
           className={`${darkUnderlineFieldClass} mt-2`}
         />
       </label>
-      <label className="block">
+      <label className="block" htmlFor="contact-email">
         <span className="type-label text-white/65">
           <SiteText textKey="ContactForm.email" />
         </span>
         <input
+          id="contact-email"
           required
           type="email"
           name="email"
           autoComplete="email"
           value={email}
+          aria-invalid={Boolean(error)}
           onChange={(e) => setEmail(e.target.value)}
           className={`${darkUnderlineFieldClass} mt-2`}
         />
       </label>
-      <label className="block">
+      <label className="block" htmlFor="contact-phone">
         <span className="type-label text-white/65">
           <SiteText textKey="ContactForm.phone" />
         </span>
         <input
+          id="contact-phone"
           type="tel"
           name="phone"
           autoComplete="tel"
@@ -104,21 +109,24 @@ export function ContactForm() {
           className={`${darkUnderlineFieldClass} mt-2`}
         />
       </label>
-      <label className="block">
+      <label className="block" htmlFor="contact-message">
         <span className="type-label text-white/65">
           <SiteText textKey="ContactForm.message" />
         </span>
         <textarea
+          id="contact-message"
           required
           name="message"
           rows={3}
           value={message}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? 'contact-error' : undefined}
           onChange={(e) => setMessage(e.target.value)}
           className={`${darkUnderlineFieldClass} mt-2 resize-none`}
         />
       </label>
       {error ? (
-        <p role="alert" className="type-body text-[#e8c4a8]">
+        <p id="contact-error" role="alert" className="type-body text-[#e8c4a8]">
           {error}
         </p>
       ) : null}
