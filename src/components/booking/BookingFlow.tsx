@@ -348,11 +348,13 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
 
   async function continueFromEmployee() {
     if (!selected || !employee) return
+    const request = ++flowRequest.current
     setError('')
     setBusy(true)
     setStep('date')
     try {
       const result = await loadDates(sessionRef.current, selected.id, employee.id)
+      if (flowRequest.current !== request) return
       setDates(result.dates)
       if (!result.dates.includes(date)) {
         setDate('')
@@ -360,10 +362,11 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
         setTimes([])
       }
     } catch (err) {
+      if (flowRequest.current !== request) return
       setDates([])
       setError(err instanceof Error ? err.message : 'Dagen laden lukt nu niet.')
     } finally {
-      setBusy(false)
+      if (flowRequest.current === request) setBusy(false)
     }
   }
 
@@ -442,6 +445,9 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
   }
 
   function back() {
+    flowRequest.current += 1
+    timesRequest.current += 1
+    setBusy(false)
     setError('')
     if (step === 'employee') setStep('treatment')
     else if (step === 'date') setStep(employees.length <= 1 ? 'treatment' : 'employee')
