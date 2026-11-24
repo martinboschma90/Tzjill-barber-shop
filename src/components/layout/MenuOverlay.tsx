@@ -40,14 +40,6 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
       className="fixed inset-0 z-40 flex flex-col backdrop-blur-md"
       style={{ backgroundColor: 'var(--menu-bg)' }}
     >
-      <button
-        type="button"
-        onClick={onClose}
-        aria-label={siteText(content.site, 'Navbar.menuClose')}
-        className="absolute right-5 top-28 min-h-11 min-w-11 text-xl text-white"
-      >
-        ×
-      </button>
       <nav
         className="flex flex-1 flex-col items-center justify-start gap-1 overflow-y-auto px-6 pb-4 pt-28"
         aria-label="Hoofdnavigatie"
@@ -90,6 +82,9 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
         <BookButton surface="dark" className="mt-4 w-full" onClick={onClose}>
           <SiteText textKey="MenuOverlay.1" />
         </BookButton>
+        <button type="button" className="sr-only" onClick={onClose}>
+          {siteText(content.site, 'Navbar.menuClose')}
+        </button>
       </div>
     </div>
   )
