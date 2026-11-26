@@ -6,7 +6,6 @@ import { BookButton } from '@/components/booking/BookButton'
 import { BookingWell } from '@/components/booking/BookingWell'
 import { DateAgenda } from '@/components/booking/DateAgenda'
 import { ResolvedImg } from '@/components/ui/ResolvedMedia'
-import { treatmentStill, type TreatmentStill } from '@/data/treatmentStills'
 import {
   FALLBACK_TREATMENTS,
   pickDefaultEmployee,
@@ -145,11 +144,9 @@ function Bone({ className }: { className: string }) {
 
 function ListSkeleton({
   count,
-  shape = 'rounded-xl',
   label,
 }: {
   count: number
-  shape?: string
   label: string
 }) {
   return (
@@ -158,7 +155,6 @@ function ListSkeleton({
         <ul className="flex flex-col gap-2">
           {Array.from({ length: count }, (_, index) => (
             <li key={index} className="flex items-center gap-3 px-3 py-3 sm:gap-4 sm:px-4">
-              <Bone className={`h-12 w-12 shrink-0 ${shape}`} />
               <span className="min-w-0 flex-1 space-y-2">
                 <Bone className="h-3.5 w-[68%] rounded-full" />
                 <Bone className="h-2.5 w-[32%] rounded-full" />
@@ -649,13 +645,6 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
                             title={item.name}
                             meta={item.displayMinutes ? `${item.displayMinutes} min` : undefined}
                             aside={item.priceLabel || '—'}
-                            leading={
-                              <TreatmentThumb
-                                image={item.image}
-                                still={treatmentStill(item)}
-                                active={selected?.id === item.id}
-                              />
-                            }
                             onClick={() => {
                               setSelectedId(item.id)
                               requestEmployees(item.id)
@@ -692,7 +681,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
           <>
             {busy && !employees.length ? (
               <div className="mt-7">
-                <ListSkeleton count={4} shape="rounded-full" label="Kappers laden" />
+                <ListSkeleton count={4} label="Kappers laden" />
               </div>
             ) : (
             <BookingWell list className="mt-7">
@@ -972,60 +961,6 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
         ) : null}
       </div>
     </div>
-  )
-}
-
-function TreatmentThumb({
-  image,
-  still,
-  active,
-}: {
-  image?: string
-  still: TreatmentStill
-  active: boolean
-}) {
-  const ring = active ? 'ring-[#2c241c]/20' : 'ring-white/15'
-  if (image) {
-    if (/^https:\/\//i.test(image) || image.startsWith('/')) {
-      return (
-        <img
-          src={image}
-          alt=""
-          width={48}
-          height={48}
-          className={`h-12 w-12 shrink-0 rounded-xl object-cover object-[center_28%] ring-1 ${ring}`}
-        />
-      )
-    }
-    return (
-      <span className={`h-12 w-12 shrink-0 overflow-hidden rounded-xl ring-1 ${ring}`}>
-        <ResolvedImg src={image} alt="" className="h-full w-full object-cover" size="thumb" />
-      </span>
-    )
-  }
-  if (still.kind === 'kids') {
-    return (
-      <span
-        className={`type-ui flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-[10px] tracking-[0.14em] ${
-          active
-            ? 'bg-[#2c241c] text-[#efeae3]'
-            : 'bg-[#efeae3] text-[#2c241c] group-hover:bg-[#2c241c] group-hover:text-[#efeae3]'
-        }`}
-      >
-        Kids
-      </span>
-    )
-  }
-  return (
-    <img
-      src={still.src}
-      alt=""
-      width={48}
-      height={48}
-      className={`h-12 w-12 shrink-0 rounded-xl object-cover ring-1 ${
-        still.focus === 'beard' ? 'object-bottom' : 'object-[center_28%]'
-      } ${active ? 'ring-[#2c241c]/20' : 'ring-white/15'}`}
-    />
   )
 }
 

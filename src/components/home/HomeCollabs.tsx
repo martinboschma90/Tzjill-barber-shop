@@ -55,7 +55,7 @@ export function HomeCollabs() {
           <div>
             <p className="type-label text-white/65"><SiteText textKey="HomeCollabs.2" /></p>
             <Reveal className="mt-4">
-              <h2 id="home-collabs-title" className="type-headline"><SiteText textKey="HomeCollabs.3" /></h2>
+              <h2 id="home-collabs-title" className="type-headline text-white"><SiteText textKey="HomeCollabs.3" /></h2>
             </Reveal>
           </div>
           <Link

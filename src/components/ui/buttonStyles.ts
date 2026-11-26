@@ -17,11 +17,11 @@ export function buttonClass({
   const styles =
     surface === 'dark'
       ? variant === 'ghost'
-        ? 'border-white/75 bg-transparent text-white hover:border-white hover:bg-white hover:text-ink'
-        : 'border-cream-soft bg-cream-soft text-ink hover:border-white hover:bg-white'
+        ? 'border-white/75 bg-transparent text-white hover:border-white hover:bg-white hover:text-pill-on-dark-fg focus-visible:text-white active:text-white'
+        : 'border-pill-on-dark-bg bg-pill-on-dark-bg text-pill-on-dark-fg hover:border-white hover:bg-white hover:text-pill-on-dark-fg focus-visible:text-pill-on-dark-fg active:text-pill-on-dark-fg'
       : variant === 'ghost'
-        ? 'border-ink/70 bg-transparent text-ink hover:bg-ink hover:text-cream-soft'
-        : 'border-ink bg-ink text-cream-soft hover:border-ink-deep hover:bg-ink-deep'
+        ? 'border-pill-on-light-bg/70 bg-transparent text-pill-on-light-bg hover:bg-pill-on-light-bg hover:text-pill-on-light-fg'
+        : 'border-pill-on-light-bg bg-pill-on-light-bg text-pill-on-light-fg hover:border-ink-deep hover:bg-ink-deep hover:text-pill-on-light-fg'
 
   return `${base} ${styles} ${className}`.trim()
 }

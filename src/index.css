@@ -26,6 +26,11 @@
   --color-cream: #f6f3ee;
   --color-cream-dark: #ece7df;
   --color-cream-soft: #efeae3;
+  /* Theme-stable pill contrast (do not flip with data-theme) */
+  --color-pill-on-dark-bg: #efeae3;
+  --color-pill-on-dark-fg: #2c241c;
+  --color-pill-on-light-bg: #2c241c;
+  --color-pill-on-light-fg: #f6f3ee;
   --color-card: #fffcf8;
   --color-secondary: #fffcf8;
   --color-surface-body: #1c1b19;
@@ -127,6 +132,10 @@
     font-family: inherit;
   }
 
+  :where(main [id], section[id]) {
+    scroll-margin-top: calc(5.5rem + env(safe-area-inset-top, 0px) + 0.25rem);
+  }
+
   a {
     color: inherit;
     text-decoration: none;
@@ -160,6 +169,21 @@
     @apply mx-auto max-w-[var(--width-content-hero)] px-5 sm:px-8 lg:px-16;
   }
 
+  /* Keep legible foreground on dark canvases when data-theme flips global --color-ink */
+  .text-white {
+    --color-ink: #f6f3ee;
+    --color-ink-deep: #ffffff;
+    --color-ink-muted: rgb(246 243 238 / 0.62);
+  }
+
+  .bg-cream-soft,
+  .bg-pill-on-dark-bg {
+    color: #2c241c;
+    --color-ink: #2c241c;
+    --color-ink-deep: #1a1612;
+    --color-ink-muted: rgb(44 36 28 / 0.55);
+  }
+
   .radius-media {
     border-radius: var(--radius-media);
   }
@@ -186,7 +210,7 @@
 
   .panel-cta {
     border-radius: var(--radius-media);
-    @apply bg-black px-8 py-14 text-center sm:px-12 sm:py-16;
+    @apply bg-black px-8 py-14 text-center text-white sm:px-12 sm:py-16;
   }
 
   @media (min-width: 40rem) {
@@ -255,6 +279,11 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     line-height: 1.2;
+  }
+
+  /* Dark-band sections: display type must not inherit flipped --color-ink from data-theme */
+  :where(section.text-white, .full-bleed-hero) :where(.type-headline, .type-display, .type-subhead, .type-page) {
+    color: #ffffff;
   }
 
   .type-ui {

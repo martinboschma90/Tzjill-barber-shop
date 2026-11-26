@@ -97,7 +97,7 @@ export function ArtistInstagramCarousel({
               type="button"
               aria-label="Vorige posts"
               onClick={() => slide(-1)}
-              className="absolute top-1/2 left-0 z-10 hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#0c0b0d]/80 text-ink md:flex"
+              className="absolute top-1/2 left-0 z-10 hidden h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#0c0b0d]/80 text-white md:flex"
             >
               <Chevron dir="left" />
             </button>
@@ -105,7 +105,7 @@ export function ArtistInstagramCarousel({
               type="button"
               aria-label="Volgende posts"
               onClick={() => slide(1)}
-              className="absolute top-1/2 right-0 z-10 hidden h-10 w-10 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#0c0b0d]/80 text-ink md:flex"
+              className="absolute top-1/2 right-0 z-10 hidden h-10 w-10 translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/10 bg-[#0c0b0d]/80 text-white md:flex"
             >
               <Chevron dir="right" />
             </button>
