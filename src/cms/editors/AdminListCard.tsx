@@ -54,11 +54,7 @@ export function AdminListCard({
           <button
             type="button"
             onClick={onToggle}
-            className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold ${
-              isOpen
-                ? 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50'
-                : 'border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-800'
-            }`}
+            className="inline-flex items-center gap-1.5 px-2 py-1 text-[12px] font-medium text-[#6b6b66] hover:text-[#111214]"
           >
             {isOpen ? <X className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
             {isOpen ? 'Sluiten' : 'Bewerken'}

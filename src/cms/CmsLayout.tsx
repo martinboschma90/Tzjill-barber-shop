@@ -26,11 +26,14 @@ import {
   useFlowMatesSearchHotkey,
 } from '@/cms/flow-mates/CommandPalette'
 import { EditorPreviewLayout } from '@/cms/flow-mates/EditorPreviewLayout'
-import { EditorTopBar } from '@/cms/flow-mates/EditorTopBar'
 import { SiteDocumentBar } from '@/cms/flow-mates/SiteDocumentBar'
 import { DashboardHome } from '@/cms/flow-mates/Dashboard'
 import { EditorAccordionScope } from '@/cms/flow-mates/EditorAccordionScope'
-import { isPagesWorkspacePath, isFormsWorkspacePath, PagesTabBar } from '@/cms/flow-mates/PagesTabBar'
+import {
+  isPagesWorkspacePath,
+  isFormsWorkspacePath,
+  SidebarPageLinks,
+} from '@/cms/flow-mates/PagesTabBar'
 import type { CmsPanelProps } from '@/cms/panels/types'
 import { UsersAdmin } from '@/cms/editors/UsersAdmin'
 import { RouteFallback } from '@/components/ui/RouteFallback'
@@ -59,7 +62,7 @@ const CmsSettingsPanel = lazy(() => import('@/cms/panels/settings'))
 const NAV = [
   { to: '/cms/dashboard', label: 'Dashboard', icon: LayoutDashboard, match: 'dashboard' as const },
   { to: '/cms/home', label: "Pagina's", icon: FileText, match: 'pages' as const },
-  { to: '/cms/forms', label: 'Formulieren & pop-ups', icon: FileText, match: 'forms' as const },
+  { to: '/cms/forms', label: 'Formulieren', icon: FileText, match: 'forms' as const },
   { to: '/cms/faq', label: 'FAQ', icon: HelpCircle, match: 'faq' as const },
   { to: '/cms/media', label: 'Media', icon: FolderOpen, match: 'media' as const },
   { to: '/cms/settings', label: 'Instellingen', icon: Settings, match: 'settings' as const },
@@ -161,19 +164,9 @@ function useCmsPanels(): {
   return {
     mode: 'pages',
     title: 'Homepage',
-    subtitle: 'Bewerk elke sectie. Concept wordt automatisch opgeslagen; live via de balk hierboven.',
+    subtitle: 'Homepage',
     Page: CmsHomePanel,
   }
-}
-
-function formatSavedAt(ts: number | null) {
-  if (!ts) return 'Nog niet opgeslagen'
-  return `Opgeslagen ${new Date(ts).toLocaleString('nl-BE', {
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit',
-  })}`
 }
 
 const shellFont = { fontFamily: "system-ui, -apple-system, 'Segoe UI', sans-serif" } as const
@@ -210,8 +203,6 @@ function CmsWorkAlert() {
 export function CmsLayout() {
   const { pathname, search } = useLocation()
   const navigate = useNavigate()
-  const { savedAt, artistSyncError, siteSyncError, artistSaving, contentSyncStatus, needsPublish } =
-    useCms()
   const { user, authRequired, signOut, role, displayName, canEdit, canManageUsers } =
     useAuth()
   const panels = useCmsPanels()
@@ -269,10 +260,10 @@ export function CmsLayout() {
 
   const navLinks = () => (
     <nav className="cms-nav flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-1 pb-2">
-      <p className="mb-1 px-2.5 pt-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8a8a86]">
+      <p className="mb-1 px-2.5 pt-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8a8a86]">
         Tzjill
       </p>
-      <ul className="space-y-0.5">
+      <ul className="space-y-px">
         {navItems.map((n) => {
           const active =
             n.match === 'forms'
@@ -289,6 +280,8 @@ export function CmsLayout() {
                       ? pathname.startsWith('/cms/settings') && !usersPath
                       : pathname.startsWith(n.to)
           const Icon = n.icon
+          const showPages = n.match === 'pages' && active
+          const showForms = n.match === 'forms' && active
           return (
             <li key={n.to}>
               <NavLink
@@ -304,6 +297,8 @@ export function CmsLayout() {
                 <Icon className={`h-[18px] w-[18px] shrink-0 ${active ? 'text-[#111214]' : 'text-[#7a7a76]'}`} />
                 <span className="whitespace-nowrap">{n.label}</span>
               </NavLink>
+              {showPages ? <SidebarPageLinks kind="pages" /> : null}
+              {showForms ? <SidebarPageLinks kind="forms" /> : null}
             </li>
           )
         })}
@@ -313,11 +308,9 @@ export function CmsLayout() {
 
   const brand = (onClose?: () => void) => (
     <div className="flex shrink-0 items-center justify-between px-2.5 pb-3 pt-1">
-      <Link to="/cms/dashboard" className="flex flex-col leading-tight">
-        <span className="text-[15px] font-semibold tracking-[-0.02em] text-[#111214]">Tzjill</span>
-        <span className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8a8a86]">
-          CMS
-        </span>
+      <Link to="/cms/dashboard" className="flex items-center gap-2 px-1 text-[15px] font-semibold tracking-[-0.02em] text-[#111214]">
+        <span className="inline-block h-2 w-2 rounded-full bg-[#16c060]" />
+        Tzjill
       </Link>
       {onClose ? (
         <button
@@ -431,36 +424,18 @@ export function CmsLayout() {
         </button>
       </header>
 
-      <main
-        className={`bg-white ${pagesWorkspace ? 'lg:pl-[424px]' : 'lg:pl-[248px]'} ${
-          pagesWorkspace
-            ? '[--cms-editor-sticky-top:6.25rem] lg:[--cms-editor-sticky-top:1.5rem]'
-            : '[--cms-editor-sticky-top:3.5rem] lg:[--cms-editor-sticky-top:1.5rem]'
-        }`}
-      >
-        <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-          <SiteDocumentBar />
+      <main className="flex min-h-svh flex-col bg-white lg:pl-[248px] [--cms-editor-sticky-top:0.75rem]">
+        <div className="min-h-0 flex-1 overflow-auto px-4 py-5 sm:px-6 lg:px-8">
           <CmsWorkAlert />
-          {pagesWorkspace ? <PagesTabBar /> : null}
 
           {panels.mode === 'dashboard' || panels.mode === 'media' || panels.mode === 'settings' || usersPath || !panels.Page ? (
-          <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-neutral-200/70 pb-6">
-            <div className="min-w-0">
-              <h1
-                className="text-2xl font-medium tracking-tight text-neutral-900 sm:text-[1.75rem]"
-                style={{ letterSpacing: '-0.01em' }}
-              >
-                {panels.title}
-              </h1>
-              <p className="mt-1.5 text-sm leading-relaxed text-neutral-500">{panels.subtitle}</p>
-              {panels.mode !== 'dashboard' ? (
-                <p className="mt-2 text-[11px] uppercase tracking-wide text-neutral-400">
-                  {formatSavedAt(savedAt)}
-                  {artistSyncError ? ` · Artist: ${artistSyncError}` : ''}
-                  {siteSyncError ? ` · Site: ${siteSyncError}` : ''}
-                </p>
-              ) : null}
-            </div>
+          <div className="mb-5">
+            <h1 className="text-[22px] font-semibold tracking-[-0.03em] text-[#111214]">
+              {panels.title}
+            </h1>
+            {panels.mode !== 'dashboard' ? (
+              <p className="mt-1 text-[13px] text-[#6b6b66]">{panels.subtitle}</p>
+            ) : null}
           </div>
           ) : null}
 
@@ -471,24 +446,6 @@ export function CmsLayout() {
           ) : panels.Page ? (
             panels.mode === 'media' || panels.mode === 'settings' ? (
               <div className="cms-editor-pane min-w-0">
-                <EditorTopBar
-                  mode="auto-save"
-                  saving={artistSaving || contentSyncStatus === 'pending'}
-                  lastSavedAt={savedAt ? new Date(savedAt) : null}
-                  hint={
-                    panels.mode === 'settings'
-                      ? 'Instellingen worden als concept opgeslagen'
-                      : 'Media wordt als concept opgeslagen'
-                  }
-                  extraInfo={
-                    artistSyncError || siteSyncError ? (
-                      <span className="text-rose-600">
-                        {artistSyncError ? `Artist: ${artistSyncError}` : ''}
-                        {siteSyncError ? ` Site: ${siteSyncError}` : ''}
-                      </span>
-                    ) : null
-                  }
-                />
                 <EditorAccordionScope key={`${pathname}${search}`}>
                   <Suspense fallback={<RouteFallback compact />}>
                     <panels.Page slot="editor" />
@@ -498,31 +455,21 @@ export function CmsLayout() {
             ) : (
               <EditorPreviewLayout>
               <div className="cms-editor-pane sticky top-[var(--cms-editor-sticky-top,0px)] flex h-[calc(100dvh-var(--cms-editor-sticky-top,0px)-1.5rem)] min-h-0 min-w-0 flex-col self-start pr-1">
-                <div className="shrink-0 border-b border-neutral-200/70 pb-3">
-                  <h1
-                    className="text-2xl font-medium tracking-tight text-neutral-900 sm:text-2xl"
-                    style={{ letterSpacing: '-0.01em' }}
-                  >
-                    {panels.title}
-                  </h1>
-                  <p className="mt-1.5 text-sm leading-relaxed text-neutral-500">{panels.subtitle}</p>
-
+                <div className="cms-crumb mb-3 flex min-h-10 shrink-0 items-center gap-2">
+                  <b className="text-[15px] font-semibold text-[#111214]">{panels.title}</b>
+                  <span className="text-[12px] text-[#6b6b66]">{panels.subtitle}</span>
                 </div>
                 {panels.mode === 'artists' && artistSlug ? (
-                  <div className="cms-artist-tabs shrink-0 bg-[#fafaf8] py-3">
-                    <div className="rounded-xl border border-neutral-200 bg-white p-2.5 shadow-sm">
-                    <div className="mb-2 flex items-center justify-between gap-3 px-1">
+                  <div className="cms-artist-tabs mb-3 shrink-0">
+                    <div className="mb-2">
                       <Link
                         to="/cms/artists"
-                        className="shrink-0 text-xs font-medium text-neutral-500 hover:text-neutral-900"
+                        className="text-[12px] font-medium text-[#6b6b66] hover:text-[#111214]"
                       >
                         ← Alle artiesten
                       </Link>
-                      <span className="text-[10px] font-semibold text-neutral-400">
-                        Artiestenpagina invullen
-                      </span>
                     </div>
-                    <div className="grid grid-cols-2 gap-1 sm:grid-cols-4">
+                    <div className="flex flex-wrap gap-1">
                       {ARTIST_EDITOR_TABS.map((tab) => {
                         const isActive = isArtistEditorTabActive(
                           tab.id,
@@ -532,52 +479,19 @@ export function CmsLayout() {
                           <Link
                             key={tab.id}
                             to={artistEditorPath(artistSlug, tab.id)}
-                            className={`rounded-lg px-3 py-2.5 transition-colors ${
+                            className={`rounded-lg px-3 py-1.5 text-[13px] font-semibold ${
                               isActive
-                                ? 'bg-neutral-900 text-white'
-                                : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                                ? 'bg-[#f5f5f5] text-[#111214] shadow-[inset_0_0_0_1px_#e5e5e5]'
+                                : 'text-[#3a3a37] hover:bg-[#fafafa]'
                             }`}
                           >
-                            <span className="block text-sm font-semibold">{tab.label}</span>
-                            <span
-                              className={`mt-0.5 block truncate text-[10px] ${
-                                isActive ? 'text-white/65' : 'text-neutral-400'
-                              }`}
-                            >
-                              {tab.description}
-                            </span>
+                            {tab.label}
                           </Link>
                         )
                       })}
                     </div>
-                    </div>
                   </div>
                 ) : null}
-                <div className="shrink-0 pt-3">
-                {panels.mode === 'artists' && artistSlug ? null : (
-                  <EditorTopBar
-                    mode="auto-save"
-                    saving={artistSaving || contentSyncStatus === 'pending'}
-                    lastSavedAt={savedAt ? new Date(savedAt) : null}
-                    error={siteSyncError || artistSyncError}
-                    hint={
-                      siteSyncError || artistSyncError
-                        ? 'Opslaan mislukt — probeer opnieuw of herlaad.'
-                        : needsPublish
-                          ? 'Concept is opgeslagen. Gebruik Publiceren om bezoekers te laten meekijken.'
-                          : 'Concept is live — bezoekers zien deze versie.'
-                    }
-                    extraInfo={
-                      artistSyncError || siteSyncError ? (
-                        <span className="text-rose-600">
-                          {artistSyncError ? `Artist: ${artistSyncError}` : ''}
-                          {siteSyncError ? ` Site: ${siteSyncError}` : ''}
-                        </span>
-                      ) : null
-                    }
-                  />
-                )}
-                </div>
                 <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
                 <EditorAccordionScope key={`${pathname}${search}`}>
                   <ErrorBoundary compact label="cms-editor" resetKey={`${pathname}${search}`}>
@@ -599,6 +513,7 @@ export function CmsLayout() {
             )
           ) : null}
         </div>
+        <SiteDocumentBar />
       </main>
     </div>
   )

@@ -251,11 +251,7 @@ export function EditorSection({
           <button
             type="button"
             onClick={() => setOpen(!open)}
-            className={`mr-2 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold ${
-              open
-                ? 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50'
-                : 'border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-800'
-            }`}
+            className="mr-1 inline-flex items-center gap-1 px-2 py-1 text-[12px] font-medium text-[#6b6b66] hover:text-[#111214]"
           >
             {open ? <X className="h-3 w-3" /> : <Pencil className="h-3 w-3" />}
             {open ? 'Sluiten' : 'Bewerken'}
@@ -268,11 +264,7 @@ export function EditorSection({
                 onVisibleChange(!visible)
               }}
               title={visible ? 'Sectie verbergen' : 'Sectie tonen'}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
-                visible
-                  ? 'border-emerald-200/70 bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
-                  : 'border-neutral-200 bg-white text-neutral-500 hover:bg-neutral-50'
-              }`}
+              className="inline-flex items-center gap-1.5 px-2 py-1 text-[12px] font-medium text-[#6b6b66] hover:text-[#111214]"
             >
               {visible ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
               {visible ? 'Zichtbaar' : 'Verborgen'}

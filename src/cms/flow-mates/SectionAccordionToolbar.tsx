@@ -23,9 +23,9 @@ export function SectionAccordionToolbar({
   onQuickEdit?: () => void;
 }) {
   return (
-    <div className="mb-3 flex items-center justify-between gap-3 px-1">
-      <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-neutral-400">
-        {openCount} van {total} open
+    <div className="mb-2 flex items-center justify-between gap-3">
+      <span className="text-[12px] text-[#6b6b66]">
+        {openCount}/{total} open
       </span>
       <div className="flex items-center gap-1">
         {onQuickEdit && (
