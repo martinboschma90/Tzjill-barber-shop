@@ -1,34 +1,30 @@
 import { useState } from 'react'
-import { Globe, UploadCloud } from 'lucide-react'
+import { Globe } from 'lucide-react'
 import { useCms } from '@/cms/CmsProvider'
 import { useAuth } from '@/cms/auth/AuthProvider'
 import { isSupabaseConfigured } from '@/lib/supabaseEnv'
-import { PrimaryButton, GhostButton } from '@/cms/flow-mates/cms-ui'
-import { ViewSiteButton, formatRelative, EditorStatusPill } from '@/cms/flow-mates/EditorTopBar'
+import { formatRelative } from '@/cms/flow-mates/EditorTopBar'
 import type { ContentSyncStatus } from '@/cms/CmsContext'
 
-function statusFromSync(
+function statusCopy(
   contentSyncStatus: ContentSyncStatus,
   needsPublish: boolean,
   publishing: boolean,
-): 'draft' | 'saving' | 'published' | 'error' {
-  if (publishing || contentSyncStatus === 'pending') return 'saving'
-  if (contentSyncStatus === 'live' && !needsPublish) return 'published'
-  return 'draft'
+  error: string | null,
+): { label: string; live: boolean } {
+  if (error) return { label: 'Opslaan mislukt', live: false }
+  if (publishing) return { label: 'Publiceren…', live: false }
+  if (contentSyncStatus === 'pending') return { label: 'Concept opslaan…', live: false }
+  if (needsPublish) return { label: 'Concept klaar', live: false }
+  return { label: 'Live op de website', live: true }
 }
 
-function statusLabel(
-  contentSyncStatus: ContentSyncStatus,
-  needsPublish: boolean,
-  publishing: boolean,
-): string {
-  if (publishing) return 'Live zetten…'
-  if (contentSyncStatus === 'pending') return 'Concept opslaan…'
-  if (needsPublish) return 'Klaar om live te zetten'
-  return 'Live op de website'
+function formatDay(ts: number | null): string | null {
+  if (!ts) return null
+  return formatRelative(new Date(ts))
 }
 
-/** Co-public-style global publish bar (draft auto-sync, explicit go-live). */
+/** Co-public-style document chrome: concept vs publiceren, all Tzjill content. */
 export function SiteDocumentBar() {
   const local = !isSupabaseConfigured
   const { canEdit } = useAuth()
@@ -46,10 +42,11 @@ export function SiteDocumentBar() {
   if (local || !canEdit) return null
 
   const hasUnsavedEdits = contentSyncStatus === 'pending'
-  const pill = statusFromSync(contentSyncStatus, needsPublish, publishing)
-  const pillLabel = statusLabel(contentSyncStatus, needsPublish, publishing)
   const saving = hasUnsavedEdits || publishing
   const canPublish = needsPublish || hasUnsavedEdits
+  const status = statusCopy(contentSyncStatus, needsPublish, publishing, siteSyncError)
+  const conceptLabel = formatDay(savedAt)
+  const liveLabel = formatDay(publishedAt)
 
   async function handlePublish() {
     setPublishing(true)
@@ -58,54 +55,57 @@ export function SiteDocumentBar() {
   }
 
   return (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-neutral-200/80 bg-white px-4 py-3 shadow-sm">
-      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3 text-xs text-neutral-600">
-        <EditorStatusPill
-          state={siteSyncError ? 'error' : pill}
-          label={siteSyncError ? 'Sync mislukt' : pillLabel}
-        />
-        {savedAt ? (
-          <span className="text-neutral-400">
-            Concept {formatRelative(new Date(savedAt))}
-          </span>
-        ) : null}
-        {publishedAt && !needsPublish ? (
-          <span className="text-neutral-400">
-            · Live {formatRelative(new Date(publishedAt))}
-          </span>
-        ) : needsPublish ? (
-          <span className="text-amber-700/90">Bezoekers zien nog de vorige live versie.</span>
+    <div className="sticky top-0 z-30 mb-6 flex flex-wrap items-center justify-between gap-3 border-b border-[#e5e5e5] bg-white px-0 py-3 lg:static lg:rounded-xl lg:border lg:px-4">
+      <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2.5 text-[12px] text-[#6b6b66]">
+        <span
+          className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.08em] ${
+            siteSyncError
+              ? 'bg-rose-50 text-rose-700'
+              : status.live
+                ? 'bg-[#16c060]/12 text-[#0f8f46]'
+                : 'bg-amber-50 text-amber-800'
+          }`}
+        >
+          <span
+            className={`h-1.5 w-1.5 rounded-full ${
+              siteSyncError ? 'bg-rose-500' : status.live ? 'bg-[#16c060]' : 'bg-amber-500'
+            }`}
+          />
+          {status.label}
+        </span>
+        {conceptLabel ? <span>Concept {conceptLabel}</span> : null}
+        {liveLabel && !needsPublish ? <span>· Live {liveLabel}</span> : null}
+        {needsPublish ? (
+          <span className="text-amber-800">Bezoekers zien nog de vorige live versie.</span>
         ) : null}
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-2">
-        <ViewSiteButton />
-        <GhostButton
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-[#e5e5e5] bg-white px-3.5 text-[13px] font-semibold text-[#3a3a37] hover:bg-[#fafafa]"
+        >
+          Bekijk website
+          <Globe className="h-3.5 w-3.5 text-[#8a8a86]" />
+        </a>
+        <button
           type="button"
           disabled={saving || !hasUnsavedEdits}
           onClick={() => void saveDraft()}
+          className="inline-flex min-h-10 items-center rounded-lg border border-[#e5e5e5] bg-white px-4 text-[13px] font-semibold text-[#111214] hover:bg-[#fafafa] disabled:cursor-not-allowed disabled:opacity-45"
         >
           Concept opslaan
-        </GhostButton>
-        <PrimaryButton
+        </button>
+        <button
           type="button"
           disabled={saving || !canPublish}
           onClick={() => void handlePublish()}
+          className="inline-flex min-h-10 items-center rounded-lg border border-[#16c060] bg-[#16c060] px-4 text-[13px] font-semibold text-white hover:bg-[#12a352] disabled:cursor-not-allowed disabled:opacity-45"
         >
-          <span className="inline-flex items-center gap-1.5">
-            <UploadCloud className="h-4 w-4" />
-            {publishing ? 'Publiceren…' : 'Live zetten'}
-          </span>
-        </PrimaryButton>
+          {publishing ? 'Publiceren…' : 'Publiceren'}
+        </button>
       </div>
     </div>
-  )
-}
-
-export function SiteDocumentBarHint() {
-  return (
-    <p className="mt-1 flex items-center gap-1.5 text-[11px] text-neutral-400">
-      <Globe className="h-3 w-3" />
-      Wijzigingen worden als concept opgeslagen. Zet live wanneer bezoekers het mogen zien.
-    </p>
   )
 }

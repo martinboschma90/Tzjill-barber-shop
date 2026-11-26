@@ -79,7 +79,7 @@ function useCmsPanels(): {
     return {
       mode: 'dashboard',
       title: 'Dashboard',
-      subtitle: 'Flow Mates CMS',
+      subtitle: 'Tzjill websitebeheer',
       Page: null,
     }
   }
@@ -250,7 +250,7 @@ export function CmsLayout() {
       ? [
           {
             to: '/cms/settings/users',
-            label: 'Team',
+            label: 'Gebruikers',
             icon: UserPlus,
             match: 'users' as const,
           },
@@ -258,14 +258,19 @@ export function CmsLayout() {
       : []),
   ]
 
-  const navLinks = (collapsible: boolean) => (
-    <nav className="flex-1 overflow-y-auto px-3 py-5">
-      <p
-        className={`mb-2 whitespace-nowrap px-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400 ${
-          collapsible ? 'hidden' : ''
-        }`}
-      >
-        Werkomgeving
+  const initials = (displayName || user?.email || 'TZ')
+    .split(/[\s@._-]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? '')
+    .join('') || 'TZ'
+  const roleLabel =
+    role === 'admin' ? 'Beheerder' : role === 'editor' ? 'Redacteur' : 'Kijker'
+
+  const navLinks = () => (
+    <nav className="cms-nav flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-1 pb-2">
+      <p className="mb-1 px-2.5 pt-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8a8a86]">
+        Tzjill
       </p>
       <ul className="space-y-0.5">
         {navItems.map((n) => {
@@ -290,20 +295,14 @@ export function CmsLayout() {
                 to={n.to}
                 title={n.label}
                 aria-label={n.label}
-                className={`group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-all ${
+                className={`flex min-h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-[14px] font-medium ${
                   active
-                    ? 'bg-neutral-900 text-white shadow-sm'
-                    : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                    ? 'bg-[#f5f5f5] text-[#111214] shadow-[inset_0_0_0_1px_#e5e5e5]'
+                    : 'text-[#3a3a37] hover:bg-[#fafafa]'
                 }`}
               >
-                <Icon className="h-4 w-4 shrink-0" />
-                <span
-                  className={`whitespace-nowrap font-medium ${
-                    collapsible ? 'hidden' : ''
-                  }`}
-                >
-                  {n.label}
-                </span>
+                <Icon className={`h-[18px] w-[18px] shrink-0 ${active ? 'text-[#111214]' : 'text-[#7a7a76]'}`} />
+                <span className="whitespace-nowrap">{n.label}</span>
               </NavLink>
             </li>
           )
@@ -312,183 +311,120 @@ export function CmsLayout() {
     </nav>
   )
 
-  const brand = (onClose?: () => void) => {
-    const collapsible = !onClose
-    return (
-      <div
-        className={`flex shrink-0 items-center justify-between border-b border-neutral-200 ${
-          collapsible ? 'h-[77px] px-3' : 'px-5 py-5'
-        }`}
-      >
-        <Link
-          to="/cms/dashboard"
-          className={`flex flex-col leading-tight ${
-            collapsible ? 'min-w-10 items-center' : ''
-          }`}
+  const brand = (onClose?: () => void) => (
+    <div className="flex shrink-0 items-center justify-between px-2.5 pb-3 pt-1">
+      <Link to="/cms/dashboard" className="flex flex-col leading-tight">
+        <span className="text-[15px] font-semibold tracking-[-0.02em] text-[#111214]">Tzjill</span>
+        <span className="mt-0.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8a8a86]">
+          CMS
+        </span>
+      </Link>
+      {onClose ? (
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-md p-1.5 text-[#6b6b66] hover:bg-[#f5f5f5]"
+          aria-label="Menu sluiten"
         >
-          <span
-            className={`font-semibold tracking-tight text-neutral-900 ${
-              collapsible ? 'text-[11px]' : 'text-[15px]'
-            }`}
-          >
-            Flow Mates
-          </span>
-          <span
-            className={`mt-1 whitespace-nowrap text-[10px] font-medium uppercase tracking-[0.18em] text-neutral-500 ${
-              collapsible ? 'hidden' : ''
-            }`}
-          >
-            CMS
-          </span>
-        </Link>
-        {onClose ? (
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-md p-1.5 text-neutral-500 hover:bg-neutral-100"
-            aria-label="Menu sluiten"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        ) : null}
-      </div>
-    )
-  }
+          <X className="h-4 w-4" />
+        </button>
+      ) : null}
+    </div>
+  )
 
-  const searchBtn = (collapsible: boolean) => (
-    <div className="px-3 pt-4">
+  const searchBtn = () => (
+    <div className="px-1 pb-2">
       <button
         type="button"
         onClick={() => {
           setMobileOpen(false)
           setSearchOpen(true)
         }}
-        className={`flex items-center gap-2.5 overflow-hidden rounded-lg border border-neutral-200 bg-neutral-50/60 px-3 py-2 text-left text-sm text-neutral-500 hover:border-neutral-300 hover:bg-white ${
-          collapsible ? 'w-10' : 'w-full'
-        }`}
+        className="flex min-h-9 w-full items-center gap-2.5 rounded-lg border border-[#e5e5e5] bg-white px-2.5 text-left text-[14px] text-[#6b6b66] hover:bg-[#fafafa]"
       >
-        <Search className="h-4 w-4 shrink-0 text-neutral-400" />
-        <span className={`flex-1 truncate ${collapsible ? 'hidden' : ''}`}>
-          Zoek pagina's, media…
-        </span>
+        <Search className="h-4 w-4 shrink-0 text-[#8a8a86]" />
+        <span className="flex-1 truncate">Zoek pagina's, media…</span>
       </button>
     </div>
   )
 
-  const footer = (collapsible: boolean) => (
-    <div
-      className={`border-t border-neutral-200 py-4 ${
-        collapsible ? 'px-3' : 'px-5'
-      }`}
-    >
-      <p
-        className={`truncate text-xs font-medium text-neutral-700 ${
-          collapsible ? 'hidden' : ''
-        }`}
-      >
-        {user?.email ??
-          (authRequired ? 'Niet ingelogd' : 'Lokale modus — geen login')}
+  const footer = () => (
+    <div className="mt-auto px-1 pb-1">
+      <p className="mb-2 flex items-center gap-2 px-2 text-[11px] font-medium text-[#8a8a86]">
+        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#16c060]" />
+        Flow Mates
       </p>
-      <a
-        href="/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className={`mt-3 flex items-center justify-center gap-1.5 overflow-hidden rounded-md border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100 ${
-          collapsible ? 'w-10' : 'w-full'
-        }`}
+      <button
+        type="button"
+        onClick={() => (authRequired ? void handleLogout() : undefined)}
+        className="flex min-h-[52px] w-full items-center gap-2 rounded-lg px-2 text-left hover:bg-[#fafafa]"
+        data-signout={authRequired ? true : undefined}
       >
-        <LayoutDashboard className="h-3.5 w-3.5 shrink-0" />
-        <span className={collapsible ? 'hidden whitespace-nowrap' : ''}>
-          Site bekijken
+        <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[#e5e5e5] bg-white text-[11px] font-semibold text-[#111214]">
+          {initials}
         </span>
-      </a>
-      {authRequired ? (
-        <button
-          type="button"
-          onClick={() => void handleLogout()}
-          className={`mt-2 flex items-center justify-center gap-1.5 overflow-hidden rounded-md border border-neutral-200 px-3 py-1.5 text-xs font-medium text-neutral-700 hover:bg-neutral-100 ${
-            collapsible ? 'w-10' : 'w-full'
-          }`}
-        >
-          <LogOut className="h-3.5 w-3.5 shrink-0" />
-          <span className={collapsible ? 'hidden whitespace-nowrap' : ''}>
-            Uitloggen
-          </span>
-        </button>
-      ) : null}
+        <span className="min-w-0">
+          <strong className="block truncate text-[13px] font-semibold text-[#111214]">
+            {displayName || user?.email || 'CMS'}
+          </strong>
+          <small className="block text-[11px] font-medium text-[#6b6b66]">{roleLabel}</small>
+        </span>
+        {authRequired ? <LogOut className="ml-auto h-3.5 w-3.5 shrink-0 text-[#8a8a86]" /> : null}
+      </button>
     </div>
   )
 
   return (
     <div
-      className="cms-layout min-h-svh text-neutral-900"
+      className="cms-layout min-h-svh bg-white text-[#111214]"
       style={shellFont}
       data-cms-readonly={canEdit ? undefined : 'true'}
     >
-      <div className="fixed top-4 right-4 z-40 hidden items-center gap-3 rounded-xl border border-neutral-200 bg-white/95 px-3 py-2 shadow-sm lg:flex">
-        <div className="min-w-0 text-right">
-          <p className="max-w-[12rem] truncate text-xs font-semibold text-neutral-900">
-            {displayName || user?.email || 'CMS'}
-          </p>
-          <span className="mt-0.5 inline-flex rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-600">
-            {role === 'admin' ? 'Admin' : role === 'editor' ? 'Editor' : 'Viewer'}
-          </span>
-        </div>
-        {authRequired ? (
-          <button
-            type="button"
-            onClick={() => void handleLogout()}
-            className="rounded-md border border-neutral-200 px-2 py-1 text-[11px] font-medium text-neutral-600 hover:bg-neutral-100"
-          >
-            Uitloggen
-          </button>
-        ) : null}
-      </div>
       <FlowMatesCommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
 
-      <aside className="group/sidebar peer/sidebar fixed inset-y-0 left-0 z-30 hidden w-16 flex-col overflow-hidden border-r border-neutral-200/80 bg-white shadow-sm lg:flex">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[248px] flex-col border-r border-[#e5e5e5] bg-white px-3 py-4 lg:flex">
         {brand()}
-        {searchBtn(true)}
-        {navLinks(true)}
-        {footer(true)}
+        {searchBtn()}
+        {navLinks()}
+        {footer()}
       </aside>
 
       {mobileOpen ? (
         <div className="fixed inset-0 z-40 lg:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-neutral-900/50"
+            className="absolute inset-0 bg-[#111214]/20"
             aria-label="Sluiten"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="absolute inset-y-0 left-0 flex w-72 max-w-[85%] flex-col bg-white shadow-2xl">
+          <aside className="absolute inset-y-0 left-0 flex w-[248px] max-w-[85%] flex-col bg-white px-3 py-4 shadow-2xl">
             {brand(() => setMobileOpen(false))}
-            {searchBtn(false)}
-            {navLinks(false)}
-            {footer(false)}
+            {searchBtn()}
+            {navLinks()}
+            {footer()}
           </aside>
         </div>
       ) : null}
 
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-neutral-200/80 bg-white/90 px-4 py-3 backdrop-blur lg:hidden">
+      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#e5e5e5] bg-white px-4 py-3 lg:hidden">
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
-          className="rounded-lg p-2 text-neutral-700 hover:bg-neutral-100"
+          className="rounded-lg p-2 text-[#3a3a37] hover:bg-[#f5f5f5]"
           aria-label="Menu openen"
         >
           <MenuIcon className="h-5 w-5" />
         </button>
         <div className="flex flex-col items-center leading-tight">
-          <span className="text-[13px] font-semibold text-neutral-900">Flow Mates</span>
-          <span className="text-[9px] font-medium uppercase tracking-[0.18em] text-neutral-500">
+          <span className="text-[13px] font-semibold text-[#111214]">Tzjill</span>
+          <span className="text-[9px] font-medium uppercase tracking-[0.18em] text-[#8a8a86]">
             CMS
           </span>
         </div>
         <button
           type="button"
           onClick={() => setSearchOpen(true)}
-          className="rounded-lg p-2 text-neutral-700 hover:bg-neutral-100"
+          className="rounded-lg p-2 text-[#3a3a37] hover:bg-[#f5f5f5]"
           aria-label="Zoeken"
         >
           <Search className="h-5 w-5" />
@@ -496,12 +432,10 @@ export function CmsLayout() {
       </header>
 
       <main
-        className={`transition-[padding-left] duration-300 ease-out ${pagesWorkspace ? 'lg:pl-60' : 'lg:pl-16'} ${
+        className={`bg-white ${pagesWorkspace ? 'lg:pl-[424px]' : 'lg:pl-[248px]'} ${
           pagesWorkspace
             ? '[--cms-editor-sticky-top:6.25rem] lg:[--cms-editor-sticky-top:1.5rem]'
-            : panels.mode === 'artists' && artistSlug
-              ? '[--cms-editor-sticky-top:3.5rem] lg:[--cms-editor-sticky-top:1.5rem]'
-              : '[--cms-editor-sticky-top:3.5rem] lg:[--cms-editor-sticky-top:1.5rem]'
+            : '[--cms-editor-sticky-top:3.5rem] lg:[--cms-editor-sticky-top:1.5rem]'
         }`}
       >
         <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
@@ -630,7 +564,7 @@ export function CmsLayout() {
                       siteSyncError || artistSyncError
                         ? 'Opslaan mislukt — probeer opnieuw of herlaad.'
                         : needsPublish
-                          ? 'Concept is opgeslagen. Gebruik Live zetten om bezoekers te laten meekijken.'
+                          ? 'Concept is opgeslagen. Gebruik Publiceren om bezoekers te laten meekijken.'
                           : 'Concept is live — bezoekers zien deze versie.'
                     }
                     extraInfo={

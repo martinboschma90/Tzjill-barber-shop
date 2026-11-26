@@ -63,7 +63,7 @@ function ActionTile({
   return (
     <Link
       to={to}
-      className="cms-action-card group relative flex flex-col rounded-2xl border border-neutral-200 bg-white p-4 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-[0_0_28px_rgba(34,197,94,0.16)]"
+      className="cms-action-card group relative flex flex-col rounded-xl border border-[#e5e5e5] bg-white p-4 transition-all duration-200 hover:bg-[#fafafa]"
     >
       <div
         className={`inline-flex h-8 w-8 items-center justify-center rounded-lg ${accent}`}

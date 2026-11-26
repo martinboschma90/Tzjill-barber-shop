@@ -45,7 +45,7 @@ export function PagesTabBar() {
   const visibleTabs = PAGE_TABS.filter(tab => isFormsWorkspacePath(tab.to) === formsWorkspace)
 
   return (
-    <div className="cms-page-tabs sticky top-12 z-10 mb-6 -mx-4 border-b border-neutral-200/70 bg-[#fafaf8]/95 px-4 backdrop-blur-sm sm:-mx-6 sm:px-6 lg:fixed lg:inset-y-0 lg:left-16 lg:z-20 lg:m-0 lg:w-44 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:px-3 lg:py-7">
+    <div className="cms-page-tabs sticky top-12 z-10 mb-6 -mx-4 border-b border-neutral-200/70 bg-white/95 px-4 backdrop-blur-sm sm:-mx-6 sm:px-6 lg:fixed lg:inset-y-0 lg:left-[248px] lg:z-20 lg:m-0 lg:w-44 lg:overflow-y-auto lg:border-b-0 lg:border-r lg:border-[#e5e5e5] lg:px-3 lg:py-7">
       <div className="flex items-center gap-1 overflow-x-auto py-2 lg:flex-col lg:items-stretch lg:overflow-visible">
         <span className="mr-3 shrink-0 text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
           {formsWorkspace ? 'Formulieren & pop-ups' : 'Website'}
@@ -61,10 +61,10 @@ export function PagesTabBar() {
               key={tab.to}
               to={tab.to}
               aria-current={active ? 'page' : undefined}
-              className={`shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+              className={`shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
                 active
-                  ? 'bg-neutral-900 text-white'
-                  : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900'
+                  ? 'bg-[#f5f5f5] text-[#111214] shadow-[inset_0_0_0_1px_#e5e5e5]'
+                  : 'text-[#3a3a37] hover:bg-[#fafafa]'
               }`}
             >
               {tab.label}
