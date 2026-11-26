@@ -54,6 +54,7 @@ export function SiteHealthMeter({
     content,
     savedAt,
     contentSyncStatus,
+    needsPublish,
     artistSyncError,
     siteSyncError,
     dirtyArtistIds,
@@ -63,6 +64,7 @@ export function SiteHealthMeter({
       assessSiteHealth(content, {
         savedAt,
         contentSyncStatus,
+        needsPublish,
         artistSyncError,
         siteSyncError,
         dirtyCount: dirtyArtistIds.size,
@@ -72,6 +74,7 @@ export function SiteHealthMeter({
       content,
       savedAt,
       contentSyncStatus,
+      needsPublish,
       artistSyncError,
       siteSyncError,
       dirtyArtistIds,

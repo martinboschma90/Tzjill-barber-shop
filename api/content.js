@@ -10,10 +10,15 @@ export default async function handler(req, res) {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!url || !key) return json(res, 503, { error: 'Publieke inhoud is nog niet geconfigureerd.' })
   try {
-    const response = await fetch(`${url}/rest/v1/cms_content?key=eq.tzjill-cms-content-v1&select=data&limit=1`, { headers: { ...schemaHeaders(), apikey: key, Authorization: `Bearer ${key}` }, signal: AbortSignal.timeout(5000) })
+    const response = await fetch(`${url}/rest/v1/rpc/tzjill_published`, {
+      method: 'POST',
+      headers: { ...schemaHeaders(), apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json' },
+      body: '{}',
+      signal: AbortSignal.timeout(5000),
+    })
     if (!response.ok) return json(res, 502, { error: 'Inhoud ophalen lukt nu niet.' })
-    const [row] = await response.json()
-    const content = publicSnapshot(row?.data)
+    const published = await response.json()
+    const content = publicSnapshot(published)
     if (!content) return json(res, 404, { error: 'Geen gepubliceerde inhoud.' })
     return json(res, 200, content)
   } catch { return json(res, 502, { error: 'Inhoud ophalen lukt nu niet.' }) }

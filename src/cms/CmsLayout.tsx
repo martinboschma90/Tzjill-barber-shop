@@ -27,6 +27,7 @@ import {
 } from '@/cms/flow-mates/CommandPalette'
 import { EditorPreviewLayout } from '@/cms/flow-mates/EditorPreviewLayout'
 import { EditorTopBar } from '@/cms/flow-mates/EditorTopBar'
+import { SiteDocumentBar } from '@/cms/flow-mates/SiteDocumentBar'
 import { DashboardHome } from '@/cms/flow-mates/Dashboard'
 import { EditorAccordionScope } from '@/cms/flow-mates/EditorAccordionScope'
 import { isPagesWorkspacePath, isFormsWorkspacePath, PagesTabBar } from '@/cms/flow-mates/PagesTabBar'
@@ -160,7 +161,7 @@ function useCmsPanels(): {
   return {
     mode: 'pages',
     title: 'Homepage',
-    subtitle: 'Bewerk elke sectie. Wijzigingen worden automatisch opgeslagen.',
+    subtitle: 'Bewerk elke sectie. Concept wordt automatisch opgeslagen; live via de balk hierboven.',
     Page: CmsHomePanel,
   }
 }
@@ -209,7 +210,8 @@ function CmsWorkAlert() {
 export function CmsLayout() {
   const { pathname, search } = useLocation()
   const navigate = useNavigate()
-  const { savedAt, artistSyncError, siteSyncError, artistSaving, contentSyncStatus } = useCms()
+  const { savedAt, artistSyncError, siteSyncError, artistSaving, contentSyncStatus, needsPublish } =
+    useCms()
   const { user, authRequired, signOut, role, displayName, canEdit, canManageUsers } =
     useAuth()
   const panels = useCmsPanels()
@@ -503,6 +505,7 @@ export function CmsLayout() {
         }`}
       >
         <div className="px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+          <SiteDocumentBar />
           <CmsWorkAlert />
           {pagesWorkspace ? <PagesTabBar /> : null}
 
@@ -540,8 +543,8 @@ export function CmsLayout() {
                   lastSavedAt={savedAt ? new Date(savedAt) : null}
                   hint={
                     panels.mode === 'settings'
-                      ? 'Wijzigingen worden automatisch opgeslagen'
-                      : 'Media wordt automatisch opgeslagen'
+                      ? 'Instellingen worden als concept opgeslagen'
+                      : 'Media wordt als concept opgeslagen'
                   }
                   extraInfo={
                     artistSyncError || siteSyncError ? (
@@ -623,7 +626,13 @@ export function CmsLayout() {
                     saving={artistSaving || contentSyncStatus === 'pending'}
                     lastSavedAt={savedAt ? new Date(savedAt) : null}
                     error={siteSyncError || artistSyncError}
-                    hint={siteSyncError || artistSyncError ? 'Opslaan mislukt — je wijzigingen zijn nog niet online.' : authRequired ? 'Wijzigingen worden automatisch online opgeslagen' : 'Alleen lokaal opgeslagen — de live site verandert niet'}
+                    hint={
+                      siteSyncError || artistSyncError
+                        ? 'Opslaan mislukt — probeer opnieuw of herlaad.'
+                        : needsPublish
+                          ? 'Concept is opgeslagen. Gebruik Live zetten om bezoekers te laten meekijken.'
+                          : 'Concept is live — bezoekers zien deze versie.'
+                    }
                     extraInfo={
                       artistSyncError || siteSyncError ? (
                         <span className="text-rose-600">

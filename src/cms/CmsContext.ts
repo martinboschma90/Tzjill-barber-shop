@@ -2,12 +2,14 @@ import { createContext, useContext } from 'react'
 import type { Artist, TeamMember } from '@/types/artist'
 import type { CmsContent, SiteContent } from '@/cms/content'
 
-export type ContentSyncStatus = 'synced' | 'pending'
+export type ContentSyncStatus = 'synced' | 'pending' | 'draft_saved' | 'live'
 
 export type CmsContextValue = {
   content: CmsContent
   savedAt: number | null
+  publishedAt: number | null
   contentSyncStatus: ContentSyncStatus
+  needsPublish: boolean
   artistSyncError: string | null
   siteSyncError: string | null
   dirtyArtistIds: ReadonlySet<string>
@@ -19,6 +21,8 @@ export type CmsContextValue = {
   addArtist: (name: string) => Artist
   removeArtist: (slug: string) => void
   saveArtist: (slug: string) => Promise<{ error: string | null }>
+  saveDraft: () => Promise<{ error: string | null }>
+  publishLive: () => Promise<{ error: string | null }>
   publishArtist: (slug: string) => Promise<{ error: string | null }>
   unpublishArtist: (slug: string) => Promise<{ error: string | null }>
   resetContent: () => void
