@@ -29,7 +29,7 @@ function relativeTime(ts: number | null): string {
   return `${d} dag${d === 1 ? '' : 'en'} geleden`
 }
 
-function ActionTile({
+function ActionRow({
   to,
   label,
   description,
@@ -43,13 +43,13 @@ function ActionTile({
   return (
     <Link
       to={to}
-      className="flex min-h-[72px] flex-col justify-between rounded-[12px] border border-[#e5e5e5] p-3 hover:bg-[#fafafa]"
+      className="flex min-h-12 items-center justify-between gap-3 border-b border-[#e5e5e5] py-3 hover:bg-[#fafafa]"
     >
-      <span className="flex items-center gap-2 text-[13px] font-semibold text-[#111214]">
-        <Icon className="h-3.5 w-3.5 text-[#7a7a76]" />
+      <span className="flex items-center gap-2.5 text-[15px] font-semibold text-[#111214]">
+        <Icon className="h-4 w-4 text-[#7a7a76]" />
         {label}
       </span>
-      <span className="text-[12px] text-[#6b6b66]">{description}</span>
+      <span className="text-[13px] text-[#6b6b66]">{description}</span>
     </Link>
   )
 }
@@ -77,16 +77,16 @@ export function DashboardHome() {
       </p>
 
       <section className="mb-8">
-        <h2 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#6b6b66]">
+        <h2 className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#6b6b66]">
           Bewerken
         </h2>
-        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-          <ActionTile to="/cms/team" label="Team" description="Kappers en lounge" icon={Users} />
-          <ActionTile to="/cms/media" label="Media" description="Foto’s en clips" icon={FolderOpen} />
-          <ActionTile to="/cms/contact" label="Contact" description="Telefoon, mail, WhatsApp" icon={Phone} />
-          <ActionTile to="/cms/prijzen" label="Prijzen" description="Tarieven" icon={Banknote} />
-          <ActionTile to="/cms/home" label="Homepage" description="Hero en merkinhoud" icon={Home} />
-          <ActionTile to="/cms/settings" label="Instellingen" description="Domein en account" icon={Settings} />
+        <div>
+          <ActionRow to="/cms/team" label="Team" description="Kappers en lounge" icon={Users} />
+          <ActionRow to="/cms/media" label="Media" description="Foto’s en clips" icon={FolderOpen} />
+          <ActionRow to="/cms/contact" label="Contact" description="Telefoon, mail, WhatsApp" icon={Phone} />
+          <ActionRow to="/cms/prijzen" label="Prijzen" description="Tarieven" icon={Banknote} />
+          <ActionRow to="/cms/home" label="Homepage" description="Hero en merkinhoud" icon={Home} />
+          <ActionRow to="/cms/settings" label="Instellingen" description="Domein en account" icon={Settings} />
         </div>
       </section>
 

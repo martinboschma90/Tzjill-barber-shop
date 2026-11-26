@@ -260,9 +260,6 @@ export function CmsLayout() {
 
   const navLinks = () => (
     <nav className="cms-nav flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-1 pb-2">
-      <p className="mb-1 px-2.5 pt-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#8a8a86]">
-        Tzjill
-      </p>
       <ul className="space-y-px">
         {navItems.map((n) => {
           const active =
@@ -343,10 +340,6 @@ export function CmsLayout() {
 
   const footer = () => (
     <div className="mt-auto px-1 pb-1">
-      <p className="mb-2 flex items-center gap-2 px-2 text-[11px] font-medium text-[#8a8a86]">
-        <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#16c060]" />
-        Flow Mates
-      </p>
       <button
         type="button"
         onClick={() => (authRequired ? void handleLogout() : undefined)}
@@ -371,6 +364,7 @@ export function CmsLayout() {
     <div
       className="cms-layout min-h-svh bg-white text-[#111214]"
       style={shellFont}
+      data-cms=""
       data-cms-readonly={canEdit ? undefined : 'true'}
     >
       <FlowMatesCommandPalette open={searchOpen} onClose={() => setSearchOpen(false)} />
@@ -424,12 +418,22 @@ export function CmsLayout() {
         </button>
       </header>
 
-      <main className="flex min-h-svh flex-col bg-white lg:pl-[248px] [--cms-editor-sticky-top:0.75rem]">
-        <div className="min-h-0 flex-1 overflow-auto px-4 py-5 sm:px-6 lg:px-8">
+      <main className="flex min-h-svh flex-col bg-white lg:h-svh lg:pl-[248px]">
+        <div
+          className={
+            panels.Page &&
+            panels.mode !== 'dashboard' &&
+            panels.mode !== 'media' &&
+            panels.mode !== 'settings' &&
+            !usersPath
+              ? 'flex min-h-0 flex-1 flex-col overflow-hidden'
+              : 'min-h-0 flex-1 overflow-auto px-6 py-6 lg:px-8'
+          }
+        >
           <CmsWorkAlert />
 
           {panels.mode === 'dashboard' || panels.mode === 'media' || panels.mode === 'settings' || usersPath || !panels.Page ? (
-          <div className="mb-5">
+          <div className="mb-6">
             <h1 className="text-[22px] font-semibold tracking-[-0.03em] text-[#111214]">
               {panels.title}
             </h1>
@@ -454,13 +458,13 @@ export function CmsLayout() {
               </div>
             ) : (
               <EditorPreviewLayout>
-              <div className="cms-editor-pane sticky top-[var(--cms-editor-sticky-top,0px)] flex h-[calc(100dvh-var(--cms-editor-sticky-top,0px)-1.5rem)] min-h-0 min-w-0 flex-col self-start pr-1">
-                <div className="cms-crumb mb-3 flex min-h-10 shrink-0 items-center gap-2">
+              <div className="cms-editor-pane flex h-full min-h-0 min-w-0 flex-col">
+                <div className="cms-crumb flex shrink-0 items-baseline gap-2 border-b border-[#e5e5e5] px-5 py-3">
                   <b className="text-[15px] font-semibold text-[#111214]">{panels.title}</b>
                   <span className="text-[12px] text-[#6b6b66]">{panels.subtitle}</span>
                 </div>
                 {panels.mode === 'artists' && artistSlug ? (
-                  <div className="cms-artist-tabs mb-3 shrink-0">
+                  <div className="cms-artist-tabs shrink-0 border-b border-[#e5e5e5] px-5 py-3">
                     <div className="mb-2">
                       <Link
                         to="/cms/artists"
@@ -492,7 +496,7 @@ export function CmsLayout() {
                     </div>
                   </div>
                 ) : null}
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4">
                 <EditorAccordionScope key={`${pathname}${search}`}>
                   <ErrorBoundary compact label="cms-editor" resetKey={`${pathname}${search}`}>
                   <Suspense fallback={<RouteFallback compact />}>
@@ -502,7 +506,7 @@ export function CmsLayout() {
                 </EditorAccordionScope>
                 </div>
               </div>
-              <div className="min-h-0 min-w-0 flex-1">
+              <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
                 <ErrorBoundary compact label="cms-preview" resetKey={`${pathname}${search}`}>
                 <Suspense fallback={<RouteFallback compact />}>
                   <panels.Page slot="preview" />

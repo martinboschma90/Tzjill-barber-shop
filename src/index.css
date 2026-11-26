@@ -410,18 +410,46 @@
   color: var(--cms-hint);
 }
 
-/* Flow Mates chrome — Frame CMS look, not Notype lime/magenta */
+/* Co-public CMS chrome — one face, one icon stroke. Preview keeps the public type. */
 [data-cms] {
   color-scheme: light;
-  font-size: 14px;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: 0;
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --color-brand: #171717;
-  --color-brand-dim: #404040;
-  --color-brand-fg: #171717;
-  --color-more: #171717;
-  --color-accent: #171717;
-  --color-accent-dim: #525252;
-  --body-bg: #fafaf8;
+  color: #111214;
+  --color-brand: #111214;
+  --color-brand-dim: #3a3a37;
+  --color-brand-fg: #111214;
+  --color-more: #111214;
+  --color-accent: #16c060;
+  --color-accent-dim: #12a352;
+  --body-bg: #ffffff;
+  --cms-text: #111214;
+  --cms-muted: #6b6b66;
+  --cms-divider: #e5e5e5;
+}
+
+[data-cms] .cms-layout svg.lucide,
+[data-cms] .cms-editor-pane svg.lucide,
+[data-cms] .cms-theme-root > *:not([data-cms-preview]) svg.lucide {
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+[data-cms] .cms-nav svg.lucide,
+[data-cms] aside svg.lucide {
+  width: 18px;
+  height: 18px;
+}
+
+[data-cms] .cms-editor-pane svg.lucide,
+[data-cms] .cms-editor-pane button svg,
+[data-cms] .cms-editor-pane a svg {
+  width: 16px;
+  height: 16px;
 }
 
 .cms-theme-root,
@@ -615,30 +643,58 @@
   background-color: #1d4937;
 }
 
-/* Compact Flow Mates editor typography; previews keep the public Notype face. */
-[data-cms] .cms-editor-pane :where(.type-display, .type-headline) {
+/* Editor uses the same system UI as the shell. Public preview is unchanged. */
+[data-cms] .cms-editor-pane :where(.type-display, .type-headline, .type-body, .type-label) {
   font-family: inherit;
-  font-weight: 600;
   font-style: normal;
   font-synthesis: auto;
-  text-transform: none;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
 }
 
-[data-cms] .cms-editor-pane .text-sm,
+[data-cms] .cms-editor-pane :where(.type-display, .type-headline) {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  text-transform: none;
+  font-size: 15px;
+  color: #111214;
+}
+
+[data-cms] .cms-editor-pane .type-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b6b66;
+}
+
+[data-cms] .cms-editor-pane .type-body {
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #6b6b66;
+}
+
+[data-cms] .cms-editor-pane [class~='text-ink'] {
+  color: #111214;
+}
+
+[data-cms] .cms-editor-pane [class*='text-ink/'] {
+  color: #6b6b66;
+}
+
 [data-cms] .cms-editor-pane input,
 [data-cms] .cms-editor-pane textarea,
 [data-cms] .cms-editor-pane select {
-  font-size: 0.78rem;
-}
-
-[data-cms] .cms-editor-pane .text-xs {
-  font-size: 0.69rem;
+  font-family: inherit;
+  font-size: 15px;
+  color: #111214;
 }
 
 [data-cms] .cms-editor-pane h3 {
-  font-size: 0.8rem;
+  font-size: 15px;
+  font-weight: 600;
+  color: #111214;
 }
 
 [data-cms] [data-cms-preview] {

@@ -98,7 +98,7 @@ export function SiteHealthMeter({
   if (compact) {
     const issue = health.errors[0] ?? topIssues[0]
     return (
-      <section className="flex h-full flex-col rounded-2xl border border-neutral-200 bg-white p-4">
+      <section className="flex h-full flex-col border border-[#e5e5e5] bg-white p-4">
         <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-neutral-400">
           Website
         </p>
@@ -141,7 +141,7 @@ export function SiteHealthMeter({
   }
 
   return (
-    <section className="mb-4 overflow-hidden rounded-2xl border border-neutral-200 bg-white px-4 py-3 text-neutral-900">
+    <section className="mb-4 overflow-hidden border border-[#e5e5e5] bg-white px-4 py-3 text-neutral-900">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <p className="text-[10px] font-semibold tracking-wider text-neutral-400 uppercase">

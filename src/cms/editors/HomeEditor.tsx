@@ -199,10 +199,7 @@ export function HomeEditor() {
                   description="Foto’s van elke kaart staan onder Media."
                 >
                   {treatments.map((item, index) => (
-                    <div
-                      key={index}
-                      className="space-y-3 rounded-xl border border-neutral-200 bg-neutral-50/70 p-3.5"
-                    >
+                    <div key={index} className="space-y-3">
                       <TextInput
                         label={`Kaart ${index + 1}`}
                         value={item.title}

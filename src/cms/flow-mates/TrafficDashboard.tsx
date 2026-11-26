@@ -444,7 +444,7 @@ export function TrafficDashboard({
 
   return (
     <>
-      <section className="cms-traffic-panel mb-5 overflow-hidden rounded-2xl border border-neutral-200 bg-white text-neutral-900">
+      <section className="cms-traffic-panel mb-5 overflow-hidden border border-[#e5e5e5] bg-white text-neutral-900">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-200 px-4 py-2.5">
           <div className="flex items-center gap-2.5">
             <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-400/15">

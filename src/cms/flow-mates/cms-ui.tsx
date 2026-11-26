@@ -5,7 +5,7 @@
 import * as React from "react";
 
 export const inputCls =
-  "w-full rounded-lg border border-neutral-200 bg-white px-3.5 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 outline-none transition-all duration-200 hover:border-neutral-300 focus:border-neutral-900 focus:ring-4 focus:ring-neutral-900/5";
+  "w-full min-h-11 rounded-lg border border-[#e5e5e5] bg-white px-3 py-2 text-[15px] text-[#111214] placeholder:text-[#8a8a86] outline-none hover:border-[#d4d4d0] focus:border-[#111214] focus:ring-[3px] focus:ring-[#111214]/8";
 
 /** Editor (wider) + live preview. Editor used to be 2fr vs 3fr preview, which
  *  crushed media cards and made buttons unclickable in the left column. */
@@ -25,11 +25,11 @@ export function Field({
 }) {
   return (
     <div className="space-y-1.5">
-      <label className="block text-xs font-semibold tracking-[0.02em] text-neutral-700">
+      <label className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[#6b6b66]">
         {label}
       </label>
       {children}
-      {hint && <p className="text-xs leading-relaxed text-neutral-500">{hint}</p>}
+      {hint && <p className="text-[13px] leading-relaxed text-[#6b6b66]">{hint}</p>}
     </div>
   );
 }
@@ -51,8 +51,8 @@ export function Card({
     <div
       id={id}
       onFocusCapture={onFocusCapture}
-      className={`rounded-2xl border border-neutral-200/80 bg-white shadow-[0_1px_2px_rgba(15,15,15,0.04)] transition-all duration-300 ${
-        hover ? "hover:border-neutral-300 hover:shadow-[0_8px_24px_-12px_rgba(15,15,15,0.12)]" : ""
+      className={`rounded-[12px] border border-[#e5e5e5] bg-white ${
+        hover ? "hover:bg-[#fafafa]" : ""
       } ${className}`}
     >
       {children}
@@ -72,10 +72,10 @@ export function SectionGroup({
   return (
     <section className="space-y-4">
       <header className="space-y-1">
-        <h4 className="text-xs font-semibold uppercase tracking-[0.12em] text-neutral-500">
+        <h4 className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#6b6b66]">
           {title}
         </h4>
-        {description && <p className="text-xs text-neutral-500">{description}</p>}
+        {description && <p className="text-[13px] text-[#6b6b66]">{description}</p>}
       </header>
       <div className="space-y-5">{children}</div>
     </section>
@@ -89,7 +89,7 @@ export function PrimaryButton({
   return (
     <button
       {...rest}
-      className={`cms-primary-action inline-flex items-center justify-center gap-1.5 rounded-lg bg-neutral-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all duration-200 hover:bg-neutral-800 hover:shadow-md active:scale-[0.98] disabled:opacity-50 disabled:hover:bg-neutral-900 ${rest.className ?? ""}`}
+      className={`cms-primary-action inline-flex min-h-10 items-center justify-center gap-2 rounded-lg bg-[#111214] px-4 text-[13px] font-semibold text-white hover:bg-black disabled:opacity-45 ${rest.className ?? ""}`}
     >
       {children}
     </button>
@@ -103,7 +103,7 @@ export function SecondaryButton({
   return (
     <button
       {...rest}
-      className={`cms-secondary-action inline-flex items-center justify-center gap-1.5 rounded-lg border border-neutral-200 bg-white px-4 py-2 text-sm font-medium text-neutral-700 transition-all duration-200 hover:border-neutral-300 hover:bg-neutral-50 active:scale-[0.98] disabled:opacity-50 ${rest.className ?? ""}`}
+      className={`cms-secondary-action inline-flex min-h-10 items-center justify-center gap-2 rounded-lg border border-[#e5e5e5] bg-white px-4 text-[13px] font-semibold text-[#111214] hover:bg-[#fafafa] disabled:opacity-45 ${rest.className ?? ""}`}
     >
       {children}
     </button>
@@ -117,7 +117,7 @@ export function GhostButton({
   return (
     <button
       {...rest}
-      className={`cms-ghost-action inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-neutral-600 transition-colors duration-200 hover:bg-neutral-100 hover:text-neutral-900 ${rest.className ?? ""}`}
+      className={`cms-ghost-action inline-flex min-h-10 items-center justify-center gap-2 rounded-lg px-3 text-[13px] font-semibold text-[#6b6b66] hover:bg-[#fafafa] hover:text-[#111214] disabled:opacity-45 ${rest.className ?? ""}`}
     >
       {children}
     </button>
@@ -143,13 +143,13 @@ export function Tabs<T extends string>({
             key={t.key}
             type="button"
             onClick={() => onChange(t.key)}
-            className={`relative inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-medium transition-all duration-200 ${
-              active
-                ? "bg-white text-neutral-900 shadow-sm"
-                : "text-neutral-500 hover:text-neutral-900"
-            }`}
+            className={`relative inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[13px] font-semibold ${
+                active
+                  ? "bg-white text-[#111214] shadow-[inset_0_0_0_1px_#e5e5e5]"
+                  : "text-[#6b6b66] hover:text-[#111214]"
+              }`}
           >
-            {Icon && <Icon className="h-3.5 w-3.5" />}
+            {Icon && <Icon className="h-4 w-4" />}
             {t.label}
           </button>
         );

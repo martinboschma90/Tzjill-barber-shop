@@ -145,7 +145,7 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
         maximized ? 'fixed inset-0 z-50' : 'h-full'
       }`}
     >
-      <div className="flex shrink-0 items-center gap-2.5 px-1 pb-3">
+      <div className="flex shrink-0 items-center gap-2.5 px-5 pb-3 pt-4">
         <b className="text-[13px] font-semibold text-[#111214]">Live voorbeeld</b>
         <div className="ml-auto flex gap-1">
           {devices.map(({ id, label: title }) => (
@@ -187,14 +187,18 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
         </div>
       </div>
       {submissionBlocked ? (
-        <p role="status" className="mb-2 text-[12px] text-[#6b6b66]">
+        <p role="status" className="mb-2 px-5 text-[12px] text-[#6b6b66]">
           Dit is een voorbeeld. Er is niets verstuurd of geboekt.
         </p>
       ) : null}
-      <div className="relative min-h-0 flex-1 overflow-hidden bg-[#ece8e1] p-4">
+      <div className="relative min-h-0 flex-1 overflow-hidden bg-white px-5 pb-5">
         <div ref={stageRef} className="flex h-full min-h-0 justify-center overflow-hidden">
           <div
-            className="relative overflow-hidden rounded-lg bg-white shadow-md"
+            className={`relative overflow-hidden bg-white ${
+              device === 'mobile'
+                ? 'rounded-[28px] border-[8px] border-[#111214]'
+                : 'rounded-lg border border-[#e5e5e5]'
+            }`}
             style={{
               width: `${logicalWidth * scale}px`,
               height: `${stageSize.height || 720}px`,

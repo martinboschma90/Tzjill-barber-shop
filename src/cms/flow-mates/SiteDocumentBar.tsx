@@ -32,11 +32,10 @@ export function SiteDocumentBar() {
   } = useCms()
   const [publishing, setPublishing] = useState(false)
 
-  if (local || !canEdit) return null
-
+  const locked = local || !canEdit
   const hasUnsavedEdits = contentSyncStatus === 'pending'
   const saving = hasUnsavedEdits || publishing
-  const canPublish = needsPublish || hasUnsavedEdits
+  const canPublish = !locked && (needsPublish || hasUnsavedEdits)
 
   async function handlePublish() {
     setPublishing(true)
@@ -45,10 +44,14 @@ export function SiteDocumentBar() {
   }
 
   return (
-    <footer className="sticky bottom-0 z-20 flex min-h-[56px] shrink-0 flex-wrap items-center gap-2 border-t border-[#e7e4dc] bg-white/96 px-4 py-3 sm:px-6 lg:px-8">
+    <footer className="sticky bottom-0 z-20 flex min-h-[56px] shrink-0 flex-wrap items-center gap-2 border-t border-[#e5e5e5] bg-white px-5 py-3">
       <span className="mr-auto text-[12px] text-[#6b6b66]">
-        {statusCopy(contentSyncStatus, needsPublish, publishing, siteSyncError)}
-        {savedAt && !hasUnsavedEdits ? ` ${formatRelative(new Date(savedAt))}` : ''}
+        {locked
+          ? local
+            ? 'Lokaal concept — Opslaan gaat live na koppeling.'
+            : 'Alleen kijken.'
+          : statusCopy(contentSyncStatus, needsPublish, publishing, siteSyncError)}
+        {!locked && savedAt && !hasUnsavedEdits ? ` ${formatRelative(new Date(savedAt))}` : ''}
       </span>
       <a
         href="/"
@@ -60,7 +63,7 @@ export function SiteDocumentBar() {
       </a>
       <button
         type="button"
-        disabled={saving || !hasUnsavedEdits}
+        disabled={locked || saving || !hasUnsavedEdits}
         onClick={() => void saveDraft()}
         className="inline-flex min-h-10 items-center rounded-[8px] bg-[#111214] px-4 text-[13px] font-semibold text-white hover:bg-black disabled:cursor-not-allowed disabled:opacity-45"
       >
@@ -68,7 +71,7 @@ export function SiteDocumentBar() {
       </button>
       <button
         type="button"
-        disabled={saving || !canPublish}
+        disabled={locked || saving || !canPublish}
         onClick={() => void handlePublish()}
         className="inline-flex min-h-10 items-center rounded-[8px] bg-[#16c060] px-4 text-[13px] font-semibold text-white hover:bg-[#12a352] disabled:cursor-not-allowed disabled:opacity-45"
       >

@@ -1,6 +1,4 @@
 import type { ReactNode } from 'react'
-import { ChevronDown, Pencil, X } from 'lucide-react'
-import { Card } from '@/cms/flow-mates/cms-ui'
 
 export function AdminListCard({
   isOpen,
@@ -20,53 +18,29 @@ export function AdminListCard({
   children?: ReactNode
 }) {
   return (
-    <Card
-      hover={!isOpen}
-      className={`overflow-hidden ${isOpen ? 'ring-1 ring-neutral-900/5' : ''}`}
-    >
-      <div className="flex flex-wrap items-center gap-2.5 px-3 py-2 sm:px-4">
+    <article className="border-b border-[#e5e5e5]">
+      <div className="flex min-h-12 items-center gap-3 py-2">
         <button
           type="button"
           onClick={onToggle}
           aria-expanded={isOpen}
-          className="flex min-w-60 flex-1 items-center gap-3 text-left"
+          className="flex min-w-0 flex-1 items-center gap-3 text-left"
         >
-          <div className="relative h-[76px] w-[76px] shrink-0 overflow-hidden rounded-lg bg-neutral-100">
-            {thumbnail}
-          </div>
+          {thumbnail ? (
+            <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-md bg-[#f5f5f5]">
+              {thumbnail}
+            </div>
+          ) : null}
           <div className="min-w-0 flex-1">
-            <h3 className="truncate text-[14px] font-semibold tracking-tight text-neutral-900">
-              {title}
-            </h3>
+            <h3 className="truncate text-[15px] font-semibold text-[#111214]">{title}</h3>
             {meta != null ? (
-              <p className="mt-0.5 truncate text-[11.5px] leading-relaxed text-neutral-500">
-                {meta}
-              </p>
+              <p className="truncate text-[13px] text-[#6b6b66]">{meta}</p>
             ) : null}
           </div>
-          <ChevronDown
-            className={`h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-300 ${
-              isOpen ? 'rotate-180' : ''
-            }`}
-          />
         </button>
-        <div className="ml-auto flex w-full flex-wrap items-center justify-end gap-1 border-t border-neutral-100 pt-2">
-          <button
-            type="button"
-            onClick={onToggle}
-            className="inline-flex items-center gap-1.5 px-2 py-1 text-[12px] font-medium text-[#6b6b66] hover:text-[#111214]"
-          >
-            {isOpen ? <X className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
-            {isOpen ? 'Sluiten' : 'Bewerken'}
-          </button>
-          {actions}
-        </div>
+        {actions}
       </div>
-      {isOpen && children ? (
-        <div className="border-t border-neutral-200/70 bg-gradient-to-b from-neutral-50/60 to-white/40">
-          <div className="space-y-3.5 px-4 py-4 sm:px-5">{children}</div>
-        </div>
-      ) : null}
-    </Card>
+      {isOpen && children ? <div className="space-y-3 pb-4">{children}</div> : null}
+    </article>
   )
 }
