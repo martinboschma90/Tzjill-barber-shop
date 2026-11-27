@@ -131,8 +131,9 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
 
     const style = doc.createElement('style')
     style.textContent = `
-      html, body { margin: 0; height: 100%; overflow: hidden !important; }
-      #preview-root { height: 100%; overflow: auto !important; overflow-x: hidden; }
+      html, body { margin: 0; height: 100%; overflow: hidden !important; overscroll-behavior: none; }
+      #preview-root { height: 100%; overflow: auto !important; overflow-x: clip; overscroll-behavior: contain; }
+      .full-bleed-hero { width: 100% !important; max-width: 100% !important; margin-inline: 0 !important; min-height: 100%; }
     `
     doc.head.appendChild(style)
     doc.documentElement.dataset.theme = theme
@@ -141,7 +142,7 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
 
   return (
     <div
-      className={`flex min-h-0 flex-col overflow-hidden bg-white ${
+      className={`flex min-h-0 flex-col overflow-hidden overscroll-none bg-white ${
         maximized ? 'fixed inset-0 z-50' : 'h-full'
       }`}
     >

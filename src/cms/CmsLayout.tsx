@@ -362,7 +362,7 @@ export function CmsLayout() {
 
   return (
     <div
-      className="cms-layout min-h-svh bg-white text-[#111214]"
+      className="cms-layout flex h-svh flex-col overflow-hidden overscroll-none bg-white text-[#111214]"
       style={shellFont}
       data-cms=""
       data-cms-readonly={canEdit ? undefined : 'true'}
@@ -393,7 +393,7 @@ export function CmsLayout() {
         </div>
       ) : null}
 
-      <header className="sticky top-0 z-20 flex items-center justify-between border-b border-[#e5e5e5] bg-white px-4 py-3 lg:hidden">
+      <header className="z-20 flex shrink-0 items-center justify-between border-b border-[#e5e5e5] bg-white px-4 py-3 lg:hidden">
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
@@ -418,7 +418,7 @@ export function CmsLayout() {
         </button>
       </header>
 
-      <main className="flex min-h-svh flex-col bg-white lg:h-svh lg:pl-[248px]">
+      <main className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white lg:pl-[248px]">
         <div
           className={
             panels.Page &&
@@ -496,7 +496,10 @@ export function CmsLayout() {
                     </div>
                   </div>
                 ) : null}
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4">
+                <div
+                  data-cms-editor-scroll
+                  className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4"
+                >
                 <EditorAccordionScope key={`${pathname}${search}`}>
                   <ErrorBoundary compact label="cms-editor" resetKey={`${pathname}${search}`}>
                   <Suspense fallback={<RouteFallback compact />}>

@@ -25,7 +25,7 @@ export function EditorPreviewLayout({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <div className="flex h-full min-h-0 min-w-0 flex-1">
+    <div className="flex h-full min-h-0 min-w-0 flex-1 overflow-hidden overscroll-none">
       <div
         className="flex min-h-0 min-w-0 flex-1 flex-col lg:w-[420px] lg:max-w-[42%] lg:flex-none"
       >

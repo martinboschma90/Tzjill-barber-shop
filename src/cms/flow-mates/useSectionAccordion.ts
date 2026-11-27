@@ -12,6 +12,7 @@
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import { scrollCmsSectionIntoView } from "@/cms/flow-mates/EditorAccordionScope";
 
 export function useSectionAccordion<K extends string>(allKeys: readonly K[], defaultOpen: K) {
   const [searchParams] = useSearchParams();
@@ -35,9 +36,7 @@ export function useSectionAccordion<K extends string>(allKeys: readonly K[], def
     setOpenSet((prev) => new Set(prev).add(key));
     setFocus(key);
     window.requestAnimationFrame(() => {
-      document
-        .getElementById(`cms-editor-section-${key}`)
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      scrollCmsSectionIntoView(key);
     });
   }, [initialQuerySection, allKeys]);
 

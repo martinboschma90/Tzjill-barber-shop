@@ -159,7 +159,7 @@ export function CollabsCarousel({ items }: CollabsCarouselProps) {
               aria-posinset={index + 1}
               aria-setsize={items.length}
               aria-current={index === active ? 'true' : undefined}
-              className="w-[calc(100vw-6.75rem)] shrink-0 snap-start sm:w-[min(62vw,24rem)]"
+              className="w-[calc(100%-6.75rem)] max-w-[24rem] shrink-0 snap-start sm:w-[min(62%,24rem)]"
             >
               {/* One swipe unit: this collab's video and its copy move together. */}
               <div className="overflow-hidden radius-media bg-[#100e0c] ring-1 ring-white/15">
