@@ -30,9 +30,11 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   const contentRef = useRef(content)
   const [hydrated, setHydrated] = useState(local)
   const [savedAt, setSavedAt] = useState<number | null>(() => loadStoredContentUpdatedAt() || null)
+  const [publishedAt, setPublishedAt] = useState<number | null>(null)
+  const [needsPublish, setNeedsPublish] = useState(false)
   const [siteSyncError, setSiteSyncError] = useState<string | null>(null)
   const [artistSyncError, setArtistSyncError] = useState<string | null>(null)
-  const [contentSyncStatus, setContentSyncStatus] = useState<ContentSyncStatus>(local ? 'synced' : 'pending')
+  const [contentSyncStatus, setContentSyncStatus] = useState<ContentSyncStatus>(local ? 'live' : 'pending')
   const [dirtyArtistIds, setDirtyArtistIds] = useState<Set<string>>(new Set())
   const [artistSaving, setArtistSaving] = useState(false)
   const [editVersion, setEditVersion] = useState(0)
@@ -67,8 +69,10 @@ export function CmsProvider({ children }: { children: ReactNode }) {
         persistContent(next, { updatedAt: remote?.updatedAt ?? 0 })
         cachePublic(next)
         setSavedAt(remote?.updatedAt ?? null)
+        setPublishedAt(remote?.publishedAt ?? null)
+        setNeedsPublish(remote?.needsPublish ?? false)
         setSiteSyncError(null)
-        setContentSyncStatus('synced')
+        setContentSyncStatus(remote?.needsPublish ? 'draft_saved' : 'live')
         setHydrated(true)
       } catch (error) {
         if (!cancelled) setSiteSyncError(error instanceof Error ? error.message : 'CMS ophalen mislukt. Herlaad om opnieuw te proberen.')
@@ -90,52 +94,73 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     if (local) {
       cachePublic(next)
       setSavedAt(Date.now())
+      setPublishedAt(Date.now())
+      setNeedsPublish(false)
+      setContentSyncStatus('live')
     } else {
       setContentSyncStatus('pending')
+      setNeedsPublish(true)
     }
   }, [canEdit, hydrated, local])
 
-  const save = useCallback(async () => {
-    if (!canEdit || !hydrated) return { error: 'CMS is nog niet geladen of je hebt geen schrijfrechten.' }
-    if (local) return { error: null }
-    if (!writer.current) return { error: 'CMS is nog niet geladen.' }
-    const snapshot = contentRef.current
-    const validationError = validateCmsContent(snapshot)
-    if (validationError) { setSiteSyncError(validationError); return { error: validationError } }
-    const version = versionRef.current
-    const result = await writer.current.save(snapshot)
-    if (result.error) {
-      setSiteSyncError(result.error)
-      setContentSyncStatus('pending')
-      return { error: result.error }
-    }
-    invalidateArtistsCache()
-    if (version === versionRef.current) {
-      persistContent(snapshot, { updatedAt: result.updatedAt ?? 0 })
-      cachePublic(snapshot)
-      setSavedAt(result.updatedAt)
-      setContentSyncStatus('synced')
-      setSiteSyncError(null)
-      setDirtyArtistIds(new Set())
-      storageRemove('tzjill-cms-unsaved-v1'); setBackup(null)
-    }
-    return { error: null }
-  }, [canEdit, hydrated, local])
+  const persist = useCallback(
+    async (publish: boolean) => {
+      if (!canEdit || !hydrated) return { error: 'CMS is nog niet geladen of je hebt geen schrijfrechten.' }
+      if (local) return { error: null }
+      if (!writer.current) return { error: 'CMS is nog niet geladen.' }
+      const snapshot = contentRef.current
+      const validationError = validateCmsContent(snapshot)
+      if (validationError) {
+        setSiteSyncError(validationError)
+        return { error: validationError }
+      }
+      const version = versionRef.current
+      const result = await writer.current.save(snapshot, { publish })
+      if (result.error) {
+        setSiteSyncError(result.error)
+        setContentSyncStatus('pending')
+        return { error: result.error }
+      }
+      invalidateArtistsCache()
+      if (version === versionRef.current) {
+        persistContent(snapshot, { updatedAt: result.updatedAt ?? 0 })
+        if (publish) cachePublic(snapshot)
+        setSavedAt(result.updatedAt)
+        if (publish) {
+          setPublishedAt(result.updatedAt)
+          setNeedsPublish(false)
+          setContentSyncStatus('live')
+        } else {
+          setNeedsPublish(true)
+          setContentSyncStatus('draft_saved')
+        }
+        setSiteSyncError(null)
+        setDirtyArtistIds(new Set())
+        storageRemove('tzjill-cms-unsaved-v1')
+        setBackup(null)
+      }
+      return { error: null }
+    },
+    [canEdit, hydrated, local],
+  )
+
+  const saveDraft = useCallback(() => persist(false), [persist])
+  const publishLive = useCallback(() => persist(true), [persist])
 
   useEffect(() => {
     if (local || !hydrated || editVersion === 0 || !canEdit) return
-    const timer = window.setTimeout(() => { void save() }, 700)
+    const timer = window.setTimeout(() => { void saveDraft() }, 700)
     return () => window.clearTimeout(timer)
-  }, [canEdit, editVersion, hydrated, local, save])
+  }, [canEdit, editVersion, hydrated, local, saveDraft])
 
   const saveArtist = useCallback(async (slug: string) => {
     if (!contentRef.current.artists.some((artist) => artist.slug === slug)) return { error: 'Kapper niet gevonden.' }
     setArtistSaving(true)
-    const result = await save()
+    const result = await publishLive()
     setArtistSaving(false)
     setArtistSyncError(result.error)
     return result
-  }, [save])
+  }, [publishLive])
 
   const changeStatus = useCallback(async (slug: string, published: boolean) => {
     const current = contentRef.current.artists.find((artist) => artist.slug === slug)
@@ -150,7 +175,15 @@ export function CmsProvider({ children }: { children: ReactNode }) {
   }, [edit, saveArtist])
 
   const value = useMemo<CmsContextValue>(() => ({
-    content, savedAt, contentSyncStatus, siteSyncError, artistSyncError, dirtyArtistIds, artistSaving,
+    content,
+    savedAt,
+    publishedAt,
+    contentSyncStatus,
+    needsPublish,
+    siteSyncError,
+    artistSyncError,
+    dirtyArtistIds,
+    artistSaving,
     setSite: (updater) => edit((previous) => ({ ...previous, site: updater(previous.site) })),
     setTeam: (updater) => edit((previous) => ({ ...previous, team: updater(previous.team) })),
     setArtists: (updater) => edit((previous) => {
@@ -170,12 +203,29 @@ export function CmsProvider({ children }: { children: ReactNode }) {
     },
     removeArtist: (slug) => edit((previous) => ({ ...previous, artists: previous.artists.filter((artist) => artist.slug !== slug) })),
     saveArtist,
+    saveDraft,
+    publishLive,
     publishArtist: (slug) => changeStatus(slug, true),
     unpublishArtist: (slug) => changeStatus(slug, false),
     resetContent: () => edit(() => createDefaultContent()),
     getArtistBySlug: (slug) => content.artists.find((artist) => artist.slug === slug),
     isArtistDirty: (id) => dirtyArtistIds.has(id),
-  }), [content, savedAt, contentSyncStatus, siteSyncError, artistSyncError, dirtyArtistIds, artistSaving, edit, saveArtist, changeStatus])
+  }), [
+    content,
+    savedAt,
+    publishedAt,
+    contentSyncStatus,
+    needsPublish,
+    siteSyncError,
+    artistSyncError,
+    dirtyArtistIds,
+    artistSaving,
+    edit,
+    saveArtist,
+    saveDraft,
+    publishLive,
+    changeStatus,
+  ])
 
   return <CmsContext.Provider value={value}>{hydrated ? <>{backup ? <div data-cms className="border-b border-amber-200 bg-amber-50 p-3 text-sm text-neutral-900">Een lokale conceptkopie is bewaard. <button type="button" className="underline" onClick={() => { try { downloadCmsBackup(JSON.parse(backup)) } catch { /* invalid backup remains untouched */ } }}>Conceptkopie downloaden</button></div> : null}{children}</> : <div data-cms className="flex min-h-svh flex-col items-center justify-center gap-4 bg-neutral-50 p-6 text-neutral-900"><p role={siteSyncError ? 'alert' : 'status'}>{siteSyncError || 'CMS-inhoud veilig laden…'}</p>{siteSyncError ? <button type="button" onClick={() => window.location.reload()} className="rounded-lg border px-4 py-3">Opnieuw laden</button> : null}</div>}</CmsContext.Provider>
 }

@@ -1,15 +1,12 @@
 import { useEffect, useId, useState, type ChangeEvent, type ReactNode } from 'react'
 import {
-  ChevronDown,
   Eye,
   EyeOff,
   FileText,
   Image as ImageIcon,
-  Pencil,
   Sliders,
-  X,
 } from 'lucide-react'
-import { Card, Tabs, inputCls } from '@/cms/flow-mates/cms-ui'
+import { Tabs, inputCls } from '@/cms/flow-mates/cms-ui'
 import { useEditorAccordion } from '@/cms/flow-mates/EditorAccordionScope'
 
 type FieldProps = {
@@ -22,11 +19,11 @@ type FieldProps = {
 export function Field({ label, controlId, hint, children }: FieldProps) {
   return (
     <div className="space-y-1.5">
-      <label htmlFor={controlId} className="block text-xs font-semibold tracking-[0.02em] text-neutral-700">
+      <label htmlFor={controlId} className="block text-[11px] font-semibold uppercase tracking-[0.08em] text-[#6b6b66]">
         {label}
       </label>
       {children}
-      {hint ? <p id={controlId ? `${controlId}-hint` : undefined} className="text-xs leading-relaxed text-neutral-500">{hint}</p> : null}
+      {hint ? <p id={controlId ? `${controlId}-hint` : undefined} className="text-[13px] leading-relaxed text-[#6b6b66]">{hint}</p> : null}
     </div>
   )
 }
@@ -183,108 +180,57 @@ export function EditorSection({
   }
 
   return (
-    <Card
-      hover={!open}
+    <section
       id={`cms-editor-section-${id}`}
       onFocusCapture={() => window.dispatchEvent(new CustomEvent('cms-preview-section', { detail: id }))}
-      className={`overflow-hidden ${open ? 'ring-1 ring-neutral-900/5' : ''}`}
+      className="border-b border-[#e5e5e5] py-1"
     >
-      <div className="flex flex-wrap items-center gap-3 px-4 py-2.5 sm:px-5">
-        <button
-          type="button"
-          onClick={thumbnail ? openMedia : () => setOpen(!open)}
-          className="relative h-10 w-10 shrink-0 overflow-hidden rounded-lg bg-neutral-100"
-          title={thumbnail ? 'Media wijzigen' : `${title} openen`}
-          aria-label={thumbnail ? `Media van ${title} wijzigen` : `${title} openen`}
-        >
-          {thumbnail ? (
+      <div className="flex min-h-10 items-center gap-2">
+        {thumbnail ? (
+          <button
+            type="button"
+            onClick={openMedia}
+            className="relative h-8 w-8 shrink-0 overflow-hidden rounded-md bg-[#f5f5f5]"
+            title="Media wijzigen"
+            aria-label={`Media van ${title} wijzigen`}
+          >
             <img src={thumbnail} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <div
-              className={`flex h-full w-full items-center justify-center ${
-                visible ? 'bg-neutral-900 text-white' : 'bg-neutral-100 text-neutral-400'
-              }`}
-            >
-              <FileText className="h-4 w-4" />
-            </div>
-          )}
-          {!visible ? (
-            <div className="pointer-events-none absolute inset-0 bg-white/60" />
-          ) : null}
-        </button>
+          </button>
+        ) : null}
         <button
           type="button"
           onClick={() => setOpen(!open)}
-          className="flex min-w-48 flex-1 items-center gap-3 text-left"
+          className="flex min-w-0 flex-1 items-center gap-2 text-left"
           aria-expanded={open}
           aria-controls={panelId}
         >
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <h3 className="truncate text-[13.5px] font-semibold tracking-tight text-neutral-900">
-                {title}
-              </h3>
-              {badge ? (
-                <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold tracking-[0.02em] text-neutral-500">
-                  {badge}
-                </span>
-              ) : null}
-              {!visible ? (
-                <span className="rounded-full bg-neutral-100 px-1.5 py-0.5 text-[10px] font-semibold tracking-[0.02em] text-neutral-500">
-                  Verborgen
-                </span>
-              ) : null}
-            </div>
-            {description ? (
-              <p className="mt-0.5 truncate text-xs leading-relaxed text-neutral-500">
-                {description}
-              </p>
-            ) : null}
-          </div>
-          <ChevronDown
-            className={`h-4 w-4 shrink-0 text-neutral-400 transition-transform duration-300 ${
-              open ? 'rotate-180' : ''
-            }`}
-          />
+          <span className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-[#6b6b66]">
+            {title}
+          </span>
+          {badge ? <span className="text-[11px] text-[#8a8a86]">{badge}</span> : null}
+          {!visible ? <span className="text-[11px] text-[#8a8a86]">verborgen</span> : null}
         </button>
-        <div className="ml-auto shrink-0">
+        {onVisibleChange ? (
           <button
             type="button"
-            onClick={() => setOpen(!open)}
-            className={`mr-2 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 text-xs font-semibold ${
-              open
-                ? 'border-neutral-200 bg-white text-neutral-700 hover:bg-neutral-50'
-                : 'border-neutral-900 bg-neutral-900 text-white hover:bg-neutral-800'
-            }`}
+            onClick={(e) => {
+              e.stopPropagation()
+              onVisibleChange(!visible)
+            }}
+            title={visible ? 'Sectie verbergen' : 'Sectie tonen'}
+            className="inline-flex items-center gap-1 text-[12px] font-medium text-[#6b6b66] hover:text-[#111214]"
           >
-            {open ? <X className="h-3 w-3" /> : <Pencil className="h-3 w-3" />}
-            {open ? 'Sluiten' : 'Bewerken'}
+            {visible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+            {visible ? 'Aan' : 'Uit'}
           </button>
-          {onVisibleChange ? (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation()
-                onVisibleChange(!visible)
-              }}
-              title={visible ? 'Sectie verbergen' : 'Sectie tonen'}
-              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs font-semibold ${
-                visible
-                  ? 'border-emerald-200/70 bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100'
-                  : 'border-neutral-200 bg-white text-neutral-500 hover:bg-neutral-50'
-              }`}
-            >
-              {visible ? <Eye className="h-3 w-3" /> : <EyeOff className="h-3 w-3" />}
-              {visible ? 'Zichtbaar' : 'Verborgen'}
-            </button>
-          ) : null}
-        </div>
+        ) : null}
       </div>
 
       {open ? (
-        <div id={panelId} className="border-t border-neutral-200/70">
+        <div id={panelId} className="pb-4 pt-1">
+          {description ? <p className="mb-3 text-[13px] text-[#6b6b66]">{description}</p> : null}
           {tabs && tabs.length > 0 ? (
-            <div className="flex flex-wrap items-center justify-between gap-2 px-4 pt-3 sm:px-5">
+            <div className="mb-3">
               <Tabs
                 tabs={tabs.map((t) => ({
                   key: t.id,
@@ -296,11 +242,9 @@ export function EditorSection({
               />
             </div>
           ) : null}
-          <div className="space-y-3.5 px-4 pb-5 pt-4 sm:px-5">
-            <div className="animate-in fade-in duration-200">{body}</div>
-          </div>
+          <div className="space-y-3">{body}</div>
         </div>
       ) : null}
-    </Card>
+    </section>
   )
 }

@@ -1,5 +1,6 @@
 import { SiteText } from '@/cms/SiteText'
 import { useCms } from '@/cms/CmsContext'
+import { siteText } from '@/cms/siteText'
 import { useRef, useState, type FormEvent } from 'react'
 import { buttonClass } from '@/components/ui/buttonStyles'
 import { Check, Spinner } from '@/components/ui/StatusIcon'
@@ -31,9 +32,9 @@ export function Newsletter() {
 
   return (
     <section data-cms-section="texts-Newsletter" className="text-white">
-      <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
-        <div className="rounded-[1.75rem] bg-black px-8 py-14 text-center sm:rounded-[2rem] sm:px-12 sm:py-16">
-          <p className="type-label inline-flex items-center justify-center gap-2 rounded-full bg-[#efeae3] px-3.5 py-1.5 text-[#2c241c]">
+      <div className="content-wrap section-y">
+        <div className="panel-cta">
+          <p className="type-label inline-flex items-center justify-center gap-2 rounded-full bg-pill-on-dark-bg px-3.5 py-1.5 text-pill-on-dark-fg">
             <span className="h-1.5 w-1.5 rounded-full bg-[#2c241c]" aria-hidden /><SiteText textKey="Newsletter.1" /></p>
           <h2 className="type-headline mt-6"><SiteText textKey="Newsletter.2" /></h2>
           <p className="type-lead mx-auto mt-5 max-w-md text-white/55"><SiteText textKey="Newsletter.3" /></p>
@@ -51,7 +52,7 @@ export function Newsletter() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Je e-mail"
+                placeholder={siteText(content.site, 'Newsletter.placeholder')}
                 className="type-ui min-h-[3rem] flex-1 rounded-full border border-white/75 bg-white/5 px-6 py-3 text-center text-white outline-none placeholder:text-white/65 backdrop-blur-[2px] transition-colors focus:border-white sm:text-left"
               />
               <label className="type-body order-3 flex flex-wrap items-center gap-2 text-left text-white/75 sm:col-span-2"><input type="checkbox" required checked={consent} onChange={(event) => setConsent(event.target.checked)} /><SiteText textKey="Newsletter.5" /><a href="/privacy" className="underline"><SiteText textKey="Newsletter.6" /></a></label>
@@ -61,7 +62,11 @@ export function Newsletter() {
                 className={buttonClass({ variant: 'solid', surface: 'dark', className: 'shrink-0 disabled:opacity-70' })}
               >
                 {phase === 'sending' ? <Spinner /> : phase === 'done' ? <Check /> : null}
-                {phase === 'sending' ? 'Versturen' : phase === 'done' ? 'Aangemeld' : 'Aanmelden'}
+                {phase === 'sending'
+                  ? siteText(content.site, 'Newsletter.submitSending')
+                  : phase === 'done'
+                    ? siteText(content.site, 'Newsletter.submitDone')
+                    : siteText(content.site, 'Newsletter.submitIdle')}
                 {phase === 'idle' ? (
                   <span aria-hidden className="motion-arrow">
                     →

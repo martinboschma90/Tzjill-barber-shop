@@ -19,7 +19,13 @@ describe('CMS hydration', () => {
   it('takes remote content over a newer local cache and performs no writes on open', async () => {
     const local = createDefaultContent(); local.site.name = 'Oude cache'; localStorage.setItem('tzjill-cms-content-v1', JSON.stringify(local)); localStorage.setItem(CMS_CONTENT_TS_KEY, String(Date.now() + 100000))
     const remote = createDefaultContent(); remote.site.name = 'Remote'; remote.team = []
-    mocks.fetch.mockResolvedValue({ content: remote, updatedAt: 100, revision: 'server.123456' })
+    mocks.fetch.mockResolvedValue({
+      content: remote,
+      updatedAt: 100,
+      revision: 'server.123456',
+      publishedAt: 100,
+      needsPublish: false,
+    })
     render(<CmsProvider><Probe /></CmsProvider>)
     expect(await screen.findByText('Remote')).toBeTruthy()
     expect(screen.getByText('0 teamleden')).toBeTruthy()
@@ -31,13 +37,20 @@ describe('CMS hydration', () => {
     expect(await screen.findByRole('alert')).toBeTruthy(); expect(mocks.push).not.toHaveBeenCalled(); expect(mocks.legacy).not.toHaveBeenCalled()
   })
   it('saves an actual edit with the exact revision', async () => {
-    mocks.fetch.mockResolvedValue({ content: createDefaultContent(), updatedAt: 100, revision: '2026-10-14T10:00:00.123456+00:00' })
+    mocks.fetch.mockResolvedValue({
+      content: createDefaultContent(),
+      updatedAt: 100,
+      revision: '2026-10-14T10:00:00.123456+00:00',
+      publishedAt: 100,
+      needsPublish: false,
+    })
     mocks.push.mockResolvedValue({ error: null, revision: 'next', updatedAt: 200 })
     render(<CmsProvider><Probe /></CmsProvider>)
     await screen.findByText('Tzjill'); fireEvent.click(screen.getByText('Wijzig'))
     await waitFor(() => expect(mocks.push).toHaveBeenCalled(), { timeout: 2000 })
     expect(mocks.push.mock.calls.at(-1)?.[0].site.name).toBe('Gewijzigd')
     expect(mocks.push.mock.calls.at(-1)?.[1]).toBe('2026-10-14T10:00:00.123456+00:00')
+    expect(mocks.push.mock.calls.at(-1)?.[2]).toBe(false)
   })
 })
 
@@ -49,7 +62,10 @@ describe('serialized saves', () => {
     const first = queue.save('first'); const second = queue.save('second'); const third = queue.save('last')
     expect(write).toHaveBeenCalledTimes(1)
     finish({ error: null, revision: 'r2', updatedAt: 2 }); await act(async () => { await Promise.all([first, second, third]) })
-    expect(write.mock.calls).toEqual([['first', 'r1'], ['last', 'r2']])
+    expect(write.mock.calls).toEqual([
+      ['first', 'r1', false],
+      ['last', 'r2', false],
+    ])
   })
   it('blocks further writes after a conflict so newer remote content is not overwritten', async () => {
     const write = vi.fn().mockResolvedValue({ error: 'Conflict', revision: 'old', updatedAt: null })

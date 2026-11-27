@@ -38,7 +38,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (themeColor) {
       themeColor.setAttribute(
         'content',
-        theme === 'dark' ? '#1c1b19' : '#f6f3ee',
+        theme === 'dark' ? '#1c1b19' : '#1c1b19',
       )
     }
   }, [theme])

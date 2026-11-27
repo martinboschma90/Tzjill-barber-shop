@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { CmsPreviewModeProvider } from '@/cms/previews/PreviewMode'
-import { ExternalLink, Maximize2, Minimize2, Monitor, RefreshCw, Smartphone, Tablet } from 'lucide-react'
+import { Maximize2, Minimize2, RefreshCw } from 'lucide-react'
 import { useTheme } from '@/theme/ThemeProvider'
 
 export type PreviewDevice = 'desktop' | 'tablet' | 'mobile'
@@ -17,11 +17,10 @@ const devices: {
   id: PreviewDevice
   label: string
   width: number | null
-  icon: typeof Monitor
 }[] = [
-  { id: 'desktop', label: 'Desktop · 1280px', width: 1280, icon: Monitor },
-  { id: 'tablet', label: 'Tablet · 820px', width: 820, icon: Tablet },
-  { id: 'mobile', label: 'Mobile · 390px', width: 390, icon: Smartphone },
+  { id: 'desktop', label: 'Desktop · 1280px', width: 1280 },
+  { id: 'tablet', label: 'Tablet · 820px', width: 820 },
+  { id: 'mobile', label: 'Mobile · 390px', width: 390 },
 ]
 
 /**
@@ -132,8 +131,9 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
 
     const style = doc.createElement('style')
     style.textContent = `
-      html, body { margin: 0; height: 100%; overflow: hidden !important; }
-      #preview-root { height: 100%; overflow: auto !important; overflow-x: hidden; }
+      html, body { margin: 0; height: 100%; overflow: hidden !important; overscroll-behavior: none; }
+      #preview-root { height: 100%; overflow: auto !important; overflow-x: clip; overscroll-behavior: contain; }
+      .full-bleed-hero { width: 100% !important; max-width: 100% !important; margin-inline: 0 !important; min-height: 100%; }
     `
     doc.head.appendChild(style)
     doc.documentElement.dataset.theme = theme
@@ -142,80 +142,64 @@ export function PreviewFrame({ label, children, scrollToId }: PreviewFrameProps)
 
   return (
     <div
-      className={`flex min-h-0 flex-col overflow-hidden bg-white ${
+      className={`flex min-h-0 flex-col overflow-hidden overscroll-none bg-white ${
         maximized ? 'fixed inset-0 z-50' : 'h-full'
       }`}
     >
-      <div className="sticky top-0 z-20 flex shrink-0 items-center justify-between gap-3 border-b border-neutral-200 bg-white px-3 py-2">
-        <div className="min-w-0">
-          <p className="truncate text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500">
-            Live preview
-          </p>
-          <p className="truncate text-xs text-neutral-400">
-            {label} · {active.label}
-          </p>
-        </div>
-        <div className="flex items-center gap-1">
-          <div className="inline-flex items-center gap-0.5 rounded-md bg-white p-0.5 ring-1 ring-neutral-200">
-            {devices.map(({ id, icon: Icon, label: title }) => (
-              <button
-                key={id}
-                type="button"
-                title={title}
-                onClick={() => {
-                  if (id === device) return
-                  setMountNode(null)
-                  setDevice(id)
-                }}
-                className={`rounded-[5px] p-1.5 transition-all ${
-                  id === device
-                    ? 'bg-neutral-900 text-white'
-                    : 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900'
-                }`}
-              >
-                <Icon className="h-3.5 w-3.5" />
-              </button>
-            ))}
-          </div>
-          <div className="mx-1 h-5 w-px bg-neutral-200" />
+      <div className="flex shrink-0 items-center gap-2.5 px-5 pb-3 pt-4">
+        <b className="text-[13px] font-semibold text-[#111214]">Live voorbeeld</b>
+        <div className="ml-auto flex gap-1">
+          {devices.map(({ id, label: title }) => (
+            <button
+              key={id}
+              type="button"
+              title={title}
+              onClick={() => {
+                if (id === device) return
+                setMountNode(null)
+                setDevice(id)
+              }}
+              className={`h-8 rounded-md border border-[#e5e5e5] px-3 text-[13px] font-semibold ${
+                id === device ? 'bg-[#111214] text-white border-[#111214]' : 'bg-transparent text-[#111214]'
+              }`}
+            >
+              {id === 'desktop' ? 'Desktop' : id === 'tablet' ? 'Tablet' : 'Mobiel'}
+            </button>
+          ))}
           <button
             type="button"
-            title="Refresh preview"
+            title="Preview vernieuwen"
             onClick={() => {
               setMountNode(null)
               setNonce((n) => n + 1)
             }}
-            className="rounded-md p-1.5 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+            className="grid h-8 w-8 place-items-center rounded-md text-[#6b6b66] hover:bg-[#fafafa]"
           >
             <RefreshCw className="h-3.5 w-3.5" />
           </button>
           <button
             type="button"
-            title={maximized ? 'Exit fullscreen' : 'Maximize preview'}
+            title={maximized ? 'Volledig scherm uit' : 'Volledig scherm'}
             onClick={() => setMaximized((m) => !m)}
-            className="rounded-md p-1.5 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
+            className="grid h-8 w-8 place-items-center rounded-md text-[#6b6b66] hover:bg-[#fafafa]"
           >
             {maximized ? <Minimize2 className="h-3.5 w-3.5" /> : <Maximize2 className="h-3.5 w-3.5" />}
           </button>
-          <a
-            href="/"
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Open live website"
-            className="rounded-md p-1.5 text-neutral-500 hover:bg-neutral-100 hover:text-neutral-900"
-          >
-            <ExternalLink className="h-3.5 w-3.5" />
-          </a>
         </div>
       </div>
-
-      <p role="status" className="border-b border-neutral-200 bg-neutral-50 px-3 py-2 text-[11px] text-neutral-600">
-        {submissionBlocked ? 'Dit is een voorbeeld. Er is niets verstuurd of geboekt.' : 'Voorbeeldmodus: formulieren versturen niets en maken geen afspraken.'}
-      </p>
-      <div className="relative min-h-0 flex-1 overflow-hidden bg-[#ece8e1] p-4">
+      {submissionBlocked ? (
+        <p role="status" className="mb-2 px-5 text-[12px] text-[#6b6b66]">
+          Dit is een voorbeeld. Er is niets verstuurd of geboekt.
+        </p>
+      ) : null}
+      <div className="relative min-h-0 flex-1 overflow-hidden bg-white px-5 pb-5">
         <div ref={stageRef} className="flex h-full min-h-0 justify-center overflow-hidden">
           <div
-            className="relative overflow-hidden rounded-lg bg-white shadow-md"
+            className={`relative overflow-hidden bg-white ${
+              device === 'mobile'
+                ? 'rounded-[28px] border-[8px] border-[#111214]'
+                : 'rounded-lg border border-[#e5e5e5]'
+            }`}
             style={{
               width: `${logicalWidth * scale}px`,
               height: `${stageSize.height || 720}px`,

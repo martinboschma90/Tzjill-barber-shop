@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useCms } from '@/cms/CmsContext'
 import { EditorSection, TextArea, TextInput } from '@/cms/fields'
 import defaults from '@/cms/textDefaults.json'
-const names: Record<string,string> = {AboutPage:'Over ons',CollabsPage:'Collabs',ContactPage:'Contact',LegalPage:'Privacy en cookies',LookbookPage:'Lookbook',MenuPage:'Prijzen',NotFoundPage:'Pagina niet gevonden',TeamPage:'Team',HomeCollabs:'Collabs op de homepage',HomeFaq:'Veelgestelde vragen',HomePrices:'Prijzen op de homepage',InstagramFeed:'Fotoreeks',Newsletter:'Nieuwsbrief',Testimonials:'Reviewlabel',Welcome:'Welkomstblok',Footer:'Footer',Navbar:'Navigatie',MenuOverlay:'Mobiel menu',StickyContactBar:'Contactknoppen',FaqPage:'Veelgestelde vragen',ProductsPage:'Producten'}
+const names: Record<string,string> = {AboutPage:'Over ons',AboutMission:'Missie (accordion)',AboutStats:'Statistieken',BookingFlow:'Booking-flow',CollabsPage:'Collabs',ContactForm:'Contactformulier',ContactPage:'Contact',Hero:'Hero',LegalPage:'Privacy en cookies',LookbookPage:'Lookbook',MenuPage:'Prijzen',NotFoundPage:'Pagina niet gevonden',TeamPage:'Team',HomeCollabs:'Collabs op de homepage',HomeFaq:'Veelgestelde vragen',HomePrices:'Prijzen op de homepage',InstagramFeed:'Fotoreeks',Newsletter:'Nieuwsbrief',Testimonials:'Reviewlabel',Welcome:'Welkomstblok',Footer:'Footer',Navbar:'Navigatie',MenuOverlay:'Mobiel menu',StickyContactBar:'Contactknoppen',FaqPage:'Veelgestelde vragen',ProductsPage:'Producten'}
 export function TextsEditor({onlyGroups}: {onlyGroups?:string[]}) {
  const {content:{site},setSite}=useCms();const [search,setSearch]=useState('')
  const groups=[...new Set(Object.values(defaults).map(v=>v.group))].filter(g=>!onlyGroups||onlyGroups.includes(g))

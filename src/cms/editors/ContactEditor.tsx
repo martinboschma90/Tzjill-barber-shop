@@ -1,5 +1,6 @@
 import { useCms } from '@/cms/CmsProvider'
 import { EditorSection, TextArea, TextInput } from '@/cms/fields'
+import { MediaUrlField } from '@/cms/media/MediaUrlField'
 
 export function ContactEditor() {
   const { content, setSite } = useCms()
@@ -43,6 +44,15 @@ export function ContactEditor() {
         value={site.instagram}
         placeholder="https://www.instagram.com/…"
         onChange={(instagram) => setSite((s) => ({ ...s, instagram }))}
+      />
+      <MediaUrlField
+        label="Hero-foto op contact"
+        kind="image"
+        value={site.contactHeroImageUrl}
+        hint="Leeg = geen grote foto bovenaan /contact."
+        onChange={(contactHeroImageUrl) =>
+          setSite((s) => ({ ...s, contactHeroImageUrl }))
+        }
       />
       <div className="space-y-3">
         <h3 className="text-sm font-semibold">Openingstijden</h3>

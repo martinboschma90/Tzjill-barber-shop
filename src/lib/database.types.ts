@@ -425,6 +425,12 @@ export type Database = {
       cms_ensure_role: { Args: never; Returns: string }
       cms_is_editor: { Args: never; Returns: boolean }
       cms_role: { Args: never; Returns: string }
+      tzjill_admin_document: { Args: never; Returns: Json }
+      tzjill_published: { Args: never; Returns: Json }
+      tzjill_save_document: {
+        Args: { p_draft: Json; p_publish?: boolean; p_expected?: string | null }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never

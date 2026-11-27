@@ -19,6 +19,19 @@ type EditorAccordionContextValue = {
 
 const EditorAccordionContext = createContext<EditorAccordionContextValue | null>(null)
 
+export function scrollCmsSectionIntoView(id: string) {
+  const el = document.getElementById(`cms-editor-section-${id}`)
+  if (!el) return
+  const pane = el.closest('[data-cms-editor-scroll]')
+  if (pane instanceof HTMLElement) {
+    const top =
+      el.getBoundingClientRect().top - pane.getBoundingClientRect().top + pane.scrollTop
+    pane.scrollTo({ top: Math.max(0, top - 8), behavior: 'smooth' })
+    return
+  }
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+}
+
 export function EditorAccordionScope({ children }: { children: ReactNode }) {
   const [searchParams] = useSearchParams()
   const requestedSection = searchParams.get('section')
@@ -37,11 +50,7 @@ export function EditorAccordionScope({ children }: { children: ReactNode }) {
         })
       }
       if (requestedSection === id) {
-        window.requestAnimationFrame(() => {
-          document
-            .getElementById(`cms-editor-section-${id}`)
-            ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        })
+        window.requestAnimationFrame(() => scrollCmsSectionIntoView(id))
       }
     },
     [requestedSection],

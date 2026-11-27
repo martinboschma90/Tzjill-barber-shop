@@ -17,7 +17,10 @@ import { Reveal } from '@/components/motion/Reveal'
 
 export function LookbookPage() {
   const { content } = useCms()
-  const lookbookImages = content.site.lookbookImages ?? cloneLookbook()
+  const lookbookImages =
+    content.site.lookbookImages !== undefined
+      ? content.site.lookbookImages
+      : cloneLookbook()
   const [filter, setFilter] = useState<LookbookFilterId>('all')
 
   const images = useMemo(() => {
@@ -74,7 +77,7 @@ export function LookbookPage() {
             {images.map((image, index) => (
               <li key={image.src}>
                 <Reveal delay={(index % 3) * 0.08}>
-                <figure className="group overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]">
+                <figure className="group overflow-hidden radius-media bg-black">
                   <img
                     src={image.src}
                     alt={image.alt}

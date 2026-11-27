@@ -1,12 +1,11 @@
+import { SiteText } from '@/cms/SiteText'
 import { useCms } from '@/cms/CmsContext'
+import { siteText } from '@/cms/siteText'
 import { useRef, useState, type FormEvent } from 'react'
 import { buttonClass } from '@/components/ui/buttonStyles'
+import { darkUnderlineFieldClass } from '@/components/ui/formStyles'
 import { Check, Spinner } from '@/components/ui/StatusIcon'
-
 import { submitMessage } from '@/lib/messages'
-
-const fieldClass =
-  'w-full border-b border-white/20 bg-transparent py-2 type-body text-white outline-none transition-colors placeholder:text-white/30 focus:border-white'
 
 export function ContactForm() {
   const [name, setName] = useState('')
@@ -27,73 +26,127 @@ export function ContactForm() {
     setError('')
     setPhase('sending')
     try {
-      await submitMessage({ kind: 'contact', name, email, phone, message, website, requestId: requestId.current })
+      await submitMessage({
+        kind: 'contact',
+        name,
+        email,
+        phone,
+        message,
+        website,
+        requestId: requestId.current,
+      })
       setPhase('done')
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : 'Verzenden mislukt.')
       setPhase('idle')
-    } finally { sendingRef.current = false }
+    } finally {
+      sendingRef.current = false
+    }
   }
 
   if (content.site.contactFormVisible === false) return null
 
+  const submitLabel =
+    phase === 'sending'
+      ? siteText(content.site, 'ContactForm.submitSending')
+      : phase === 'done'
+        ? siteText(content.site, 'ContactForm.submitDone')
+        : siteText(content.site, 'ContactForm.submitIdle')
+
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-3.5">
-      <label className="hidden" aria-hidden="true">Website<input tabIndex={-1} autoComplete="off" value={website} onChange={(event) => setWebsite(event.target.value)} /></label>
-      <label className="block">
-        <span className="type-label text-white/65">Naam</span>
+      <label className="hidden" aria-hidden="true">
+        Website
         <input
+          tabIndex={-1}
+          autoComplete="off"
+          value={website}
+          onChange={(event) => setWebsite(event.target.value)}
+        />
+      </label>
+      <label className="block" htmlFor="contact-name">
+        <span className="type-label text-white/65">
+          <SiteText textKey="ContactForm.name" />
+        </span>
+        <input
+          id="contact-name"
           required
           name="name"
           autoComplete="name"
           value={name}
+          aria-invalid={Boolean(error)}
           onChange={(e) => setName(e.target.value)}
-          className={`${fieldClass} mt-2`}
+          className={`${darkUnderlineFieldClass} mt-2`}
         />
       </label>
-      <label className="block">
-        <span className="type-label text-white/65">E-mail</span>
+      <label className="block" htmlFor="contact-email">
+        <span className="type-label text-white/65">
+          <SiteText textKey="ContactForm.email" />
+        </span>
         <input
+          id="contact-email"
           required
           type="email"
           name="email"
           autoComplete="email"
           value={email}
+          aria-invalid={Boolean(error)}
           onChange={(e) => setEmail(e.target.value)}
-          className={`${fieldClass} mt-2`}
+          className={`${darkUnderlineFieldClass} mt-2`}
         />
       </label>
-      <label className="block">
-        <span className="type-label text-white/65">Telefoon</span>
+      <label className="block" htmlFor="contact-phone">
+        <span className="type-label text-white/65">
+          <SiteText textKey="ContactForm.phone" />
+        </span>
         <input
+          id="contact-phone"
           type="tel"
           name="phone"
           autoComplete="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          className={`${fieldClass} mt-2`}
+          className={`${darkUnderlineFieldClass} mt-2`}
         />
       </label>
-      <label className="block">
-        <span className="type-label text-white/65">Bericht</span>
+      <label className="block" htmlFor="contact-message">
+        <span className="type-label text-white/65">
+          <SiteText textKey="ContactForm.message" />
+        </span>
         <textarea
+          id="contact-message"
           required
           name="message"
           rows={3}
           value={message}
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? 'contact-error' : undefined}
           onChange={(e) => setMessage(e.target.value)}
-          className={`${fieldClass} mt-2 resize-none`}
+          className={`${darkUnderlineFieldClass} mt-2 resize-none`}
         />
       </label>
-      {error ? <p role="alert" className="type-body text-[#e8c4a8]">{error}</p> : null}
-      <p className="type-body text-white/70">We gebruiken je gegevens om op je bericht te reageren. <a href="/privacy" className="underline">Privacy</a></p>
+      {error ? (
+        <p id="contact-error" role="alert" className="type-body text-[#e8c4a8]">
+          {error}
+        </p>
+      ) : null}
+      <p className="type-body text-white/70">
+        <SiteText textKey="ContactForm.privacy" />{' '}
+        <a href="/privacy" className="underline">
+          <SiteText textKey="ContactForm.privacyLink" />
+        </a>
+      </p>
       <button
         type="submit"
         disabled={phase !== 'idle'}
-        className={buttonClass({ variant: 'solid', surface: 'dark', className: 'mt-1 w-fit disabled:opacity-70' })}
+        className={buttonClass({
+          variant: 'solid',
+          surface: 'dark',
+          className: 'mt-1 w-fit disabled:opacity-70',
+        })}
       >
         {phase === 'sending' ? <Spinner /> : phase === 'done' ? <Check /> : null}
-        {phase === 'sending' ? 'Versturen' : phase === 'done' ? 'Verstuurd' : 'Verstuur'}
+        {submitLabel}
         {phase === 'idle' ? (
           <span aria-hidden className="motion-arrow">
             →
@@ -102,7 +155,7 @@ export function ContactForm() {
       </button>
       {phase === 'done' ? (
         <p className="type-lead max-w-sm text-white/70" role="status">
-          Je bericht is verstuurd. We reageren zo snel mogelijk.
+          <SiteText textKey="ContactForm.success" />
         </p>
       ) : null}
     </form>

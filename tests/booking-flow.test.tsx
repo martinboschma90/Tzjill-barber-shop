@@ -46,6 +46,23 @@ describe('booking confirmation with isolated Salonhub responses', () => {
     finish({ status: 'confirmed', appointmentId: '123' })
     expect(await screen.findByRole('heading', { name: 'Afspraak staat' })).toBeTruthy()
   })
+  it('drops a late day list when the customer goes back', async () => {
+    let finish!: (value: unknown) => void
+    api.treatments.mockResolvedValue({ treatments: [{ id: '66', name: 'Haircut', groupId: 'male', group: 'Heren', section: 'Haircut', minutes: 30, priceLabel: '€30', priceCents: 3000 }] })
+    api.employees.mockResolvedValue({ employees: [{ id: '1', name: 'Ada', any: false, photo: '' }, { id: '2', name: 'Ben', any: false, photo: '' }] })
+    api.dates.mockImplementation(() => new Promise((resolve) => { finish = resolve }))
+    render(<PublicContentProvider><BookingFlow /></PublicContentProvider>)
+    await waitFor(() => expect(screen.getByRole('button', { name: /Haircut 30 min/ })).toBeTruthy())
+    fireEvent.click(screen.getByRole('button', { name: /Haircut 30 min/ }))
+    await waitFor(() => expect((screen.getByRole('button', { name: 'Kies een kapper' }) as HTMLButtonElement).disabled).toBe(false))
+    fireEvent.click(screen.getByRole('button', { name: 'Kies een kapper' }))
+    fireEvent.click(await screen.findByRole('button', { name: 'Ada' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Kies dag en tijd' }))
+    fireEvent.click(screen.getByRole('button', { name: '← Terug' }))
+    finish({ dates: ['2099-01-01'] })
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Kies dag en tijd' })).toBeTruthy())
+    expect(screen.queryByRole('gridcell', { name: /2099/ })).toBeNull()
+  })
   it('keeps the customer in the flow when the server rejects a booking', async () => {
     api.book.mockRejectedValue(new Error('Dit tijdstip is net vergeven.'))
     await toConfirmation(); fireEvent.submit(document.getElementById(screen.getByRole('button', { name: 'Afspraak bevestigen' }).getAttribute('form')!)!)

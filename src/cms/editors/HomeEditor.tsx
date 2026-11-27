@@ -1,6 +1,7 @@
 import { HomeCollabsSectionEditor } from './HomeCollabsSectionEditor'
 import { HomeFotoreeksEditor } from './HomeFotoreeksEditor'
 import { ReviewsEditor } from './ReviewsEditor'
+import { TextGroupFields } from '@/cms/editors/TextGroupFields'
 import { useCms } from '@/cms/CmsProvider'
 import { EditorSection, TextArea, TextInput } from '@/cms/fields'
 import { SectionGroup } from '@/cms/flow-mates/cms-ui'
@@ -56,6 +57,7 @@ export function HomeEditor() {
                     rows={2}
                     onChange={(homeHeroSubtitle) => setSite((current) => ({ ...current, homeHeroSubtitle }))}
                   />
+                  <TextGroupFields group="Hero" />
                 </SectionGroup>
               </div>
             ),
@@ -197,10 +199,7 @@ export function HomeEditor() {
                   description="Foto’s van elke kaart staan onder Media."
                 >
                   {treatments.map((item, index) => (
-                    <div
-                      key={index}
-                      className="space-y-3 rounded-xl border border-neutral-200 bg-neutral-50/70 p-3.5"
-                    >
+                    <div key={index} className="space-y-3">
                       <TextInput
                         label={`Kaart ${index + 1}`}
                         value={item.title}
@@ -283,6 +282,14 @@ export function HomeEditor() {
 
       <HomeCollabsSectionEditor />
       <HomeFotoreeksEditor />
+
+      <EditorSection
+        sectionKey="texts-HomeFaq"
+        title="FAQ op homepage"
+        description="Kopteksten; vragen en antwoorden staan onder FAQ in het menu."
+      >
+        <TextGroupFields group="HomeFaq" />
+      </EditorSection>
     </div>
   )
 }

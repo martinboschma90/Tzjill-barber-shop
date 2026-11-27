@@ -173,7 +173,7 @@ export function ArtistReelsCarousel({
       <section
         ref={sectionRef}
         id="artist-visuals"
-        className="mx-auto max-w-[1400px] px-4 py-12 sm:px-6 lg:px-8"
+        className="content-wrap-wide py-12"
       >
         <div className="rounded-[1.5rem] border border-white/8 bg-[#121014] px-6 py-14 text-center">
           <p className="type-headline text-lg text-[#F5F5F5]">Shows</p>
@@ -196,7 +196,7 @@ export function ArtistReelsCarousel({
       <section
         ref={sectionRef}
         id="artist-visuals"
-        className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6 lg:px-8 lg:py-20"
+        className="content-wrap-wide py-14 lg:py-20"
       >
         <motion.div
           initial={previewMode ? false : { opacity: 0 }}
@@ -224,7 +224,7 @@ export function ArtistReelsCarousel({
             ) : null}
           </div>
 
-          <div className="overflow-hidden rounded-[1.75rem] border border-white/8 bg-[#0d090b] py-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] sm:py-14">
+          <div className="overflow-hidden radius-media border border-white/8 bg-[#0d090b] py-10 shadow-[inset_0_1px_0_rgba(255,255,255,0.035)] sm:py-14">
             <div
               ref={trackRef}
               className={
@@ -232,7 +232,7 @@ export function ArtistReelsCarousel({
                   ? 'flex justify-start overflow-x-auto px-3 py-3 sm:px-6 lg:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
                   : videos.length === 2
                     ? 'flex snap-x snap-mandatory justify-start gap-3 overflow-x-auto px-3 py-3 sm:px-6 lg:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
-                  : 'grid cursor-grab grid-flow-col auto-cols-[min(62vw,17.5rem)] grid-rows-1 items-start gap-3 overflow-x-auto overscroll-x-contain px-3 py-3 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [scrollbar-width:none] active:cursor-grabbing sm:auto-cols-[17.5rem] sm:px-6 lg:auto-cols-[17.5rem] lg:px-8 [&::-webkit-scrollbar]:hidden'
+                  : 'grid min-w-0 cursor-grab grid-flow-col auto-cols-[min(62%,17.5rem)] grid-rows-1 items-start gap-3 overflow-x-auto overscroll-x-contain px-3 py-3 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [scrollbar-width:none] active:cursor-grabbing sm:auto-cols-[17.5rem] sm:px-6 lg:auto-cols-[17.5rem] lg:px-8 [&::-webkit-scrollbar]:hidden'
               }
               onMouseLeave={() => {
                 dragRef.current = null

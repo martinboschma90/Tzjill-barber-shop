@@ -40,9 +40,11 @@ export type EditorStatus = "draft" | "saving" | "published" | "error";
 export function EditorStatusPill({
   state,
   flash = false,
+  label,
 }: {
   state: EditorStatus;
   flash?: boolean;
+  label?: string;
 }) {
   const cfg = {
     error: { dot: "bg-rose-500", text: "Opslaan mislukt", color: "text-rose-700" },
@@ -68,7 +70,7 @@ export function EditorStatusPill({
         className={`inline-block h-1.5 w-1.5 rounded-full transition-all duration-300 ${cfg.dot}`}
       />
       <span className={`text-[11px] font-semibold uppercase tracking-[0.08em] ${cfg.color}`}>
-        {cfg.text}
+        {label ?? cfg.text}
       </span>
     </span>
   );
@@ -174,7 +176,8 @@ type AutoSaveProps = {
 
 export type EditorTopBarProps = BufferedProps | AutoSaveProps;
 
-const DEFAULT_AUTOSAVE_HINT = "Wijzigingen worden per item direct opgeslagen";
+const DEFAULT_AUTOSAVE_HINT =
+  "Wijzigingen worden als concept bewaard — live zetten doe je bovenaan.";
 
 export function EditorTopBar(props: EditorTopBarProps) {
   if (props.mode === "buffered") {

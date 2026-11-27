@@ -1,4 +1,5 @@
 import { useCms } from '@/cms/CmsProvider'
+import { NavLinksEditor } from '@/cms/editors/NavLinksEditor'
 import { EditorSection, TextArea, TextInput } from '@/cms/fields'
 import { MediaUrlField } from '@/cms/media/MediaUrlField'
 
@@ -11,6 +12,15 @@ export function FooterEditor() {
 
   return (
     <>
+      <EditorSection
+        sectionKey="navigation"
+        title="Navigatie"
+        description="Menu, header en footer — volgorde en zichtbaarheid."
+        defaultOpen
+      >
+        <NavLinksEditor />
+      </EditorSection>
+
       <EditorSection
         title="Merk"
         description="Naam en logo in de footer."

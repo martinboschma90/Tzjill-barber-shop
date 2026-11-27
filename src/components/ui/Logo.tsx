@@ -12,8 +12,14 @@ type LogoProps = {
 }
 
 const SRC = {
-  white: '/brand/tzjill-logo-white.png',
-  black: '/brand/tzjill-logo-black.png',
+  white: {
+    src: '/brand/tzjill-logo-white-320.png',
+    webp: '/brand/tzjill-logo-white-320.webp',
+  },
+  black: {
+    src: '/brand/tzjill-logo-black-320.png',
+    webp: '/brand/tzjill-logo-black-320.webp',
+  },
 } as const
 
 /** Official lockup (BARBERSHOP & MORE + stylized tzjill), 1200 × 1151. */
@@ -35,17 +41,20 @@ export function Logo({
   const src = SRC[tone]
 
   return (
-    <img
-      src={src}
-      alt={title}
-      width={width}
-      height={height}
-      className={`block max-w-full object-contain ${className}`}
-      style={{ height, width, objectFit: 'contain' }}
-      draggable={false}
-      loading={fetchPriority === 'high' ? 'eager' : loading}
-      decoding={fetchPriority === 'high' ? 'sync' : decoding}
-      fetchPriority={fetchPriority}
-    />
+    <picture>
+      <source srcSet={src.webp} type="image/webp" />
+      <img
+        src={src.src}
+        alt={title}
+        width={width}
+        height={height}
+        className={`block max-w-full object-contain ${className}`}
+        style={{ height, width, objectFit: 'contain' }}
+        draggable={false}
+        loading={loading ?? 'eager'}
+        decoding={decoding}
+        fetchPriority={fetchPriority ?? 'low'}
+      />
+    </picture>
   )
 }

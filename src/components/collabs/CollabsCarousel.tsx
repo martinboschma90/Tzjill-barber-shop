@@ -103,7 +103,7 @@ export function CollabsCarousel({ items }: CollabsCarouselProps) {
             step(-1)
           }
         }}
-        className="-mx-8 outline-none sm:-mx-12"
+        className="-mx-6 max-w-full overflow-x-clip outline-none lg:-mx-8"
       >
         <p className="sr-only">
           Veeg horizontaal of gebruik de pijltjestoetsen om tussen collabs te
@@ -111,7 +111,7 @@ export function CollabsCarousel({ items }: CollabsCarouselProps) {
         </p>
         <div
           ref={trackRef}
-          className="flex items-start snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-8 pb-1 pt-1 scroll-px-8 touch-pan-x [scrollbar-width:none] [-ms-overflow-style:none] sm:gap-5 sm:px-12 sm:scroll-px-12 [&::-webkit-scrollbar]:hidden"
+          className="flex items-start snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-6 pb-1 pt-1 scroll-px-6 touch-pan-x [scrollbar-width:none] [-ms-overflow-style:none] sm:gap-5 lg:px-8 lg:scroll-px-8 [&::-webkit-scrollbar]:hidden"
           onPointerDown={(event: PointerEvent<HTMLDivElement>) => {
             if (event.pointerType !== 'mouse' || event.button !== 0) return
             dragRef.current = {
@@ -159,10 +159,10 @@ export function CollabsCarousel({ items }: CollabsCarouselProps) {
               aria-posinset={index + 1}
               aria-setsize={items.length}
               aria-current={index === active ? 'true' : undefined}
-              className="w-[calc(100vw-6.75rem)] shrink-0 snap-start sm:w-[min(62vw,24rem)]"
+              className="w-[min(100%,20.5rem)] shrink-0 snap-start sm:w-[min(62%,24rem)]"
             >
               {/* One swipe unit: this collab's video and its copy move together. */}
-              <div className="overflow-hidden rounded-[1.75rem] bg-[#100e0c] ring-1 ring-white/15 sm:rounded-[2rem]">
+              <div className="overflow-hidden radius-media bg-[#100e0c] ring-1 ring-white/15">
                 <CollabMedia
                   image={item.image}
                   video={collabVideoUrl(item)}

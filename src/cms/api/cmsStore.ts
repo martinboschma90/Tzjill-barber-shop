@@ -1,13 +1,11 @@
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import {
-  CMS_STORAGE_KEY,
-} from '@/cms/storageKeys'
 import type { CmsContent } from '@/cms/content'
 import { normalizeSiteContent } from '@/cms/mappers/site'
 import { withArtDirection } from '@/cms/imageFocus'
 import { coerceArtist } from '@/cms/mappers/artist'
 import type { Json } from '@/lib/database.types'
 import type { Artist } from '@/types/artist'
+import { projectPublishedFromDraft } from '@/cms/api/publicSnapshot'
 
 export type { CmsArtistRow, CmsContentRow } from '@/cms/api/publicCmsRead'
 export {
@@ -81,16 +79,51 @@ export async function upsertCmsContentRow(
   }
 }
 
+type AdminDocumentRow = {
+  draft: unknown
+  published: unknown
+  updated_at: string | null
+  revision: string | null
+}
+
+function publishedMatchesDraft(content: CmsContent, published: unknown): boolean {
+  const live = parseCmsBlob(published)
+  if (!live) return false
+  const projected = projectPublishedFromDraft(content)
+  return (
+    JSON.stringify(projected) ===
+    JSON.stringify({
+      site: live.site,
+      team: live.team,
+      artists: live.artists,
+    })
+  )
+}
+
 export async function fetchCmsContentBlob(): Promise<{
   content: CmsContent
   updatedAt: number
   revision: string
+  publishedAt: number | null
+  needsPublish: boolean
 } | null> {
-  const row = await fetchCmsContentRow(CMS_STORAGE_KEY)
-  if (!row) return null
-  const content = parseCmsBlob(row.data)
+  if (!isSupabaseConfigured || !supabase) return null
+  const { data, error } = await supabase.rpc('tzjill_admin_document')
+  if (error) throw new Error("CMS ophalen mislukt. Er is niets teruggeschreven.")
+  const row = data as AdminDocumentRow | null
+  if (!row?.draft) return null
+  const content = parseCmsBlob(row.draft)
   if (!content) throw new Error("De opgeslagen CMS-inhoud is ongeldig. Er is niets teruggeschreven.")
-  return { content, updatedAt: row.updatedAt, revision: row.revision }
+  const updatedAt = row.updated_at ? new Date(row.updated_at).getTime() : Date.now()
+  const revision = row.updated_at ?? row.revision ?? ''
+  const inSync = publishedMatchesDraft(content, row.published)
+  return {
+    content,
+    updatedAt,
+    revision,
+    publishedAt: inSync ? updatedAt : null,
+    needsPublish: !inSync,
+  }
 }
 
 export async function fetchCmsArtists(): Promise<Artist[]> {
@@ -168,21 +201,29 @@ export async function replaceCmsArtists(
 export async function pushCmsSnapshot(
   content: CmsContent,
   expectedRevision: string | null,
+  publish = false,
 ): Promise<{ error: string | null; updatedAt: number | null; revision: string | null }> {
   if (!supabase) return { error: 'Supabase is not configured', updatedAt: null, revision: expectedRevision }
-  const payload = { key: CMS_STORAGE_KEY, data: asJson(content) }
-  const query = expectedRevision
-    ? supabase.from('cms_content').update({ data: payload.data }).eq('key', CMS_STORAGE_KEY).eq('updated_at', expectedRevision)
-    : supabase.from('cms_content').insert(payload)
-  const { data, error } = await query.select('updated_at').maybeSingle()
-  if (error || !data) {
+  const p_expected = expectedRevision ? expectedRevision : null
+  const { data, error } = await supabase.rpc('tzjill_save_document', {
+    p_draft: asJson(content),
+    p_publish: publish,
+    p_expected,
+  })
+  if (error) {
+    const conflict =
+      error.code === '40001' ||
+      error.message?.toLowerCase().includes('conflict')
     return {
-      error: !data && !error || error?.code === '23505'
+      error: conflict
         ? 'De inhoud is intussen elders gewijzigd. Je wijzigingen blijven lokaal bewaard. Herlaad en vergelijk vóór je opnieuw opslaat.'
         : 'Opslaan mislukt. Je wijzigingen blijven lokaal bewaard. Herlaad om opnieuw te verbinden.',
       updatedAt: null,
       revision: expectedRevision,
     }
   }
-  return { error: null, updatedAt: Date.parse(data.updated_at), revision: data.updated_at }
+  const row = data as AdminDocumentRow | null
+  const updatedAt = row?.updated_at ? Date.parse(row.updated_at) : null
+  const revision = row?.updated_at ?? expectedRevision
+  return { error: null, updatedAt, revision }
 }

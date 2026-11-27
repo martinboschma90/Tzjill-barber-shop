@@ -4,7 +4,6 @@ import { useLocation } from 'react-router-dom'
 import { openSalonhub } from '@/lib/salonhub'
 import { useCms } from '@/cms/CmsContext'
 import { phoneHref } from '@/lib/contactLinks'
-import { PHONE_TEL } from '@/data/site'
 
 type StickyContactBarProps = {
   hidden?: boolean
@@ -95,7 +94,7 @@ export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
   return (
     <div
       data-sticky-afspraak
-      className="fixed inset-x-0 bottom-0 z-[55] border-t border-white/10 bg-[#1c1b19] lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-[55] border-t border-white/10 bg-[#1c1b19]/98 backdrop-blur-sm lg:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="grid h-16 grid-cols-2">
@@ -104,7 +103,18 @@ export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
           onClick={() => openSalonhub()}
           className="type-ui min-h-11 border-r border-white/10 text-[#f6f3ee]"
         ><SiteText textKey="StickyContactBar.1" /></button>
-        <a href={phoneHref(content.site.phoneNumber || PHONE_TEL)} className="type-ui flex min-h-11 items-center justify-center text-[#f6f3ee]"><SiteText textKey="StickyContactBar.2" /></a>
+        {content.site.phoneNumber.trim() ? (
+          <a
+            href={phoneHref(content.site.phoneNumber.trim())}
+            className="type-ui flex min-h-11 items-center justify-center text-[#f6f3ee]"
+          >
+            <SiteText textKey="StickyContactBar.2" />
+          </a>
+        ) : (
+          <span className="type-ui flex min-h-11 items-center justify-center text-[#f6f3ee]/40">
+            <SiteText textKey="StickyContactBar.2" />
+          </span>
+        )}
       </div>
     </div>
   )

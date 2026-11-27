@@ -7,29 +7,32 @@ import { MediaReveal } from '@/components/motion/MediaReveal'
 import { Parallax } from '@/components/motion/Parallax'
 import { useCms } from '@/cms/CmsContext'
 import { useResolvedMediaUrl } from '@/cms/media/useResolvedMediaUrl'
-import { feed, feedFrameClass, HERO_POSTER } from '@/data/feed'
-
-const FALLBACK_POSTER = HERO_POSTER
+import { feedFrameClass } from '@/data/feed'
 
 export function Welcome() {
   const { content } = useCms()
-  const poster = useResolvedMediaUrl(content.site.homeHeroImageUrl, FALLBACK_POSTER)
-  const posterSrc = poster || FALLBACK_POSTER
+  const posterField = content.site.homeHeroImageUrl?.trim() ?? ''
+  const poster = useResolvedMediaUrl(posterField || null)
+  const posterSrc = poster
+  const welcomeImage = content.site.welcomeImageUrl?.trim() ?? ''
 
   return (
     <section data-cms-section="welcome" className="text-white">
-      <div className="mx-auto grid max-w-[1240px] items-center gap-12 px-6 section-y lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16 lg:px-8">
+      <div className="content-wrap section-y grid items-center gap-12 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)] lg:gap-16">
         <div>
-          <p className="type-label text-white/65">{content.site.welcomeKicker || 'Studio'}</p>
-          <Reveal className="mt-4">
-            <h2 className="type-headline max-w-2xl whitespace-pre-line">
-              {content.site.welcomeTitle || 'Elke coupe\nis maatwerk.'}
-            </h2>
-          </Reveal>
-          <p className="type-lead mt-6 max-w-xs text-white/55">
-            {content.site.welcomeText ||
-              'Knippen, scheren, baard. Voorstreek, Leeuwarden. A man’s world.'}
-          </p>
+          {content.site.welcomeKicker.trim() ? (
+            <p className="type-label text-white/65">{content.site.welcomeKicker}</p>
+          ) : null}
+          {content.site.welcomeTitle.trim() ? (
+            <Reveal className="mt-4">
+              <h2 className="type-headline max-w-2xl whitespace-pre-line text-white">
+                {content.site.welcomeTitle}
+              </h2>
+            </Reveal>
+          ) : null}
+          {content.site.welcomeText.trim() ? (
+            <p className="type-lead mt-6 max-w-xs text-white/55">{content.site.welcomeText}</p>
+          ) : null}
           <Link
             to="/over-ons"
             className={buttonClass({ variant: 'ghost', surface: 'dark', className: 'mt-8' })}
@@ -39,10 +42,12 @@ export function Welcome() {
           </Link>
         </div>
 
+        {posterSrc || welcomeImage ? (
         <div className="relative mx-auto h-[22rem] w-full max-w-lg sm:h-[28rem] lg:h-[32rem]">
+          {posterSrc ? (
           <Parallax
             distance={16}
-            className="group absolute right-0 top-0 w-[62%] overflow-hidden rounded-[1.75rem] bg-black sm:rounded-[2rem]"
+            className="group absolute right-0 top-0 w-[62%] overflow-hidden radius-media bg-black"
           >
             <MediaReveal>
               <div className="relative aspect-[3/4]">
@@ -55,20 +60,24 @@ export function Welcome() {
               </div>
             </MediaReveal>
           </Parallax>
-          <Parallax
-            distance={-16}
-            className="group absolute bottom-0 left-0 z-10 w-[56%] overflow-hidden rounded-[1.75rem] bg-black shadow-[0_24px_50px_rgb(0_0_0/0.45)] sm:rounded-[2rem]"
-          >
-            <MediaReveal delay={0.1}>
-              <ResolvedImg
-                src={content.site.welcomeImageUrl || feed.dsc00030}
-                alt=""
-                className={`wf-media-zoom aspect-[3/4] w-full ${feedFrameClass}`}
-                loading="lazy"
-              />
-            </MediaReveal>
-          </Parallax>
+          ) : null}
+          {welcomeImage ? (
+            <Parallax
+              distance={-16}
+              className="group absolute bottom-0 left-0 z-10 w-[56%] overflow-hidden radius-media bg-black shadow-[0_24px_50px_rgb(0_0_0/0.45)]"
+            >
+              <MediaReveal delay={0.1}>
+                <ResolvedImg
+                  src={welcomeImage}
+                  alt=""
+                  className={`wf-media-zoom aspect-[3/4] w-full ${feedFrameClass}`}
+                  loading="lazy"
+                />
+              </MediaReveal>
+            </Parallax>
+          ) : null}
         </div>
+        ) : null}
       </div>
     </section>
   )

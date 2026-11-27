@@ -32,6 +32,7 @@ export type PageHealth = {
 export type HealthRuntime = {
   savedAt: number | null
   contentSyncStatus: ContentSyncStatus
+  needsPublish?: boolean
   artistSyncError: string | null
   siteSyncError: string | null
   dirtyCount: number
@@ -79,7 +80,7 @@ export function assessSiteHealth(
   content: CmsContent,
   runtime: HealthRuntime = {
     savedAt: null,
-    contentSyncStatus: 'synced',
+    contentSyncStatus: 'live',
     artistSyncError: null,
     siteSyncError: null,
     dirtyCount: 0,
@@ -245,7 +246,11 @@ export function assessSiteHealth(
   const stale =
     Boolean(runtime.savedAt) &&
     ageMs > STALE_CONTENT_DAYS * 24 * 60 * 60 * 1000
-  const pending = runtime.contentSyncStatus === 'pending' || runtime.dirtyCount > 0
+  const pending =
+    runtime.contentSyncStatus === 'pending' ||
+    runtime.contentSyncStatus === 'draft_saved' ||
+    runtime.needsPublish ||
+    runtime.dirtyCount > 0
   const hasArtistError = Boolean(runtime.artistSyncError)
   const hasSiteError = Boolean(runtime.siteSyncError)
 
@@ -254,7 +259,7 @@ export function assessSiteHealth(
     : stale
       ? `Content is ${Math.floor(ageMs / 86400000)} dagen oud. Werk pagina’s of artiesten bij.`
       : pending
-        ? 'Er staan nog wijzigingen klaar om te syncen.'
+        ? 'Er staat concept-klaar werk — zet live of werk verder bij.'
         : 'Content is recent bijgewerkt.'
 
   const artistChecks: HealthCheck[] = [

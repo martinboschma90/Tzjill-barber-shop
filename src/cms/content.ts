@@ -19,6 +19,7 @@ import { lookbookImages as defaultLookbook } from '@/data/lookbook'
 import { products as defaultProducts } from '@/data/products'
 import { collabs as defaultCollabs } from '@/data/collabs'
 import { openingHours, productsEnabled, site as defaultSite } from '@/data/site'
+import { defaultNavLinks } from '@/lib/siteNav'
 import { DEFAULT_WHATSAPP_NUMBER } from '@/data/whatsapp'
 import type { Artist, TeamMember } from '@/types/artist'
 
@@ -164,6 +165,15 @@ export type LegalLink = {
   href: string
 }
 
+export type SiteNavLink = {
+  label: string
+  to: string
+  visible: boolean
+  /** Desktop header column; `none` = mobile menu & footer only. */
+  desktop: 'left' | 'right' | 'none'
+  footerSection: 'main' | 'studio'
+}
+
 export type FaqItem = {
   id: string
   question: string
@@ -210,6 +220,8 @@ export type SiteContent = {
   newsletterVisible: boolean
   promoSignupVisible: boolean
   contactIntro: string
+  /** Hero image on /contact. */
+  contactHeroImageUrl: string
   contact: ContactItem[]
   legal: LegalInfo
   /** Accessible / CMS title for the About page (logo remains the visual mark). */
@@ -285,6 +297,8 @@ export type SiteContent = {
   treatmentsTitle: string
   treatmentsIntro: string
   treatments: HomeTreatment[]
+  /** Primary navigation; omit in JSON → shipped default order. */
+  navLinks?: SiteNavLink[]
 }
 
 export type CmsContent = {
@@ -317,6 +331,7 @@ export function createDefaultSiteContent(): SiteContent {
     promoSignupVisible: true,
     contactIntro:
       'Afspraak, vragen of collab. Voorstreek 18.',
+    contactHeroImageUrl: '',
     contact: defaultSite.contact.map((item) => ({ ...item })),
     legal: {
       company: defaultSite.legal.company,
@@ -365,6 +380,7 @@ export function createDefaultSiteContent(): SiteContent {
     treatmentsIntro:
       'Knippen, baard, kids — dezelfde precisie, altijd in verhouding met je gezicht.',
     treatments: cloneTreatments(),
+    navLinks: defaultNavLinks(),
   }
 }
 

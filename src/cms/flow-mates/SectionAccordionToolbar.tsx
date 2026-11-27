@@ -3,7 +3,7 @@
  * Alles sluiten buttons. Renders above the list of section cards in every
  * CMS page editor.
  */
-import { ChevronsDownUp, ChevronsUpDown, PencilLine } from "lucide-react";
+import { PencilLine } from "lucide-react";
 
 export function SectionAccordionToolbar({
   openCount,
@@ -23,38 +23,36 @@ export function SectionAccordionToolbar({
   onQuickEdit?: () => void;
 }) {
   return (
-    <div className="mb-3 flex items-center justify-between gap-3 px-1">
-      <span className="text-[11px] font-medium uppercase tracking-[0.12em] text-neutral-400">
-        {openCount} van {total} open
+    <div className="mb-1 flex items-center justify-between gap-3">
+      <span className="text-[11px] text-[#8a8a86]">
+        {openCount}/{total}
       </span>
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-3">
         {onQuickEdit && (
           <button
             type="button"
             onClick={onQuickEdit}
-            className="inline-flex items-center gap-1.5 rounded-md bg-neutral-900 px-2.5 py-1 text-[11px] font-semibold text-white transition hover:bg-neutral-800"
+            className="inline-flex items-center gap-1 text-[12px] font-medium text-[#6b6b66] hover:text-[#111214]"
           >
-            <PencilLine className="h-3 w-3" />
-            Snel bewerken
+            <PencilLine className="h-3.5 w-3.5" />
+            Snel
           </button>
         )}
         <button
           type="button"
           onClick={onExpandAll}
           disabled={allOpen}
-          className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-medium text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+          className="text-[12px] font-medium text-[#6b6b66] hover:text-[#111214] disabled:opacity-40"
         >
-          <ChevronsUpDown className="h-3 w-3" />
-          Alles openen
+          Open
         </button>
         <button
           type="button"
           onClick={onCollapseAll}
           disabled={allClosed}
-          className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-medium text-neutral-600 transition hover:bg-neutral-100 hover:text-neutral-900 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
+          className="text-[12px] font-medium text-[#6b6b66] hover:text-[#111214] disabled:opacity-40"
         >
-          <ChevronsDownUp className="h-3 w-3" />
-          Alles sluiten
+          Dicht
         </button>
       </div>
     </div>

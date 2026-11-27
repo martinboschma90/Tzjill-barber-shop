@@ -7,13 +7,15 @@ import { cloneShopMenu } from '@/cms/content'
 
 export function HomePrices() {
   const { content } = useCms()
-  const highlights = (content.site.shopMenu ?? cloneShopMenu())
+  const menu =
+    content.site.shopMenu !== undefined ? content.site.shopMenu : cloneShopMenu()
+  const highlights = menu
     .flatMap((category) => category.groups.flatMap((group) => group.items))
     .slice(0, 6)
 
   return (
     <section data-cms-section="texts-HomePrices" className="text-white">
-      <div className="mx-auto max-w-[1240px] px-6 section-y lg:px-8">
+      <div className="content-wrap section-y">
         <SectionHead
           kicker={<SiteText textKey="HomePrices.kicker" />}
           title={

@@ -19,9 +19,11 @@ export function PageIntro({
     return (
       <header>
         <p className="type-label text-white/65">{kicker}</p>
-        <Reveal trigger="load" className="mt-4">
-          <h1 className="type-headline text-white">{title}</h1>
-        </Reveal>
+        {title ? (
+          <Reveal trigger="load" className="mt-4">
+            <h1 className="type-headline text-white">{title}</h1>
+          </Reveal>
+        ) : null}
         {intro ? <p className="type-lead mt-5 max-w-xl text-white/55">{intro}</p> : null}
       </header>
     )
@@ -31,9 +33,11 @@ export function PageIntro({
     <header className="grid items-end gap-8 lg:grid-cols-12">
       <div className="lg:col-span-8">
         <p className="type-label text-white/65">{kicker}</p>
-        <Reveal trigger="load" className="mt-4">
-          <h1 className="type-headline text-white">{title}</h1>
-        </Reveal>
+        {title ? (
+          <Reveal trigger="load" className="mt-4">
+            <h1 className="type-headline text-white">{title}</h1>
+          </Reveal>
+        ) : null}
       </div>
       {intro ? (
         <p className="type-lead max-w-xs text-white/55 lg:col-span-4 lg:ml-auto lg:text-right">

@@ -13,7 +13,11 @@ import {
 
 export function CollabsPage() {
   const { content } = useCms()
-  const collabs = content.site.collabs ?? cloneCollabs()
+  const collabs =
+    content.site.collabs !== undefined
+      ? content.site.collabs
+      : cloneCollabs()
+  const collabEmail = content.site.contact[0]?.email?.trim() ?? ''
   // Two distinct slides: each collab's own video + matching text, together.
 
   return (
@@ -27,7 +31,11 @@ export function CollabsPage() {
           intro={<SiteText textKey="CollabsPage.intro" />}
         />
         <div className="mt-6 sm:mt-10">
-          <PillButton href="mailto:info@tzjill.nl" surface="dark"><SiteText textKey="CollabsPage.3" /></PillButton>
+          {collabEmail ? (
+            <PillButton href={`mailto:${collabEmail}`} surface="dark">
+              <SiteText textKey="CollabsPage.3" />
+            </PillButton>
+          ) : null}
         </div>
 
         <CollabsCarousel items={collabs} />
