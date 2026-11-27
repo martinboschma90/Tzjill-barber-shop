@@ -94,7 +94,7 @@ export function StickyContactBar({ hidden = false }: StickyContactBarProps) {
   return (
     <div
       data-sticky-afspraak
-      className="fixed inset-x-0 bottom-0 z-[55] border-t border-white/10 bg-[#1c1b19] lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-[55] border-t border-white/10 bg-[#1c1b19]/98 backdrop-blur-sm lg:hidden"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="grid h-16 grid-cols-2">

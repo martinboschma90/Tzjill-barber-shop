@@ -118,7 +118,7 @@ export function AboutPage() {
             <SiteText textKey="AboutPage.1" />
           </SectionKicker>
           {site.aboutTitle.trim() ? (
-            <h1 className="type-headline mt-6">{site.aboutTitle}</h1>
+            <h1 className="type-headline mt-6 text-white">{site.aboutTitle}</h1>
           ) : null}
           {intro ? (
             <p className="type-lead mx-auto mt-5 max-w-lg text-white/55">{intro}</p>
@@ -128,16 +128,20 @@ export function AboutPage() {
         <AboutHeroVideo />
 
         {stats.length ? (
-          <ul className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+          <ul className="mt-5 grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3">
             {stats.map((item, index) => (
               <li key={`${item.label}-${index}`}>
                 <Reveal delay={index * 0.06}>
-                  <div className="rounded-3xl bg-cream-soft px-5 py-6 text-ink sm:px-6 sm:py-8">
+                  <div className="flex h-full flex-col items-center justify-center rounded-[1.15rem] border border-white/12 bg-white/[0.04] px-3 py-4 text-center sm:rounded-[1.25rem] sm:px-4 sm:py-5">
                     {item.n.trim() ? (
-                      <p className="type-headline leading-none">{item.n}</p>
+                      <p className="type-headline text-[clamp(1.85rem,5vw,2.35rem)] leading-none text-white">
+                        {item.n}
+                      </p>
                     ) : null}
                     {item.label.trim() ? (
-                      <p className="type-label mt-3 text-[#2c241c]/50">{item.label}</p>
+                      <p className="type-label mt-2 text-[0.65rem] tracking-[0.12em] text-white/65 sm:mt-2.5">
+                        {item.label}
+                      </p>
                     ) : null}
                   </div>
                 </Reveal>
@@ -150,11 +154,11 @@ export function AboutPage() {
           <SectionKicker>
             <SiteText textKey="AboutPage.2" />
           </SectionKicker>
-          <h2 className="type-headline mt-6">
+          <h2 className="type-headline mt-6 text-white">
             <SiteText textKey="AboutPage.3" />
           </h2>
           {body ? (
-            <p className="type-lead mx-auto mt-5 max-w-lg whitespace-pre-line text-white/55">
+            <p className="type-lead mx-auto mt-5 max-w-lg whitespace-pre-line text-white/65">
               {body}
             </p>
           ) : null}
@@ -255,7 +259,7 @@ export function AboutPage() {
               <SectionKicker>
                 <SiteText textKey="AboutPage.5" />
               </SectionKicker>
-              <h2 className="type-headline mt-6">
+              <h2 className="type-headline mt-6 text-white">
                 <SiteText textKey="AboutPage.6" />
                 <br />
                 <SiteText textKey="AboutPage.7" />
@@ -297,7 +301,7 @@ export function AboutPage() {
           <SectionKicker>
             <SiteText textKey="AboutPage.10" />
           </SectionKicker>
-          <h2 className="type-headline mt-6">
+          <h2 className="type-headline mt-6 text-white">
             <SiteText textKey="AboutPage.11" />
           </h2>
           <p className="type-lead mx-auto mt-5 max-w-md text-white/55">

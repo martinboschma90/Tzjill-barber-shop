@@ -37,7 +37,7 @@ export function MenuOverlay({ open, onClose }: MenuOverlayProps) {
       aria-modal="true"
       aria-label="Menu"
       tabIndex={-1}
-      className="fixed inset-0 z-40 flex flex-col backdrop-blur-md"
+      className="fixed inset-0 z-40 flex min-h-[100dvh] flex-col overscroll-none pt-[env(safe-area-inset-top,0px)] backdrop-blur-md"
       style={{ backgroundColor: 'var(--menu-bg)' }}
     >
       <nav

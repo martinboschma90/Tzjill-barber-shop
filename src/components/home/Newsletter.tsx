@@ -34,7 +34,7 @@ export function Newsletter() {
     <section data-cms-section="texts-Newsletter" className="text-white">
       <div className="content-wrap section-y">
         <div className="panel-cta">
-          <p className="type-label inline-flex items-center justify-center gap-2 rounded-full bg-cream-soft px-3.5 py-1.5 text-ink">
+          <p className="type-label inline-flex items-center justify-center gap-2 rounded-full bg-pill-on-dark-bg px-3.5 py-1.5 text-pill-on-dark-fg">
             <span className="h-1.5 w-1.5 rounded-full bg-[#2c241c]" aria-hidden /><SiteText textKey="Newsletter.1" /></p>
           <h2 className="type-headline mt-6"><SiteText textKey="Newsletter.2" /></h2>
           <p className="type-lead mx-auto mt-5 max-w-md text-white/55"><SiteText textKey="Newsletter.3" /></p>

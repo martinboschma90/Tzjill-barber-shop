@@ -72,7 +72,7 @@ export function MenuPage() {
         <div className="mt-16 grid items-start gap-x-20 gap-y-14 lg:grid-cols-2">
           {columns.map((block) => (
             <section key={block.key}>
-              <h2 className="type-subhead">{block.title}</h2>
+              <h2 className="type-subhead text-white">{block.title}</h2>
               <PriceRows items={block.items} />
             </section>
           ))}
@@ -80,7 +80,7 @@ export function MenuPage() {
 
         {full.map((block) => (
           <section key={block.key} className="mt-14">
-            <h2 className="type-subhead">{block.title}</h2>
+            <h2 className="type-subhead text-white">{block.title}</h2>
             <PriceRows items={block.items} />
           </section>
         ))}

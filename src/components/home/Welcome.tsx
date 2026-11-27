@@ -25,7 +25,7 @@ export function Welcome() {
           ) : null}
           {content.site.welcomeTitle.trim() ? (
             <Reveal className="mt-4">
-              <h2 className="type-headline max-w-2xl whitespace-pre-line">
+              <h2 className="type-headline max-w-2xl whitespace-pre-line text-white">
                 {content.site.welcomeTitle}
               </h2>
             </Reveal>

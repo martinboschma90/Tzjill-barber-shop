@@ -5,7 +5,7 @@ import { useCms } from '@/cms/CmsContext'
 import type { SiteContent } from '@/cms/content'
 
 const cardClass =
-  'flex h-full min-h-[16.5rem] flex-col justify-between radius-media bg-cream-soft px-7 py-7 text-left text-ink sm:min-h-[18rem] sm:px-8 sm:py-8'
+  'flex h-full min-h-[16.5rem] flex-col justify-between radius-media bg-cream-soft px-7 py-7 text-left text-pill-on-dark-fg sm:min-h-[18rem] sm:px-8 sm:py-8'
 
 function ReviewStars({ stars }: { stars: number }) {
   const count = Math.min(5, Math.max(1, stars || 5))

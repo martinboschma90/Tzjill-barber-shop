@@ -31,8 +31,8 @@ function NavItem({
   return (
     <Link
       to={link.to}
-        aria-current={navActive(pathname, link.to) ? 'page' : undefined}
-        className={`wf-link type-ui inline-flex min-h-11 items-center ${
+      aria-current={navActive(pathname, link.to) ? 'page' : undefined}
+      className={`wf-link type-ui inline-flex min-h-11 items-center ${
         navActive(pathname, link.to) ? 'opacity-100' : 'opacity-55 hover:opacity-100'
       }`}
     >
@@ -65,68 +65,70 @@ export function Navbar({
   const right = desktopNavRight(content.site)
 
   return (
-    <header
-      className={`pointer-events-none fixed inset-x-0 top-0 z-50 pt-[max(0.75rem,env(safe-area-inset-top,0px))] transition-colors duration-300 sm:pt-[max(1rem,env(safe-area-inset-top,0px))] ${
-        solid ? 'bg-[var(--body-bg)]' : 'bg-transparent'
-      }`}
-    >
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-50 isolate">
       <div
-        className={`relative mx-auto grid h-[5.25rem] max-w-[1600px] grid-cols-[1fr_auto_1fr] items-center px-5 sm:h-[5.5rem] sm:px-8 ${ink}`}
+        className={`w-full transition-colors duration-300 ${
+          solid ? 'bg-[var(--body-bg)]' : 'bg-transparent'
+        }`}
       >
-        <nav
-          className="pointer-events-auto hidden items-center justify-end gap-5 pe-1 lg:flex xl:gap-8"
-          aria-label="Hoofdnavigatie"
+        <div
+          className={`relative mx-auto flex h-[5.25rem] max-w-[1600px] items-center justify-between gap-4 px-5 sm:h-[5.5rem] sm:px-8 lg:grid lg:grid-cols-[1fr_auto_1fr] lg:justify-normal ${ink} pt-[max(0.75rem,env(safe-area-inset-top,0px))] sm:pt-[max(1rem,env(safe-area-inset-top,0px))]`}
         >
-          {left.map((link) => (
-            <NavItem key={link.to} link={link} pathname={pathname} />
-          ))}
-        </nav>
-
-        <Link
-          to="/"
-          aria-label="Tzjill Barber & Lounge — home"
-          className="pointer-events-auto shrink-0 justify-self-center px-5 xl:px-8"
-        >
-          <Logo tone="white" height={56} fetchPriority="low" decoding="async" />
-        </Link>
-
-        <div className="pointer-events-auto hidden items-center justify-between gap-5 ps-1 lg:flex xl:gap-8">
-          <nav className="flex items-center gap-5 xl:gap-8" aria-label="Hoofdnavigatie, rechts">
-            {right.map((link) => (
+          <nav
+            className="pointer-events-auto hidden items-center justify-end gap-5 pe-1 lg:flex xl:gap-8"
+            aria-label="Hoofdnavigatie"
+          >
+            {left.map((link) => (
               <NavItem key={link.to} link={link} pathname={pathname} />
             ))}
           </nav>
-          <BookButton surface="dark" className="shrink-0 px-5 py-2.5">
-            <SiteText textKey="Navbar.1" />
-          </BookButton>
-        </div>
 
-        <button
-          type="button"
-          className="pointer-events-auto absolute right-5 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center lg:hidden sm:right-8"
-          onPointerEnter={onMenuIntent}
-          onTouchStart={onMenuIntent}
-          onClick={onMenuToggle}
-          aria-label={
-            menuOpen
-              ? siteText(content.site, 'Navbar.menuClose')
-              : siteText(content.site, 'Navbar.menuOpen')
-          }
-          aria-expanded={menuOpen}
-        >
-          <span className="relative flex h-[12px] w-4 flex-col items-stretch justify-between">
-            <span
-              className={`block h-[1.5px] w-full origin-center bg-current transition-transform duration-200 ${
-                menuOpen ? 'translate-y-[5.25px] rotate-45' : ''
-              }`}
-            />
-            <span
-              className={`block h-[1.5px] w-full origin-center bg-current transition-transform duration-200 ${
-                menuOpen ? '-translate-y-[5.25px] -rotate-45' : ''
-              }`}
-            />
-          </span>
-        </button>
+          <Link
+            to="/"
+            aria-label="Tzjill Barber & Lounge — home"
+            className="pointer-events-auto shrink-0 lg:justify-self-center lg:px-8"
+          >
+            <Logo tone="white" height={56} fetchPriority="low" decoding="async" />
+          </Link>
+
+          <div className="pointer-events-auto hidden items-center justify-between gap-5 ps-1 lg:flex xl:gap-8">
+            <nav className="flex items-center gap-5 xl:gap-8" aria-label="Hoofdnavigatie, rechts">
+              {right.map((link) => (
+                <NavItem key={link.to} link={link} pathname={pathname} />
+              ))}
+            </nav>
+            <BookButton surface="dark" className="shrink-0 px-5 py-2.5">
+              <SiteText textKey="Navbar.1" />
+            </BookButton>
+          </div>
+
+          <button
+            type="button"
+            className="pointer-events-auto flex h-11 w-11 shrink-0 items-center justify-center lg:hidden"
+            onPointerEnter={onMenuIntent}
+            onTouchStart={onMenuIntent}
+            onClick={onMenuToggle}
+            aria-label={
+              menuOpen
+                ? siteText(content.site, 'Navbar.menuClose')
+                : siteText(content.site, 'Navbar.menuOpen')
+            }
+            aria-expanded={menuOpen}
+          >
+            <span className="relative flex h-[12px] w-4 flex-col items-stretch justify-between">
+              <span
+                className={`block h-[1.5px] w-full origin-center bg-current transition-transform duration-200 ${
+                  menuOpen ? 'translate-y-[5.25px] rotate-45' : ''
+                }`}
+              />
+              <span
+                className={`block h-[1.5px] w-full origin-center bg-current transition-transform duration-200 ${
+                  menuOpen ? '-translate-y-[5.25px] -rotate-45' : ''
+                }`}
+              />
+            </span>
+          </button>
+        </div>
       </div>
     </header>
   )
