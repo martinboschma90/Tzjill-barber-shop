@@ -72,7 +72,7 @@ export function RelatedArtists({
       </div>
       <div
         ref={trackRef}
-        className="grid snap-x snap-mandatory grid-flow-col auto-cols-[76%] gap-3 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none] sm:auto-cols-[46%] sm:gap-4 lg:auto-cols-[calc((100%-3rem)/4)] lg:gap-4 [&::-webkit-scrollbar]:hidden"
+        className="grid min-w-0 snap-x snap-mandatory grid-flow-col auto-cols-[76%] gap-3 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none] sm:auto-cols-[46%] sm:gap-4 lg:auto-cols-[calc((100%-3rem)/4)] lg:gap-4 [&::-webkit-scrollbar]:hidden"
       >
         {related.map((candidate, index) => (
           <div

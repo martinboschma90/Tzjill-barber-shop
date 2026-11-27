@@ -232,7 +232,7 @@ export function ArtistReelsCarousel({
                   ? 'flex justify-start overflow-x-auto px-3 py-3 sm:px-6 lg:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
                   : videos.length === 2
                     ? 'flex snap-x snap-mandatory justify-start gap-3 overflow-x-auto px-3 py-3 sm:px-6 lg:px-8 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden'
-                  : 'grid cursor-grab grid-flow-col auto-cols-[min(62vw,17.5rem)] grid-rows-1 items-start gap-3 overflow-x-auto overscroll-x-contain px-3 py-3 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [scrollbar-width:none] active:cursor-grabbing sm:auto-cols-[17.5rem] sm:px-6 lg:auto-cols-[17.5rem] lg:px-8 [&::-webkit-scrollbar]:hidden'
+                  : 'grid min-w-0 cursor-grab grid-flow-col auto-cols-[min(62%,17.5rem)] grid-rows-1 items-start gap-3 overflow-x-auto overscroll-x-contain px-3 py-3 [mask-image:linear-gradient(to_right,transparent,black_8%,black_92%,transparent)] [scrollbar-width:none] active:cursor-grabbing sm:auto-cols-[17.5rem] sm:px-6 lg:auto-cols-[17.5rem] lg:px-8 [&::-webkit-scrollbar]:hidden'
               }
               onMouseLeave={() => {
                 dragRef.current = null

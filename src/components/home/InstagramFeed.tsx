@@ -50,7 +50,7 @@ export function InstagramFeed() {
 
   if (!COUNT) return null
   return (
-    <section data-cms-section="texts-InstagramFeed" className="section-y overflow-hidden text-white">
+    <section data-cms-section="texts-InstagramFeed" className="section-y overflow-x-clip overflow-y-hidden text-white">
       <div className="content-wrap">
         <div className="mx-auto max-w-3xl text-center">
           <p className="type-label inline-flex items-center justify-center gap-2 text-white/65">
@@ -70,7 +70,7 @@ export function InstagramFeed() {
       </div>
 
       <div
-        className="relative mt-8 cursor-grab active:cursor-grabbing sm:mt-10"
+        className="relative mt-8 max-w-full cursor-grab overflow-x-clip active:cursor-grabbing sm:mt-10"
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onPointerDown={onPointerDown}
@@ -83,7 +83,7 @@ export function InstagramFeed() {
           role="region"
           aria-roledescription="carousel"
           aria-label="Instagram"
-          className="relative mx-auto h-[min(96vw,46rem)] w-full overflow-hidden"
+          className="relative mx-auto h-[min(96vw,46rem)] w-full max-w-full overflow-hidden"
         >
           {slides.map((image, index) => {
             const offset = shortestOffset(index, active % COUNT, COUNT)
@@ -106,7 +106,7 @@ export function InstagramFeed() {
                 }}
                 className="group absolute left-1/2 top-1/2 block origin-center overflow-hidden radius-media bg-black"
                 style={{
-                  width: 'min(78vw, 380px)',
+                  width: 'min(78%, 380px)',
                   aspectRatio: '3 / 4',
                   transform: `translate(-50%, -50%) translateX(${x}rem) scale(${scale})`,
                   zIndex: 20 - abs,

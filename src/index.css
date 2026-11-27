@@ -94,12 +94,14 @@
 
   html {
     scroll-behavior: smooth;
-    overflow-x: clip;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
   }
 
   body {
     margin: 0;
-    overflow-x: clip;
+    overflow-x: hidden;
+    overscroll-behavior-x: none;
     min-height: 100vh;
     min-height: 100svh;
     font-family: var(--font-sans);
@@ -118,6 +120,8 @@
   #root {
     min-height: 100vh;
     min-height: 100svh;
+    max-width: 100%;
+    overflow-x: clip;
     position: relative;
     z-index: 1;
   }
