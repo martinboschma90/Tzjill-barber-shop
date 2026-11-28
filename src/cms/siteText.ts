@@ -1,5 +1,6 @@
 import defaults from '@/cms/textDefaults.json'
 import type { SiteContent } from '@/cms/content'
+import { hideBookingVendor } from '@/lib/hideBookingVendor'
 
 export type TextDefaultKey = keyof typeof defaults
 
@@ -7,5 +8,5 @@ export type TextDefaultKey = keyof typeof defaults
 export function siteText(site: SiteContent, textKey: TextDefaultKey): string {
   const fallback = defaults[textKey].text
   const value = site.texts?.[textKey]
-  return value !== undefined ? value : fallback
+  return hideBookingVendor(value !== undefined ? value : fallback)
 }

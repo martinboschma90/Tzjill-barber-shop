@@ -74,7 +74,16 @@ export function Newsletter() {
                 ) : null}
               </button>
             </form>
-            {error ? <p role="alert" className="type-body mt-4 text-[#e8c4a8]">{error}</p> : null}
+            {error ? (
+              <p role="alert" className="type-body mt-4 text-[#e8c4a8]">
+                {error}{' '}
+                {content.site.contact[0]?.email?.trim() ? (
+                  <a href={`mailto:${content.site.contact[0].email.trim()}`} className="underline">
+                    {content.site.contact[0].email.trim()}
+                  </a>
+                ) : null}
+              </p>
+            ) : null}
             {phase === 'done' ? (
               <p className="type-lead mx-auto mt-4 max-w-md text-white/70" role="status"><SiteText textKey="Newsletter.7" /></p>
             ) : null}

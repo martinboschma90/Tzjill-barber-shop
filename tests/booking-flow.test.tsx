@@ -43,6 +43,7 @@ describe('booking confirmation with isolated Salonhub responses', () => {
     const form = document.getElementById(button.getAttribute('form')!)!
     fireEvent.submit(form); fireEvent.submit(form)
     expect(api.book).toHaveBeenCalledTimes(1)
+    expect(api.book.mock.calls[0]?.[1]).toMatchObject({ treatmentName: 'Haircut', minutes: 30 })
     finish({ status: 'confirmed', appointmentId: '123' })
     expect(await screen.findByRole('heading', { name: 'Afspraak staat' })).toBeTruthy()
   })
@@ -68,5 +69,12 @@ describe('booking confirmation with isolated Salonhub responses', () => {
     await toConfirmation(); fireEvent.submit(document.getElementById(screen.getByRole('button', { name: 'Afspraak bevestigen' }).getAttribute('form')!)!)
     expect(await screen.findByText('Dit tijdstip is net vergeven.')).toBeTruthy()
     expect(screen.getByLabelText('Voornaam').getAttribute('value')).toBe('Test')
+  })
+  it('does not continue with a stale catalog when Salonhub treatments fail', async () => {
+    api.treatments.mockRejectedValue(new Error('offline'))
+    render(<PublicContentProvider><BookingFlow /></PublicContentProvider>)
+    expect(await screen.findByRole('alert')).toBeTruthy()
+    expect((screen.getByRole('button', { name: 'Kies een kapper' }) as HTMLButtonElement).disabled).toBe(true)
+    expect(api.employees).not.toHaveBeenCalled()
   })
 })

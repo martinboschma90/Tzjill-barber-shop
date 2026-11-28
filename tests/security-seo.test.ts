@@ -36,7 +36,7 @@ describe('public endpoints', () => {
 
 import { publicSnapshot } from '../api/content.js'
 it('public content projection excludes draft and hidden profiles, including an intentionally empty team', () => {
-  expect(publicSnapshot({ site: {}, team: [], artists: [{ name: 'Draft', status: 'draft' }, { name: 'Hidden', status: 'published', visible: false }, { name: 'Live', status: 'published', visible: true }] })).toEqual({ site: {}, team: [], artists: [{ name: 'Live', status: 'published', visible: true }] })
+  expect(publicSnapshot({ site: {}, team: [{ name: '   ' }, { name: 'Ada' }], artists: [{ name: 'Draft', status: 'draft' }, { name: 'Hidden', status: 'published', visible: false }, { name: 'Live', status: 'published', visible: true }] })).toEqual({ site: {}, team: [{ name: 'Ada' }], artists: [{ name: 'Live', status: 'published', visible: true }] })
 })
 it('shares the request budget between parallel server instances using compare-and-swap', async () => {
   vi.stubEnv('SUPABASE_URL', 'https://test.supabase.co'); vi.stubEnv('SUPABASE_SERVICE_ROLE_KEY', 'unit-test-only'); vi.spyOn(Math, 'random').mockReturnValue(1)

@@ -23,12 +23,15 @@ type AppShellProps = {
   children: ReactNode
   navVariant?: 'hero' | 'mark' | 'wordmark'
   showFooter?: boolean
+  /** Full-screen Tzjill booking chrome; hide site nav and footer. */
+  cover?: boolean
 }
 
 export function AppShell({
   children,
   navVariant = 'wordmark',
   showFooter = true,
+  cover = false,
 }: AppShellProps) {
   const preview = useIsCmsPreview()
   const [salonhubOpen, setSalonhubOpen] = useState(false)
@@ -73,7 +76,7 @@ export function AppShell({
         >
           Ga naar inhoud
         </a>
-        {salonhubOpen ? null : (
+        {salonhubOpen || cover ? null : (
           <Navbar
             menuOpen={menuOpen}
             onMenuToggle={() => {
@@ -104,7 +107,7 @@ export function AppShell({
         ) : null}
         <div
           className={`flex flex-col ${
-            navVariant === 'hero'
+            cover || navVariant === 'hero'
               ? ''
               : 'pt-[calc(5.25rem+max(0.75rem,env(safe-area-inset-top,0px)))] sm:pt-[calc(5.5rem+max(1rem,env(safe-area-inset-top,0px)))]'
           }`}
@@ -112,7 +115,7 @@ export function AppShell({
           <main id="inhoud" className="flex flex-col">
             {children}
           </main>
-          {showFooter && !preview && !salonhubOpen ? (
+          {showFooter && !preview && !salonhubOpen && !cover ? (
             <>
               <div
                 ref={footerBoundaryRef}
@@ -130,7 +133,7 @@ export function AppShell({
         </div>
         {preview ? null : (
           <>
-            <StickyContactBar hidden={salonhubOpen || menuOpen} />
+            <StickyContactBar hidden={salonhubOpen || menuOpen || cover} />
             <SalonhubWidget open={salonhubOpen} onOpenChange={setSalonhubOpen} />
           </>
         )}

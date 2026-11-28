@@ -74,7 +74,11 @@ export function PublicContentProvider({ children }: { children: ReactNode }) {
         const team = publicTeam(remote.team)
         storageSet(PUBLIC_SITE_STORAGE_KEY, JSON.stringify(remote.site))
         storageSet(PUBLIC_TEAM_STORAGE_KEY, JSON.stringify(team))
-        setContent((previous) => ({ ...previous, site: remote.site, team }))
+        setContent((previous) => ({
+          ...previous,
+          site: normalizeSiteContent(remote.site),
+          team,
+        }))
       }).catch(() => undefined)
     }
     refresh()

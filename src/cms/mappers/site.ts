@@ -22,6 +22,7 @@ import {
 } from '@/cms/content'
 import { cloneFaqCategories, isLeftoverPromoterFaq } from '@/data/faq'
 import { isNotypeHost } from '@/lib/publicSiteUrl'
+import { hideBookingVendor } from '@/lib/hideBookingVendor'
 import { defaultNavLinks } from '@/lib/siteNav'
 import { normalizeRosterGlowPreset } from '@/cms/rosterGlow'
 import type { Json } from '@/lib/database.types'
@@ -199,8 +200,8 @@ function asFaqItems(value: unknown): FaqItem[] {
     .map((item, index) => {
       if (!item || typeof item !== 'object') return null
       const row = item as Record<string, unknown>
-      const question = asString(row.question)
-      const answer = asString(row.answer)
+      const question = hideBookingVendor(asString(row.question))
+      const answer = hideBookingVendor(asString(row.answer))
       if (!question && !answer) return null
       return {
         id: asString(row.id, `faq-item-${index + 1}`),
@@ -490,13 +491,13 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
   const row = raw as Record<string, unknown>
   const contact = asContact(row.contact, defaults.contact)
   const legalLinks = asLegalLinks(row.legalLinks, defaults.legalLinks)
-  const about = asStringArray(row.about)
+  const about = asStringArray(row.about).map(hideBookingVendor)
   const aboutImages = asStringArray(row.aboutImages)
   const copyrightRaw = asString(row.copyrightText, defaults.copyrightText)
   const copyrightLooksLegacy =
     /no\s*type(\s+mgmt|\s+management)?/i.test(copyrightRaw)
-  const faqTitle = asString(row.faqTitle, defaults.faqTitle)
-  const faqIntro = asString(row.faqIntro, defaults.faqIntro)
+  const faqTitle = hideBookingVendor(asString(row.faqTitle, defaults.faqTitle))
+  const faqIntro = hideBookingVendor(asString(row.faqIntro, defaults.faqIntro))
   const faqCategories = asFaqCategories(
     row.faqCategories,
     defaults.faqCategories,
@@ -508,7 +509,7 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
   })
 
   return {
-    texts: row.texts && typeof row.texts === 'object' && !Array.isArray(row.texts) ? Object.fromEntries(Object.entries(row.texts).filter((entry): entry is [string, string] => typeof entry[1] === 'string')) : {},
+    texts: row.texts && typeof row.texts === 'object' && !Array.isArray(row.texts) ? Object.fromEntries(Object.entries(row.texts).filter((entry): entry is [string, string] => typeof entry[1] === 'string').map(([key, text]) => [key, hideBookingVendor(text)])) : {},
     reviews: Array.isArray(row.reviews)
       ? row.reviews
           .filter((v): v is Record<string, unknown> => !!v && typeof v === 'object')
@@ -592,8 +593,8 @@ export function normalizeSiteContent(raw: unknown): SiteContent {
       row.rosterGlowCustomSecondary,
       defaults.rosterGlowCustomSecondary,
     ),
-    bookingTitle: asString(row.bookingTitle, defaults.bookingTitle),
-    bookingIntro: asString(row.bookingIntro, defaults.bookingIntro),
+    bookingTitle: hideBookingVendor(asString(row.bookingTitle, defaults.bookingTitle)),
+    bookingIntro: hideBookingVendor(asString(row.bookingIntro, defaults.bookingIntro)),
     bookingVisible: asBoolean(row.bookingVisible, defaults.bookingVisible),
     bookingTreatments: asBookingTreatments(row.bookingTreatments),
     phoneNumber: hasKey(row, 'phoneNumber')

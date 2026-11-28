@@ -6,6 +6,8 @@ import type { LiveEmployee, LiveTreatment } from '@/lib/salonhubApi'
 export type BookableTreatment = LiveTreatment & {
   image: string
   displayMinutes: number
+  /** Original Salonhub name sent on create. `name` may be a CMS label. */
+  bookingName: string
 }
 
 /**
@@ -117,6 +119,7 @@ export function presentTreatments(
         item: {
           ...item,
           ...shown,
+          bookingName: item.name,
           priceLabel: hit?.price.trim() || item.priceLabel,
           image: treatmentImage(thumbs, shown),
           displayMinutes: fromList ?? seedMinutes(item.name) ?? item.minutes,

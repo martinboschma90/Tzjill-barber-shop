@@ -1,7 +1,7 @@
 export const SHOP_FAQ_ITEMS = [
   {
     q: 'Hoe maak ik een afspraak?',
-    a: 'Boek online via Salonhub. Kies een behandeling, kapper en tijd. Je krijgt een bevestiging per mail.',
+    a: 'Boek online op deze site. Kies een behandeling, kapper en tijd. Je krijgt een bevestiging per mail.',
     tag: 'afspraak' as const,
   },
   {
@@ -26,7 +26,7 @@ export const SHOP_FAQ_ITEMS = [
   },
   {
     q: 'Knippen jullie ook kinderen?',
-    a: 'Ja, kinderen t/m 11 jaar. Zelfde precisie, rustiger tempo. Boek de kids-behandeling in Salonhub.',
+    a: 'Ja, kinderen t/m 11 jaar. Zelfde precisie, rustiger tempo. Boek de kids-behandeling online.',
     tag: 'kids' as const,
   },
 ] as const
