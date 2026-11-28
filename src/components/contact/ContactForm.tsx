@@ -127,7 +127,12 @@ export function ContactForm() {
       </label>
       {error ? (
         <p id="contact-error" role="alert" className="type-body text-[#e8c4a8]">
-          {error}
+          {error}{' '}
+          {content.site.contact[0]?.email?.trim() ? (
+            <a href={`mailto:${content.site.contact[0].email.trim()}`} className="underline">
+              {content.site.contact[0].email.trim()}
+            </a>
+          ) : null}
         </p>
       ) : null}
       <p className="type-body text-white/70">

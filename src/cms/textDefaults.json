@@ -45,7 +45,7 @@
   },
   "AboutPage.12": {
     "group": "AboutPage",
-    "text": "Boek via Salonhub. Voorstreek 18, Leeuwarden."
+    "text": "Boek online. Voorstreek 18, Leeuwarden."
   },
   "AboutPage.13": {
     "group": "AboutPage",
@@ -101,7 +101,7 @@
   },
   "ContactPage.8": {
     "group": "ContactPage",
-    "text": "Vraag of collab — knipafspraak via Salonhub."
+    "text": "Vraag of collab — knipafspraak boek je online."
   },
   "FaqPage.kicker": {
     "group": "FaqPage",
@@ -117,7 +117,7 @@
   },
   "LegalPage.3": {
     "group": "LegalPage",
-    "text": "Voor een afspraak vraagt Salonhub om je naam, e-mailadres en telefoonnummer. Deze gegevens worden gebruikt om je afspraak te maken en te bevestigen. Een contactbericht bevat de gegevens die je zelf invult; het wordt per e-mail bij de salon afgeleverd."
+    "text": "Voor een afspraak vragen we om je naam, e-mailadres en telefoonnummer. Deze gegevens worden gebruikt om je afspraak te maken en te bevestigen. Een contactbericht bevat de gegevens die je zelf invult; het wordt per e-mail bij de salon afgeleverd."
   },
   "LegalPage.4": {
     "group": "LegalPage",
@@ -133,7 +133,7 @@
   },
   "LegalPage.7": {
     "group": "LegalPage",
-    "text": "De website gebruikt Vercel voor hosting en bezoekersstatistieken, Supabase voor het CMS, Salonhub voor afspraken en een e-maildienst voor formulierberichten. De kaart van Google wordt pas geladen als je daar zelf voor kiest."
+    "text": "De website gebruikt Vercel voor hosting en bezoekersstatistieken, Supabase voor het CMS, onze online agenda voor afspraken en een e-maildienst voor formulierberichten. De kaart van Google wordt pas geladen als je daar zelf voor kiest."
   },
   "LegalPage.8": {
     "group": "LegalPage",
@@ -153,7 +153,7 @@
   },
   "LegalPage.12": {
     "group": "LegalPage",
-    "text": "Vercel Web Analytics wordt gebruikt voor bezoekersstatistieken. De Google-kaart maakt pas verbinding met Google nadat je op ‘Kaart laden’ hebt gedrukt. Via links naar Instagram en Salonhub gelden de instellingen van die diensten."
+    "text": "Vercel Web Analytics wordt gebruikt voor bezoekersstatistieken. De Google-kaart maakt pas verbinding met Google nadat je op ‘Kaart laden’ hebt gedrukt. Via links naar Instagram gelden de instellingen van die dienst."
   },
   "LegalPage.13": {
     "group": "LegalPage",
@@ -245,7 +245,7 @@
   },
   "TeamPage.3": {
     "group": "TeamPage",
-    "text": "Kies je kapper bij het boeken in Salonhub. Namen volgen in de zaak — we zetten hier geen placeholder-team."
+    "text": "Kies je kapper bij het online boeken. Namen volgen in de zaak — we zetten hier geen placeholder-team."
   },
   "TeamPage.4": {
     "group": "TeamPage",
@@ -469,7 +469,7 @@
   },
   "AboutPage.teamIntroEmpty": {
     "group": "AboutPage",
-    "text": "Kies je kapper bij het boeken in Salonhub."
+    "text": "Kies je kapper bij het online boeken."
   },
   "ContactForm.name": {
     "group": "ContactForm",

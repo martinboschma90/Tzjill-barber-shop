@@ -7,7 +7,7 @@ export type PublicSnapshot = { site: unknown; team: unknown[]; artists: unknown[
 export function projectPublishedFromDraft(content: CmsContent): PublicSnapshot {
   return {
     site: content.site,
-    team: content.team,
+    team: content.team.filter((member) => member.name.trim()),
     artists: content.artists.filter(
       (artist) => artist.visible !== false && getArtistStatus(artist) === 'published',
     ),

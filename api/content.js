@@ -2,7 +2,7 @@ import { json } from './http-security.mjs'
 import { schemaHeaders } from './supabase-schema.mjs'
 export function publicSnapshot(blob) {
   if (!blob || !blob.site || typeof blob.site !== 'object' || !Array.isArray(blob.team) || !Array.isArray(blob.artists)) return null
-  return { site: blob.site, team: blob.team, artists: blob.artists.filter((artist) => artist && artist.visible !== false && (artist.status || 'published') === 'published') }
+  return { site: blob.site, team: blob.team.filter((member) => member && String(member.name || '').trim()), artists: blob.artists.filter((artist) => artist && artist.visible !== false && (artist.status || 'published') === 'published') }
 }
 export default async function handler(req, res) {
   if (req.method !== 'GET') return json(res, 405, { error: 'Method not allowed' })

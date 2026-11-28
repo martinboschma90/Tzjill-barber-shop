@@ -1,6 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useCms } from '@/cms/CmsContext'
+import { useIsCmsPreview } from '@/cms/previews/PreviewMode'
 import { siteText, type TextDefaultKey } from '@/cms/siteText'
 import { BookButton } from '@/components/booking/BookButton'
 import { BookingWell } from '@/components/booking/BookingWell'
@@ -219,6 +220,7 @@ function cmsBarber(name: string, team: { name: string; imageUrl: string }[]) {
 
 export function BookingFlow({ compact = false }: BookingFlowProps) {
   const { content } = useCms()
+  const preview = useIsCmsPreview()
   const reduceMotion = useReducedMotion()
   const sessionRef = useRef(crypto.randomUUID())
   const submitting = useRef(false)
@@ -300,7 +302,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
   }
 
   async function continueFromTreatment() {
-    if (!selected) return
+    if (!selected || usingFallback) return
     const request = ++flowRequest.current
     setEmployee(null)
     setDate('')
@@ -398,15 +400,34 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
     setStep('details')
   }
 
+  function startOver() {
+    flowRequest.current += 1
+    timesRequest.current += 1
+    submitting.current = false
+    sessionRef.current = crypto.randomUUID()
+    employeePrefetch.current = null
+    setStep('treatment')
+    setBusy(false)
+    setError('')
+    setEmployee(null)
+    setDate('')
+    setTime('')
+    setDates([])
+    setTimes([])
+    setEmployees([])
+    setAppointmentId('')
+    setCode('')
+  }
+
   async function confirm() {
-    if (submitting.current || !selected || !employee || !date || !time) return
+    if (preview || submitting.current || !selected || !employee || !date || !time) return
     submitting.current = true
     setBusy(true)
     setError('')
     try {
       const result = await bookAppointment(sessionRef.current, {
         treatmentId: selected.id,
-        treatmentName: selected.name,
+        treatmentName: selected.bookingName || selected.name,
         minutes: selected.minutes,
         employeeId: employee.id,
         employeeName: employee.name,
@@ -603,7 +624,13 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
           </p>
         ) : null}
         {usingFallback && step === 'treatment' ? (
-          <p className="mt-5 text-[13px] text-[#f6f3ee]/45">Prijzen van de laatst bekende lijst.</p>
+          <p role="alert" className="mt-5 max-w-lg text-[13px] leading-relaxed text-[#f6f3ee]/70">
+            De agenda is nu niet bereikbaar. Deze prijzen zijn van de laatst bekende lijst. Bel{' '}
+            <a href={`tel:${phoneTel(phone)}`} className="text-white/80 hover:text-white">
+              {phone}
+            </a>{' '}
+            om te boeken.
+          </p>
         ) : null}
 
         {step === 'treatment' ? (
@@ -667,7 +694,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
               <BookButton
                 openWidget={false}
                 surface="dark"
-                disabled={loading || !selected || busy}
+                disabled={loading || usingFallback || !selected || busy}
                 onClick={() => void continueFromTreatment()}
                 className="mt-6 w-full sm:w-auto"
               >
@@ -883,6 +910,14 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
               </a>
               .
             </p>
+            <BookButton
+              openWidget={false}
+              surface="dark"
+              onClick={startOver}
+              className="mt-6 w-full sm:w-auto"
+            >
+              Nieuwe afspraak
+            </BookButton>
           </div>
         ) : null}
           </motion.div>
@@ -894,7 +929,7 @@ export function BookingFlow({ compact = false }: BookingFlowProps) {
             <BookButton
               openWidget={false}
               surface="dark"
-              disabled={loading || !selected || busy}
+              disabled={loading || usingFallback || !selected || busy}
               onClick={() => void continueFromTreatment()}
               className="w-full sm:w-auto"
             >
